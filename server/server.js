@@ -53,6 +53,7 @@ app.delete("/deletePeople/:id", (req, res) => {
   });
 });
 
+console.log("test");
 const port = 3005;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
