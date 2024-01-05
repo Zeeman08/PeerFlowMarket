@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 
+//Insert middleware here
+
 app.use(express.json());
 
 //Get all people
