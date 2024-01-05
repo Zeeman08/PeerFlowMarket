@@ -1,39 +1,62 @@
 const express = require("express");
 const app = express();
 const db = require("./db");
+
 //Insert middleware here omar
 
 app.use(express.json());
 
 //Get all people
 app.get("/getPeople", async (req, res) => {
-  const results = await db.query("SELECT * FROM test");
-  console.log(results);
-  res.status(200).json({
-    status: "success",
-    data: {
-      people: ["Gawwy", "Rubaiyat"]
-    }
-  });
+  try{
+    const results = await db.query("SELECT * FROM test");
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        people: results.rows
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
 });
 
 //Get a person
-app.get("/getPeople/:id", (req, res) => {
-  console.log("Got a person")
-  res.status(200).json({
-    status: "success",
-    data: {
-      people: "Gawwy"
-    }
-  });
+app.get("/getPeople/:id", async (req, res) => {
+  try{
+    const results = await db.query(
+      "SELECT * FROM test WHERE id = $1", [req.params.id]
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        people: results.rows[0]
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
 });
 
 //Create a person
-app.post("/createPeople", (req, res) => {
-  console.log(req.body);
-  res.status(201).json({
-    status: "success"
-  });
+app.post("/createPeople", async (req, res) => {
+  try{
+    const results = await db.query(
+      "INSERT INTO test (id, name) VALUES ($1, $2) RETURNING *",
+      [req.body.id, req.body.name]
+    );
+    res.status(201).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        people: results.rows[0]
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
 });
 
 //Update a person
