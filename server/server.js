@@ -1,13 +1,15 @@
 const express = require("express");
 const app = express();
+const db = require("./db");
 
 //Insert middleware here omar
 
 app.use(express.json());
 
 //Get all people
-app.get("/getPeople", (req, res) => {
-  console.log("Got all people")
+app.get("/getPeople", async (req, res) => {
+  const results = await db.query("SELECT * FROM test");
+  console.log(results);
   res.status(200).json({
     status: "success",
     data: {
