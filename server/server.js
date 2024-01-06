@@ -60,21 +60,37 @@ app.post("/createPeople", async (req, res) => {
 });
 
 //Update a person
-app.put("/updatePeople/:id", (req, res) => {
-  console.log(req.params);
-  console.log(req.body);
-  res.status(200).json({
-    status: "success"
-  });
+app.put("/updatePeople/:id", async (req, res) => {
+  try{
+    const results = await db.query(
+      "UPDATE test SET name = $2 WHERE id = $1 RETURNING *",
+      [req.params.id, req.body.name]
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        people: results.rows[0]
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
 });
 
 //Delete a person
-app.delete("/deletePeople/:id", (req, res) => {
-  console.log("Deleting successful");
-  console.log(req.params);
-  res.status(204).json({
-    status: "success"
-  });
+app.delete("/deletePeople/:id", async (req, res) => {
+  try{
+    const results = await db.query(
+      "DELETE FROM test where id = $1",
+      [req.params.id]
+    );
+    res.status(204).json({
+      status: "success"
+    });
+  }catch(err){
+    console.log(err);
+  }
 });
 
 console.log("test");
