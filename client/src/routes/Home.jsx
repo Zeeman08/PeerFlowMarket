@@ -1,12 +1,15 @@
 import React from 'react';
+import Header from '../components/Header';
+import UserList from '../components/UserList';
 
 const Home = () => {
   return (
     <div>
-      <h2>Home</h2>
+      <Header />
+      <UserList />
     </div>
   )
 }
 
-export default Home
+export default Home;
 

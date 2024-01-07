@@ -6,8 +6,7 @@ import UserUpdate from './routes/UserUpdate';
 
 const App = () => {
   return (
-    <div>
-        <h1>Gawwy's Version</h1>
+    <div className="container">
         <Router>
             <Routes>
                 <Route path="/" element={<Home />} />
