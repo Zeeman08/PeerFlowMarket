@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 
 const App = () => {
   return (
     <div>
-      <h1>Gawwy's Version</h1>
+        <h1>Gawwy's Version</h1>
     </div>
   )
 }
