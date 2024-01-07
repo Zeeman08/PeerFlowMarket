@@ -15,6 +15,7 @@ const SearchBar = () => {
             });
 
             console.log(response);
+            window.location("/");
         } catch (err) {
             console.log(err)
         }
@@ -25,7 +26,7 @@ const SearchBar = () => {
         <form className="d-flex mt-4 mb-4" onSubmit={onSubmitForm}>
             <input type="text" className="form-control" value={description} 
             onChange={e => setDescription(e.target.value)}/>
-            <button className="btn btn-outline-secondary">Search</button>
+            <button className="btn btn-outline-secondary">Add</button>
         </form>
     </Fragment>
     );
