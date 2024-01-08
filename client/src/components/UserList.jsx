@@ -1,8 +1,12 @@
 import React, {Fragment, useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 
 const UserList = () => {
   //Storing the data from database into users using setUsers function
   const[users, setUsers] = useState([]);
+
+  //For going to other pages
+  let navigate = useNavigate();
 
   //The async function that fetches the data from the database
   const getUsers = async () => {
@@ -44,7 +48,7 @@ const UserList = () => {
   const updateUser = (id) => {
     try{
       //Go to 
-      window.location = `/user/${id}/update`;
+      navigate(`/user/${id}/update`);
     }
     catch (err) {
       console.log(err);
