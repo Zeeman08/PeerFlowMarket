@@ -50,7 +50,7 @@ app.post("/createPeople", async (req, res) => {
     console.log("Got a create person request");
     const results = await db.query(
       "INSERT INTO test (id, name) VALUES ($1, $2) RETURNING *",
-      [11, req.body.description]
+      [12, req.body.description]
     );
     res.status(201).json({
       status: "success",
