@@ -1,8 +1,26 @@
 import React, {Fragment, useEffect, useState} from 'react';
 
 const UserList = () => {
-  //The storing the data from database into users using setUsers function
+  //Storing the data from database into users using setUsers function
   const[users, setUsers] = useState([]);
+
+  //The async function that fetches the data from the database
+  const getUsers = async () => {
+    try {
+      const response = await fetch("http://localhost:3005/getPeople");
+      const jsonData = await response.json();
+      //console.log(jsonData);
+      setUsers(jsonData.data.people);
+    }
+    catch (err) {
+      console.log(err);
+    }
+  };
+
+  //The useEffect hook that calls the getUsers() function
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   //The async function that deletes the data from the database
   const deleteUser = async (id) => {
@@ -22,23 +40,16 @@ const UserList = () => {
     }
   };
 
-  //The async function that fetches the data from the database
-  const getUsers = async () => {
-    try {
-      const response = await fetch("http://localhost:3005/getPeople");
-      const jsonData = await response.json();
-      //console.log(jsonData);
-      setUsers(jsonData.data.people);
+  //The function that takes you to the update page
+  const updateUser = (id) => {
+    try{
+      //Go to 
+      window.location = `/user/${id}/update`;
     }
     catch (err) {
       console.log(err);
     }
   };
-
-  //The useEffect hook that calls the async function
-  useEffect(() => {
-    getUsers();
-  }, []);
 
   //Returning the actual table
   return (
@@ -65,7 +76,7 @@ const UserList = () => {
             <tr key={user.id}>
               <td>{user.id}</td>
               <td>{user.name}</td>
-              <td><button className="btn btn-warning">Update</button></td>
+              <td><button className="btn btn-warning" onClick={() => updateUser(user.id)}>Update</button></td>
               <td><button className="btn btn-danger" onClick={() => deleteUser(user.id)}>Delete</button></td>
             </tr>
           ))}
