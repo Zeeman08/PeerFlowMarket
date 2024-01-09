@@ -81,6 +81,13 @@ const Home = () => {
     }
   };
 
+  //This function triggers when you double click a store row
+  const visitStore = (e, id) => {
+    if (e.detail > 1){
+      navigate(`/store/${id}`)
+    }
+  }
+
 
   return (
     <div>
@@ -118,7 +125,7 @@ const Home = () => {
           </thead>
           <tbody>
             {displayStores.map (store => (
-              <tr key={store.storefront_id}>
+              <tr key={store.storefront_id} onClick={(e) => visitStore(e, store.storefront_id)}>
                 <td>{store.name}</td>
                 <td>{store.description}</td>
                 <td>{store.rating}</td>
