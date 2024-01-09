@@ -234,7 +234,7 @@ app.delete("/deleteStore/:id", async (req, res) => {
   try{
     console.log("Got a delete store request");
     const results = await db.query(
-      "DELETE FROM storefront where storefront_id = $1 CASCADE",
+      "DELETE FROM storefront where storefront_id = $1",
       [req.params.id]
     );
     res.status(204).json({
