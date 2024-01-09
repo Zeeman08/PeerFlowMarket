@@ -173,8 +173,8 @@ app.post("/createStore", async (req, res) => {
   try{
     console.log("Got a create store request");
     const results = await db.query(
-      "INSERT INTO storefront (name, description, rating, image) VALUES ($1, $2, $3, $4) RETURNING *",
-      [req.body.name, req.body.description, req.body.rating, req.body.image]
+      "INSERT INTO storefront (name, description, image) VALUES ($1, $2, $3) RETURNING *",
+      [req.body.name, req.body.description, req.body.image]
     );
     res.status(201).json({
       status: "success",
