@@ -173,7 +173,7 @@ app.post("/createStore", async (req, res) => {
   try{
     console.log("Got a create store request");
     const results = await db.query(
-      "INSERT INTO storefront (name, description, rating, image) VALUES ($1, $2, $3) RETURNING *",
+      "INSERT INTO storefront (name, description, rating, image) VALUES ($1, $2, $3, $4) RETURNING *",
       [req.body.name, req.body.description, req.body.rating, req.body.image]
     );
     res.status(201).json({
@@ -181,6 +181,25 @@ app.post("/createStore", async (req, res) => {
       results: results.rows.length,
       data: {
         stores: results.rows[0]
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+//create a product for a storefront
+app.post("/createProduct/:id", async (req, res) => {
+  try{
+    console.log("Got a create product request");
+    const results = await db.query(
+      "INSERT INTO product (product_name, product_description, product_price, image, storefront_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [req.body.name, req.body.description, req.body.price, req.body.image, req.params.id]
+    );
+    res.status(201).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        products: results.rows[0]
       }
     });
   }catch(err){
