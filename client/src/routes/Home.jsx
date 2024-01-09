@@ -62,7 +62,7 @@ const Home = () => {
       //!= means value not equal, !== means value and type not equal
       //JS just prefers !== over !=
       setUsers(users.filter(user => user.id !== id));
-      setDisplay(users);
+      setDisplay(displayUsers.filter(user => user.id !== id));
       console.log(response);
     }
     catch (err) {
