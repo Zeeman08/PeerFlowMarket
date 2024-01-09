@@ -192,8 +192,8 @@ app.post("/createProduct/:id", async (req, res) => {
   try{
     console.log("Got a create product request");
     const results = await db.query(
-      "INSERT INTO product (product_name, product_description, product_price, image, storefront_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-      [req.body.name, req.body.description, req.body.price, req.body.image, req.params.id]
+      "INSERT INTO product (product_name, product_description, price, image, storefront_id, tags) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+      [req.body.name, req.body.description, req.body.price, req.body.image, req.params.id, req.body.tags.toString()]
     );
     res.status(201).json({
       status: "success",
