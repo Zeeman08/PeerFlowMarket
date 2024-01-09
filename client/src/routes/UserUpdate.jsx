@@ -1,0 +1,73 @@
+import React, {Fragment, useState, useEffect} from 'react';
+import {useParams, useNavigate} from 'react-router-dom';
+
+const UserUpdate = () => {
+  //Getting id from link
+  const {id} = useParams();
+
+  //Handling form stuff
+  const[name, setName] = useState("");
+
+  //Storing the data from database into user using setUser function
+  const[user, setUser] = useState([]);
+
+  //For going back to home page
+  let navigate = useNavigate();
+
+
+  //The useEffect hook that calls the getUser() function
+  useEffect(() => {
+
+    //The async function that fetches the data from the database
+    const getUser = async () => {
+      try {
+        const response = await fetch(`http://localhost:3005/getPeople/${id}`);
+        const jsonData = await response.json();
+        //console.log(jsonData);
+        setUser(jsonData.data.people);
+      }
+      catch (err) {
+        console.log(err);
+      }
+    };
+
+    //Being called
+    setName(user.name);
+    getUser();
+  }, [id, user.name]);
+
+  const onSubmitForm = async (e) => {
+    try {
+        const body = {name};
+        const response = await fetch(`http://localhost:3005/updatePeople/${id}`, {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(body)
+        });
+
+        console.log(response);
+
+        //Go back to home page
+        navigate("/");
+    }
+    catch (err) {
+        console.log(err)
+    }
+};
+
+  return (
+    <Fragment>
+      <h1 className='text-center mt-5'>UserUpdate</h1>
+      <form className="form-control mt-4 mb-4">
+        <div>
+          <label htmlFor='name'>Name:</label>
+          <input type="text" className="form-control mt-2 mb-2" value={name} 
+          onChange={e => setName(e.target.value)}/>
+          <btn className="btn btn-success ml" onClick={onSubmitForm}>Save Changes</btn>
+        </div>       
+      </form>
+    </Fragment>
+  )
+}
+
+export default UserUpdate;
