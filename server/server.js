@@ -259,6 +259,32 @@ app.delete("/deleteProduct/:storeId/:productId", async (req, res) => {
     console.log(err);
   }
 });
+//delete an announcement for a storefront
+app.delete("/deleteAnnouncement/:storeId/:announcementId", async (req, res) => {
+  try{
+    console.log("Got a delete announcement request");
+    const results = await db.query(
+      "DELETE FROM announcements where storefront_id = $1 AND announcement_id = $2",
+      [req.params.storeId, req.params.announcementId]
+    );
+    res.status(204).json({
+      status: "success"
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
 //Create a person
 app.post("/createPeople", async (req, res) => {
   try{
