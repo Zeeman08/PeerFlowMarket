@@ -61,16 +61,14 @@ app.get("/getStoreProducts/:id", async (req, res) => {
   }
 });
 //get a specific product of a specific storefront
-app.get("/getStoreProducts/:storeId/:productId", async (req, res) => {
+app.get("/getProduct/:productId", async (req, res) => {
   try {
     console.log("Got get a store products request");
 
-    const { storeId, productId } = req.params;
-
     // Use storeId and productId in your query
     const results = await db.query(
-      "SELECT * FROM product WHERE storefront_id = $1 AND product_id = $2",
-      [storeId, productId]
+      "SELECT * FROM product WHERE product_id = $1",
+      [req.params.productId]
     );
 
     res.status(200).json({
@@ -107,14 +105,12 @@ app.get("/getStoreAnnouncements/:id", async (req, res) => {
   }
 });
 //get a specific announcement of a storefront
-app.get("/getStoreAnnouncements/:storeID/:announcementID", async (req, res) => {
+app.get("/getAnnouncement/:announcementID", async (req, res) => {
   try {
     console.log("Got get a store announcements request - specific");
-    const { storeID, announcementID } = req.params;   //interesting syntax, the url parameters and the variables must be the same name
-    const results = await db.query(
-      "SELECT * FROM announcements WHERE storefront_id = $1 AND announcement_id=$2", [storeID, announcementID]
+     const results = await db.query(
+      "SELECT * FROM announcements WHERE announcement_id=$1", [req.params.announcementID]
     );
-    console.log(storeID, announcementID);
     console.log(results.rows[0]);
     res.status(200).json({
       status: "success",
@@ -208,12 +204,12 @@ app.put("/updateStore/:id", async (req, res) => {
   }
 });
 //update a product for a storefront
-app.put("/updateProduct/:storeId/:productId", async (req, res) => {
+app.put("/updateProduct/:productId", async (req, res) => {
   try{
     console.log("Got an update product request");
     const results = await db.query(
-      "UPDATE product SET product_name = $3, product_description = $4, price = $5, image = $6, tags = $7 WHERE storefront_id = $1 AND product_id = $2 RETURNING *",
-      [req.params.storeId, req.params.productId, req.body.name, req.body.description, req.body.price, req.body.image, req.body.tags.toString()]
+      "UPDATE product SET product_name = $2, product_description = $3, price = $4, image = $5, tags = $6 WHERE product_id = $1 RETURNING *",
+      [req.params.productId, req.body.name, req.body.description, req.body.price, req.body.image, req.body.tags.toString()]
     );
     res.status(200).json({
       status: "success",
@@ -227,12 +223,12 @@ app.put("/updateProduct/:storeId/:productId", async (req, res) => {
   }
 });
 //update  an announcement for a storefront
-app.put("/updateAnnouncement/:storeId/:announcementId", async (req, res) => {
+app.put("/updateAnnouncement/:announcementId", async (req, res) => {
   try{
     console.log("Got an update announcement request");
     const results = await db.query(
-      "UPDATE announcements SET announcement_description = $3, image = $4 WHERE storefront_id = $1 AND announcement_id = $2 RETURNING *",
-      [req.params.storeId, req.params.announcementId, req.body.description, req.body.image]
+      "UPDATE announcements SET announcement_description = $2, image = $3 WHERE announcement_id = $1 RETURNING *",
+      [ req.params.announcementId, req.body.description, req.body.image]
     );
     res.status(200).json({
       status: "success",
@@ -263,12 +259,12 @@ app.delete("/deleteStore/:id", async (req, res) => {
   }
 });
 //delete a product for a storefront
-app.delete("/deleteProduct/:storeId/:productId", async (req, res) => {
+app.delete("/deleteProduct/:productId", async (req, res) => {
   try{
     console.log("Got a delete product request");
     const results = await db.query(
-      "DELETE FROM product where storefront_id = $1 AND product_id = $2",
-      [req.params.storeId, req.params.productId]
+      "DELETE FROM product where product_id = $1",
+      [req.params.productId]
     );
     res.status(204).json({
       status: "success"
@@ -278,12 +274,12 @@ app.delete("/deleteProduct/:storeId/:productId", async (req, res) => {
   }
 });
 //delete an announcement for a storefront
-app.delete("/deleteAnnouncement/:storeId/:announcementId", async (req, res) => {
+app.delete("/deleteAnnouncement/:announcementId", async (req, res) => {
   try{
     console.log("Got a delete announcement request");
     const results = await db.query(
-      "DELETE FROM announcements where storefront_id = $1 AND announcement_id = $2",
-      [req.params.storeId, req.params.announcementId]
+      "DELETE FROM announcements where announcement_id = $1",
+      [req.params.announcementId]
     );
     res.status(204).json({
       status: "success"
