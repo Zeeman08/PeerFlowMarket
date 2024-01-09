@@ -24,23 +24,6 @@ app.get("/getPeople", async (req, res) => {
     console.log(err);
   }
 });
-//get all the storefronts
-app.get("/getStores", async (req, res) => {
-  try{
-    console.log("Got get all stores request");
-    const results = await db.query("SELECT * FROM storefront");
-    res.status(200).json({
-      status: "success",
-      results: results.rows.length,
-      data: {
-        stores: results.rows
-      }
-    });
-  }catch(err){
-    console.log(err);
-  }
-});
-
 //Get a person
 app.get("/getPeople/:id", async (req, res) => {
   try{
@@ -59,6 +42,152 @@ app.get("/getPeople/:id", async (req, res) => {
     console.log(err);
   }
 });
+
+
+
+//get all the storefronts
+app.get("/getStores", async (req, res) => {
+  try{
+    console.log("Got get all stores request");
+    const results = await db.query("SELECT * FROM storefront");
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        stores: results.rows
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+//get a specific storefront
+app.get("/getStore/:id", async (req, res) => {
+  try{
+    console.log("Got get a store request");
+    const results = await db.query(
+      "SELECT * FROM storefront WHERE storefront_id = $1", [req.params.id]
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        stores: results.rows[0]
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+//get all the products of a storefront
+app.get("/getStoreProducts/:id", async (req, res) => {
+  try{
+    console.log("Got get a store products request");
+    const results = await db.query(
+      "SELECT * FROM product WHERE storefront_id = $1", [req.params.id]
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        products: results.rows
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+//get a specific product of a specific storefront
+app.get("/getStoreProducts/:storeId/:productId", async (req, res) => {
+  try {
+    console.log("Got get a store products request");
+
+    const { storeId, productId } = req.params;
+
+    // Use storeId and productId in your query
+    const results = await db.query(
+      "SELECT * FROM product WHERE storefront_id = $1 AND product_id = $2",
+      [storeId, productId]
+    );
+
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        product: results.rows[0],
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+});
+//get all the announcements of a storefront
+app.get("/getStoreAnnouncements/:id", async (req, res) => {
+  try{
+    console.log("Got get a store announcements request");
+    const results = await db.query(
+      "SELECT * FROM announcements WHERE storefront_id = $1", [req.params.id]
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        announcements: results.rows
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+//get a specific announcement of a storefront
+app.get("/getStoreAnnouncements/:storeID/:announcementID", async (req, res) => {
+  try {
+    console.log("Got get a store announcements request - specific");
+    const { storeID, announcementID } = req.params;   //interesting syntax, the url parameters and the variables must be the same name
+    const results = await db.query(
+      "SELECT * FROM announcements WHERE storefront_id = $1 AND announcement_id=$2", [storeID, announcementID]
+    );
+    console.log(storeID, announcementID);
+    console.log(results.rows[0]);
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        announcements: results.rows
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+});
+//create a storefront
+app.post("/createStore", async (req, res) => {
+  try{
+    console.log("Got a create store request");
+    const results = await db.query(
+      "INSERT INTO storefront (name, description, rating, image) VALUES ($1, $2, $3) RETURNING *",
+      [req.body.name, req.body.description, req.body.rating, req.body.image]
+    );
+    res.status(201).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        stores: results.rows[0]
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+
 
 //Create a person
 app.post("/createPeople", async (req, res) => {
