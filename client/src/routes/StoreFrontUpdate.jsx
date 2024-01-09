@@ -1,30 +1,32 @@
 import React, {Fragment, useState, useEffect} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 
-const UserUpdate = () => {
+const StoreFrontUpdate = () => {
   //Getting id from link
   const {id} = useParams();
 
+  //Storing the data from database into store using setStore function
+  const[store, setStore] = useState([]);
+
   //Handling form stuff
   const[name, setName] = useState("");
-
-  //Storing the data from database into user using setUser function
-  const[user, setUser] = useState([]);
+  const[desc, setDesc] = useState("");
+  const[image, setImage] = useState("");
 
   //For going back to home page
   let navigate = useNavigate();
 
 
-  //The useEffect hook that calls the getUser() function
+  //The useEffect hook that calls the getStore() function
   useEffect(() => {
 
     //The async function that fetches the data from the database
-    const getUser = async () => {
+    const getStore = async () => {
       try {
-        const response = await fetch(`http://localhost:3005/getPeople/${id}`);
+        const response = await fetch(`http://localhost:3005/getStore/${id}`);
         const jsonData = await response.json();
         //console.log(jsonData);
-        setUser(jsonData.data.people);
+        setStore(jsonData.data.people);
       }
       catch (err) {
         console.log(err);
@@ -32,9 +34,9 @@ const UserUpdate = () => {
     };
 
     //Being called
-    setName(user.name);
-    getUser();
-  }, [id, user.name]);
+    setName(store.name);
+    getStore();
+  }, [id, store.name]);
 
   const onSubmitForm = async (e) => {
     try {
@@ -57,12 +59,18 @@ const UserUpdate = () => {
 
   return (
     <Fragment>
-      <h1 className='text-center mt-5'>UserUpdate</h1>
+      <h1 className='text-center mt-5'>Update StoreFront</h1>
       <form className="form-control mt-4 mb-4">
         <div>
           <label htmlFor='name'>Name:</label>
-          <input type="text" className="form-control mt-2 mb-2" value={name} 
+          <input type="text" className="form-control mt-2 mb-2" value={name}
           onChange={e => setName(e.target.value)}/>
+          <label htmlFor='name'>Description:</label>
+          <input type="text" className="form-control mt-2 mb-2" value={desc}
+          onChange={e => setDesc(e.target.value)}/>
+          <label htmlFor='name'>Image:</label>
+          <input type="text" className="form-control mt-2 mb-2" value={image}
+          onChange={e => setImage(e.target.value)}/>
           <btn className="btn btn-success ml" onClick={onSubmitForm}>Save Changes</btn>
         </div>       
       </form>
@@ -70,4 +78,4 @@ const UserUpdate = () => {
   )
 }
 
-export default UserUpdate;
+export default StoreFrontUpdate;

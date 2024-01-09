@@ -2,7 +2,7 @@ import React from 'react';
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import Home from './routes/Home';
 import User from './routes/User';
-import UserUpdate from './routes/UserUpdate';
+import StoreFrontUpdate from './routes/StoreFrontUpdate';
 
 const App = () => {
   return (
@@ -11,7 +11,7 @@ const App = () => {
             <Routes>
                 <Route exact path="/" element={<Home />} />
                 <Route exact path="/user/:id" element={<User />} />
-                <Route exact path="/user/:id/update" element={<UserUpdate />} />
+                <Route exact path="/user/:id/update" element={<StoreFrontUpdate />} />
                 
             </Routes>
         </Router>
