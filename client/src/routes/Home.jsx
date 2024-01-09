@@ -114,7 +114,7 @@ const Home = () => {
       console.log(response);
 
       //Refresh page
-      navigate("/");
+      window.location.reload();
     }
     catch (err) {
       console.log(err);
