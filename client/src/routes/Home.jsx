@@ -54,7 +54,7 @@ const Home = () => {
   //The async function that deletes the data from the database
   const deleteStore = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3005/deletePeople/${id}`, {
+      const response = await fetch(`http://localhost:3005/deleteStore/${id}`, {
         method: "DELETE"
       });
 
