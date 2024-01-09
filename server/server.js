@@ -8,43 +8,6 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 
-//Get all people
-app.get("/getPeople", async (req, res) => {
-  try{
-    console.log("Got get all people request");
-    const results = await db.query("SELECT * FROM test");
-    res.status(200).json({
-      status: "success",
-      results: results.rows.length,
-      data: {
-        people: results.rows
-      }
-    });
-  }catch(err){
-    console.log(err);
-  }
-});
-//Get a person
-app.get("/getPeople/:id", async (req, res) => {
-  try{
-    console.log("Got get a person request");
-    const results = await db.query(
-      "SELECT * FROM test WHERE id = $1", [req.params.id]
-    );
-    res.status(200).json({
-      status: "success",
-      results: results.rows.length,
-      data: {
-        people: results.rows[0]
-      }
-    });
-  }catch(err){
-    console.log(err);
-  }
-});
-
-
-
 //get all the storefronts
 app.get("/getStores", async (req, res) => {
   try{
@@ -271,8 +234,23 @@ app.delete("/deleteStore/:id", async (req, res) => {
   try{
     console.log("Got a delete store request");
     const results = await db.query(
-      "DELETE FROM storefront where storefront_id = $1",
+      "DELETE FROM storefront where storefront_id = $1 CASCADE",
       [req.params.id]
+    );
+    res.status(204).json({
+      status: "success"
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+//delete a product for a storefront
+app.delete("/deleteProduct/:storeId/:productId", async (req, res) => {
+  try{
+    console.log("Got a delete product request");
+    const results = await db.query(
+      "DELETE FROM product where storefront_id = $1 AND product_id = $2",
+      [req.params.storeId, req.params.productId]
     );
     res.status(204).json({
       status: "success"
@@ -336,7 +314,40 @@ app.delete("/deletePeople/:id", async (req, res) => {
     console.log(err);
   }
 });
-
+//Get all people
+app.get("/getPeople", async (req, res) => {
+  try{
+    console.log("Got get all people request");
+    const results = await db.query("SELECT * FROM test");
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        people: results.rows
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+//Get a person
+app.get("/getPeople/:id", async (req, res) => {
+  try{
+    console.log("Got get a person request");
+    const results = await db.query(
+      "SELECT * FROM test WHERE id = $1", [req.params.id]
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        people: results.rows[0]
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
 const port = 3005;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
