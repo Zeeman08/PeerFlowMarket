@@ -5,25 +5,25 @@ const Home = () => {
   //Storing data for search bar
   const [searchText, setSearchText] = useState("");
 
-  //Storing data for users for the table
+  //Storing data for stores for the table
   //Original data
-  const[users, setUsers] = useState([]);
+  const[stores, setStores] = useState([]);
   //Buffer data used on table
-  const[displayUsers, setDisplay] = useState([]);
+  const[displayStores, setDisplay] = useState([]);
 
   //For going to other pages
   let navigate = useNavigate();
 
-  //The useEffect hook that calls the getUsers() function
+  //The useEffect hook that calls the getStores() function
   useEffect(() => {
 
     //The async function that fetches the data from the database
-    const getUsers = async () => {
+    const getStores = async () => {
       try {
         const response = await fetch("http://localhost:3005/getPeople");
         const jsonData = await response.json();
         //console.log(jsonData);
-        setUsers(jsonData.data.people);
+        setStores(jsonData.data.people);
         setDisplay(jsonData.data.people);
       }
       catch (err) {
@@ -31,7 +31,7 @@ const Home = () => {
       }
     };
     
-    getUsers();
+    getStores();
   }, []);
 
 
@@ -43,7 +43,7 @@ const Home = () => {
   //On pressing search bar, it will search for the description
   const onSearch = async (e) => {
     e.preventDefault();
-    setDisplay(users.filter(user => user.name.includes(searchText)));
+    setDisplay(stores.filter(store => store.name.includes(searchText)));
   };
 
 
@@ -52,17 +52,17 @@ const Home = () => {
   /********************/
 
   //The async function that deletes the data from the database
-  const deleteUser = async (id) => {
+  const deleteStore = async (id) => {
     try {
       const response = await fetch(`http://localhost:3005/deletePeople/${id}`, {
         method: "DELETE"
       });
 
-      //Resetting data in users by removing or not keep any users that have the same id as the one deleted
+      //Resetting data in stores by removing or not keep any stores that have the same id as the one deleted
       //!= means value not equal, !== means value and type not equal
       //JS just prefers !== over !=
-      setUsers(users.filter(user => user.id !== id));
-      setDisplay(displayUsers.filter(user => user.id !== id));
+      setStores(stores.filter(store => store.storefront_id !== id));
+      setDisplay(displayStores.filter(store => store.storefront_id !== id));
       console.log(response);
     }
     catch (err) {
@@ -71,10 +71,10 @@ const Home = () => {
   };
 
   //The function that takes you to the update page
-  const updateUser = (id) => {
+  const updateStore = (id) => {
     try{
       //Go to 
-      navigate(`/user/${id}/update`);
+      navigate(`/store/${id}/update`);
     }
     catch (err) {
       console.log(err);
@@ -109,27 +109,21 @@ const Home = () => {
         <table className="table table-hover table-secondary table-striped table-bordered text-center">
           <thead className="table-dark">
             <tr className="bg-primary">
-              <th scope="col">UserID</th>
-              <th scope="col">UserName</th>
+              <th scope="col">Name</th>
+              <th scope="col">Description</th>
+              <th scope="col">Rating</th>
               <th scope="col">Update</th>
               <th scope="col">Delete</th>
             </tr>
           </thead>
           <tbody>
-            {/* Storing table data format
-            <tr>
-              <td>3</td>
-              <td>John</td>
-              <td><button className="btn btn-warning">Update</button></td>
-              <td><button className="btn btn-danger">Delete</button></td>
-            </tr>
-            */}
-            {displayUsers.map (user => (
-              <tr key={user.id}>
-                <td>{user.id}</td>
-                <td>{user.name}</td>
-                <td><button className="btn btn-warning" onClick={() => updateUser(user.id)}>Update</button></td>
-                <td><button className="btn btn-danger" onClick={() => deleteUser(user.id)}>Delete</button></td>
+            {displayStores.map (store => (
+              <tr key={store.id}>
+                <td>{store.name}</td>
+                <td>{store.description}</td>
+                <td>{store.rating}</td>
+                <td><button className="btn btn-warning" onClick={() => updateStore(store.id)}>Update</button></td>
+                <td><button className="btn btn-danger" onClick={() => deleteStore(store.id)}>Delete</button></td>
               </tr>
             ))}
           </tbody>
