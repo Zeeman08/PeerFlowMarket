@@ -21,29 +21,12 @@ const NewProduct = () => {
 
   //The useEffect hook that calls the getStore() function
   useEffect(() => {
-
-    //The async function that fetches the data from the database
-    const getProduct = async () => {
-      try {
-        const response = await fetch(`http://localhost:3005/getProduct/${id}`);
-        const jsonData = await response.json();
-        //console.log(jsonData);
-        setProduct(jsonData.data.product);
-      }
-      catch (err) {
-        console.log(err);
-      }
-    };
-
-    //Being called
-    //getProduct();
-    //console.log(product);
     setName(product.product_name || "");
     setDesc(product.product_description || "");
     setImage(product.image || "");
     setPrice(product.price || 0);
     setTags(product.tags || "");
-  }, [id, product.name, product.description, product.image, product.price, product.tags]);
+  }, [id, product]);
 
   const saveChanges = async (e) => {
     try {
@@ -54,14 +37,14 @@ const NewProduct = () => {
             image: image,
             tags: tags
         };
-        const response = await fetch(`http://localhost:3005/updateProduct/${id}`, {
-            method: "PUT",
+        const response = await fetch(`http://localhost:3005/createProduct/${id}`, {
+            method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body)
         });
 
         console.log(response);
-        navigate("/");
+        navigate(`/store/${id}`);
     }
     catch (err) {
         console.log(err)
@@ -70,7 +53,7 @@ const NewProduct = () => {
 
   return (
     <Fragment>
-      <h1 className='text-center mt-5'>Update Product</h1>
+      <h1 className='text-center mt-5'>New Product</h1>
       <div>
         <label htmlFor='name'>Name:</label>
         <input type="text" className="form-control mt-2 mb-2" value={name}
@@ -101,4 +84,4 @@ const NewProduct = () => {
   )
 }
 
-export default ProductUpdate;
+export default NewProduct;

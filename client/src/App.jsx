@@ -4,6 +4,7 @@ import Home from './routes/Home';
 import StoreFront from './routes/StoreFront';
 import StoreFrontUpdate from './routes/StoreFrontUpdate';
 import ProductUpdate from './routes/ProductUpdate';
+import NewProduct from './routes/NewProduct';
 
 const App = () => {
   return (
@@ -14,7 +15,7 @@ const App = () => {
                 <Route exact path="/store/:id" element={<StoreFront />} />
                 <Route exact path="/store/:id/update" element={<StoreFrontUpdate />} />
                 <Route exact path="/product/:id/update" element={<ProductUpdate />} />
-                {/* <Route exact path="/product/new" element={<NewProduct />} /> */}
+                <Route exact path="/store/:id/newProduct" element={<NewProduct/>} />
             </Routes>
         </Router>
     </div>

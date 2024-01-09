@@ -61,7 +61,7 @@ const ProductUpdate = () => {
         });
 
         console.log(response);
-        navigate("/");
+        navigate(`/store/${product.storefront_id}`);
     }
     catch (err) {
         console.log(err)
