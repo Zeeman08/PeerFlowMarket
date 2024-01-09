@@ -20,11 +20,11 @@ const Home = () => {
     //The async function that fetches the data from the database
     const getStores = async () => {
       try {
-        const response = await fetch("http://localhost:3005/getPeople");
+        const response = await fetch("http://localhost:3005/getStores");
         const jsonData = await response.json();
         //console.log(jsonData);
-        setStores(jsonData.data.people);
-        setDisplay(jsonData.data.people);
+        setStores(jsonData.data.stores);
+        setDisplay(jsonData.data.stores);
       }
       catch (err) {
         console.log(err);
@@ -118,12 +118,12 @@ const Home = () => {
           </thead>
           <tbody>
             {displayStores.map (store => (
-              <tr key={store.id}>
+              <tr key={store.storefront_id}>
                 <td>{store.name}</td>
                 <td>{store.description}</td>
                 <td>{store.rating}</td>
-                <td><button className="btn btn-warning" onClick={() => updateStore(store.id)}>Update</button></td>
-                <td><button className="btn btn-danger" onClick={() => deleteStore(store.id)}>Delete</button></td>
+                <td><button className="btn btn-warning" onClick={() => updateStore(store.storefront_id)}>Update</button></td>
+                <td><button className="btn btn-danger" onClick={() => deleteStore(store.storefront_id)}>Delete</button></td>
               </tr>
             ))}
           </tbody>
