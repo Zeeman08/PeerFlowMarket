@@ -36,8 +36,8 @@ const NewProduct = () => {
     };
 
     //Being called
-    getProduct();
-    console.log(product);
+    //getProduct();
+    //console.log(product);
     setName(product.product_name || "");
     setDesc(product.product_description || "");
     setImage(product.image || "");
