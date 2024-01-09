@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import Home from './routes/Home';
 import StoreFront from './routes/StoreFront';
 import StoreFrontUpdate from './routes/StoreFrontUpdate';
+import ProductUpdate from './routes/ProductUpdate';
 
 const App = () => {
   return (

@@ -39,18 +39,22 @@ const ProductUpdate = () => {
     getProduct();
 
     setName(product.name || "");
-    setDesc(store.description || "");
-    setImage(store.image || "");
-  }, [id, store.name, store.description, store.image]);
+    setDesc(product.description || "");
+    setImage(product.image || "");
+    setPrice(product.price || 0);
+    setTags(product.tags || "");
+  }, [id, product.name, product.description, product.image, product.price, product.tags]);
 
   const saveChanges = async (e) => {
     try {
         const body = {
             name: name,
             description: desc,
-            image: image
+            price: price,
+            image: image,
+            tags: tags
         };
-        const response = await fetch(`http://localhost:3005/updateStore/${id}`, {
+        const response = await fetch(`http://localhost:3005/updateProduct/${id}`, {
             method: "PUT",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body)
@@ -66,7 +70,7 @@ const ProductUpdate = () => {
 
   return (
     <Fragment>
-      <h1 className='text-center mt-5'>Update StoreFront</h1>
+      <h1 className='text-center mt-5'>Update Product</h1>
       <div>
         <label htmlFor='name'>Name:</label>
         <input type="text" className="form-control mt-2 mb-2" value={name}
@@ -82,9 +86,19 @@ const ProductUpdate = () => {
         <input type="text" className="form-control mt-2 mb-2" value={image}
         onChange={e => setImage(e.target.value)}/>
       </div>
+      <div>
+      <label htmlFor='Price'>Price:</label>
+        <input type="number" className="form-control mt-2 mb-2" value={price}
+        onChange={e => setPrice(e.target.value)}/>
+      </div>
+      <div>
+      <label htmlFor='tags'>Tags:</label>
+        <input type="text" className="form-control mt-2 mb-2" value={tags}
+        onChange={e => setTags(e.target.value)}/>
+      </div>
       <button className="btn btn-success" onClick={saveChanges}>Save Changes</button>
     </Fragment>
   )
 }
 
-export default StoreFrontUpdate;
+export default ProductUpdate;
