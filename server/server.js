@@ -259,6 +259,15 @@ app.delete("/deleteProduct/:storeId/:productId", async (req, res) => {
     console.log(err);
   }
 });
+
+
+
+
+
+
+
+
+
 //Create a person
 app.post("/createPeople", async (req, res) => {
   try{

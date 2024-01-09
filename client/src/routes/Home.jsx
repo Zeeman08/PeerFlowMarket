@@ -22,7 +22,6 @@ const Home = () => {
       try {
         const response = await fetch("http://localhost:3005/getStores");
         const jsonData = await response.json();
-        //console.log(jsonData);
         setStores(jsonData.data.stores);
         setDisplay(jsonData.data.stores);
       }

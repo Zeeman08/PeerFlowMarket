@@ -9,7 +9,7 @@ const User = () => {
   const[name, setName] = useState("");
 
   //Storing the data from database into user using setUser function
-  const[user, setUser] = useState([]);
+  const[user, setUser] = useState({});
 
   //For going back to home page
   let navigate = useNavigate();
