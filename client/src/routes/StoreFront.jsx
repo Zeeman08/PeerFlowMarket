@@ -81,7 +81,7 @@ const StoreFront = () => {
   //The async function that deletes the data from the database
   const deleteProduct = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3005/deleteStore/${id}`, {
+      const response = await fetch(`http://localhost:3005/deleteProduct/${id}`, {
         method: "DELETE"
       });
 
@@ -157,7 +157,7 @@ const StoreFront = () => {
                 <td>{product.price}</td>
                 <td>{product.rating_sum / product.rating_count}</td>
                 <td><button className="btn btn-warning" onClick={() => console.log("Update")}>Update</button></td>
-                <td><button className="btn btn-danger" onClick={() => console.log("Delete")}>Delete</button></td>
+                <td><button className="btn btn-danger" onClick={() => deleteProduct(product.product_id)}>Delete</button></td>
               </tr>
             ))}
           </tbody>
