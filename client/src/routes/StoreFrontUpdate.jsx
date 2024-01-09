@@ -26,7 +26,7 @@ const StoreFrontUpdate = () => {
         const response = await fetch(`http://localhost:3005/getStore/${id}`);
         const jsonData = await response.json();
         //console.log(jsonData);
-        setStore(jsonData.data.people);
+        setStore(jsonData.data.stores);
       }
       catch (err) {
         console.log(err);
@@ -34,14 +34,20 @@ const StoreFrontUpdate = () => {
     };
 
     //Being called
-    setName(store.name);
+    setName(store.name || "");
+    setDesc(store.description || "");
+    setImage(store.image || "");
     getStore();
-  }, [id, store.name]);
+  }, [id, store.name, store.description, store.image]);
 
-  const onSubmitForm = async (e) => {
+  const saveChanges = async (e) => {
     try {
-        const body = {name};
-        const response = await fetch(`http://localhost:3005/updatePeople/${id}`, {
+        const body = {
+            name: name,
+            description: desc,
+            image: image
+        };
+        const response = await fetch(`http://localhost:3005/updateStore/${id}`, {
             method: "PUT",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body)
@@ -65,14 +71,18 @@ const StoreFrontUpdate = () => {
           <label htmlFor='name'>Name:</label>
           <input type="text" className="form-control mt-2 mb-2" value={name}
           onChange={e => setName(e.target.value)}/>
-          <label htmlFor='name'>Description:</label>
+        </div>
+        <div>
+        <label htmlFor='description'>Description:</label>
           <input type="text" className="form-control mt-2 mb-2" value={desc}
           onChange={e => setDesc(e.target.value)}/>
-          <label htmlFor='name'>Image:</label>
+        </div>
+        <div>
+        <label htmlFor='image'>Image:</label>
           <input type="text" className="form-control mt-2 mb-2" value={image}
           onChange={e => setImage(e.target.value)}/>
-          <btn className="btn btn-success ml" onClick={onSubmitForm}>Save Changes</btn>
-        </div>       
+        </div>
+        <button className="btn btn-success ml" onClick={saveChanges}>Save Changes</button>
       </form>
     </Fragment>
   )
