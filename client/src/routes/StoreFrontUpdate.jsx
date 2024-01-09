@@ -6,7 +6,7 @@ const StoreFrontUpdate = () => {
   const {id} = useParams();
 
   //Storing the data from database into store using setStore function
-  const[store, setStore] = useState([]);
+  const[store, setStore] = useState({});
 
   //Handling form stuff
   const[name, setName] = useState("");
@@ -25,7 +25,6 @@ const StoreFrontUpdate = () => {
       try {
         const response = await fetch(`http://localhost:3005/getStore/${id}`);
         const jsonData = await response.json();
-        //console.log(jsonData);
         setStore(jsonData.data.stores);
       }
       catch (err) {
