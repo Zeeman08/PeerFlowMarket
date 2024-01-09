@@ -17,7 +17,6 @@ const SearchBar = () => {
             });
 
             console.log(response);
-            window.location("/");
         } catch (err) {
             console.log(err)
         }
