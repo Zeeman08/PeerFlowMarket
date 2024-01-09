@@ -265,6 +265,22 @@ app.put("/updateProduct/:storeId/:productId", async (req, res) => {
 });
 
 
+
+//delete a storefront
+app.delete("/deleteStore/:id", async (req, res) => {
+  try{
+    console.log("Got a delete store request");
+    const results = await db.query(
+      "DELETE FROM storefront where storefront_id = $1",
+      [req.params.id]
+    );
+    res.status(204).json({
+      status: "success"
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
 //Create a person
 app.post("/createPeople", async (req, res) => {
   try{
