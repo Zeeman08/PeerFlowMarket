@@ -226,7 +226,25 @@ app.put("/updateProduct/:storeId/:productId", async (req, res) => {
     console.log(err);
   }
 });
-
+//update  an announcement for a storefront
+app.put("/updateAnnouncement/:storeId/:announcementId", async (req, res) => {
+  try{
+    console.log("Got an update announcement request");
+    const results = await db.query(
+      "UPDATE announcements SET announcement_description = $3, image = $4 WHERE storefront_id = $1 AND announcement_id = $2 RETURNING *",
+      [req.params.storeId, req.params.announcementId, req.body.description, req.body.image]
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        announcements: results.rows[0]
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
 
 
 //delete a storefront
@@ -259,6 +277,23 @@ app.delete("/deleteProduct/:storeId/:productId", async (req, res) => {
     console.log(err);
   }
 });
+//delete an announcement for a storefront
+app.delete("/deleteAnnouncement/:storeId/:announcementId", async (req, res) => {
+  try{
+    console.log("Got a delete announcement request");
+    const results = await db.query(
+      "DELETE FROM announcements where storefront_id = $1 AND announcement_id = $2",
+      [req.params.storeId, req.params.announcementId]
+    );
+    res.status(204).json({
+      status: "success"
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+
+
 
 
 
