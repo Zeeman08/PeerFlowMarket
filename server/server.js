@@ -24,6 +24,22 @@ app.get("/getPeople", async (req, res) => {
     console.log(err);
   }
 });
+//get all the storefronts
+app.get("/getStores", async (req, res) => {
+  try{
+    console.log("Got get all stores request");
+    const results = await db.query("SELECT * FROM storefront");
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        stores: results.rows
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
 
 //Get a person
 app.get("/getPeople/:id", async (req, res) => {
