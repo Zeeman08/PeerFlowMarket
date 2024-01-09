@@ -39,10 +39,25 @@ const User = () => {
 
 
   return (
-    <Fragment>
-      //display the user id and name
-      <h1 className='text-center mt-5'>User {id} {name}</h1>
-    </Fragment>
+      //show the user name and user id in two rows of a table, use bootstrap
+      //bring the table down a bit
+
+      <div className="container" style={{ marginTop: '100px' }}>
+        <table className="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">User ID</th>
+              <th scope="col">User Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{user.id}</td>
+              <td>{user.name}</td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
   )
 }
 
