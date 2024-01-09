@@ -206,6 +206,63 @@ app.post("/createProduct/:id", async (req, res) => {
     console.log(err);
   }
 });
+//create an announcement for a storefront
+app.post("/createAnnouncement/:id", async (req, res) => {
+  try{
+    console.log("Got a create announcement request");
+    const results = await db.query(
+      "INSERT INTO announcements (STOREFRONT_ID, ANNOUNCEMENT_DESCRIPTION, IMAGE) VALUES ($1, $2, $3) RETURNING *",
+      [req.params.id, req.body.description, req.body.image]
+    );
+    res.status(201).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        announcements: results.rows[0]
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+//update a storefront
+app.put("/updateStore/:id", async (req, res) => {
+  try{
+    console.log("Got an update store request");
+    const results = await db.query(
+      "UPDATE storefront SET name = $2, description = $3, image = $4, last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = $1 RETURNING *",
+      [req.params.id, req.body.name, req.body.description, req.body.image]
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        stores: results.rows[0]
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+//update a product for a storefront
+app.put("/updateProduct/:storeId/:productId", async (req, res) => {
+  try{
+    console.log("Got an update product request");
+    const results = await db.query(
+      "UPDATE product SET product_name = $3, product_description = $4, price = $5, image = $6, tags = $7 WHERE storefront_id = $1 AND product_id = $2 RETURNING *",
+      [req.params.storeId, req.params.productId, req.body.name, req.body.description, req.body.price, req.body.image, req.body.tags.toString()]
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        products: results.rows[0]
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
 
 
 //Create a person
