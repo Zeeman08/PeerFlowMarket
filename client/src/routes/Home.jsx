@@ -52,9 +52,8 @@ const Home = () => {
   /********************/
 
   //The async function that deletes the data from the database
-  const deleteStore = async (id, e) => {
+  const deleteStore = async (id) => {
     try {
-      e.preventDefault();
       const response = await fetch(`http://localhost:3005/deletePeople/${id}`, {
         method: "DELETE"
       });
@@ -72,10 +71,9 @@ const Home = () => {
   };
 
   //The function that takes you to the update page
-  const updateStore = (id, e) => {
+  const updateStore = (id) => {
     try{
       //Go to
-      e.preventDefault();
       navigate(`/store/${id}/update`);
     }
     catch (err) {
@@ -124,8 +122,8 @@ const Home = () => {
                 <td>{store.name}</td>
                 <td>{store.description}</td>
                 <td>{store.rating}</td>
-                <td><button className="btn btn-warning" onClick={e => updateStore(store.storefront_id, e)}>Update</button></td>
-                <td><button className="btn btn-danger" onClick={e => deleteStore(store.storefront_id, e)}>Delete</button></td>
+                <td><button className="btn btn-warning" onClick={() => updateStore(store.storefront_id)}>Update</button></td>
+                <td><button className="btn btn-danger" onClick={() => deleteStore(store.storefront_id)}>Delete</button></td>
               </tr>
             ))}
           </tbody>

@@ -34,10 +34,11 @@ const StoreFrontUpdate = () => {
     };
 
     //Being called
+    getStore();
+
     setName(store.name || "");
     setDesc(store.description || "");
     setImage(store.image || "");
-    getStore();
   }, [id, store.name, store.description, store.image]);
 
   const saveChanges = async (e) => {
@@ -54,36 +55,32 @@ const StoreFrontUpdate = () => {
         });
 
         console.log(response);
-
-        //Go back to home page
         navigate("/");
     }
     catch (err) {
         console.log(err)
     }
-};
+  };
 
   return (
     <Fragment>
       <h1 className='text-center mt-5'>Update StoreFront</h1>
-      <form className="form-control mt-4 mb-4">
-        <div>
-          <label htmlFor='name'>Name:</label>
-          <input type="text" className="form-control mt-2 mb-2" value={name}
-          onChange={e => setName(e.target.value)}/>
-        </div>
-        <div>
-        <label htmlFor='description'>Description:</label>
-          <input type="text" className="form-control mt-2 mb-2" value={desc}
-          onChange={e => setDesc(e.target.value)}/>
-        </div>
-        <div>
-        <label htmlFor='image'>Image:</label>
-          <input type="text" className="form-control mt-2 mb-2" value={image}
-          onChange={e => setImage(e.target.value)}/>
-        </div>
-        <button className="btn btn-success ml" onClick={saveChanges}>Save Changes</button>
-      </form>
+      <div>
+        <label htmlFor='name'>Name:</label>
+        <input type="text" className="form-control mt-2 mb-2" value={name}
+        onChange={e => setName(e.target.value)}/>
+      </div>
+      <div>
+      <label htmlFor='description'>Description:</label>
+        <input type="text" className="form-control mt-2 mb-2" value={desc}
+        onChange={e => setDesc(e.target.value)}/>
+      </div>
+      <div>
+      <label htmlFor='image'>Image:</label>
+        <input type="text" className="form-control mt-2 mb-2" value={image}
+        onChange={e => setImage(e.target.value)}/>
+      </div>
+      <button className="btn btn-success" onClick={saveChanges}>Save Changes</button>
     </Fragment>
   )
 }
