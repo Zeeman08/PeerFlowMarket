@@ -98,15 +98,15 @@ const StoreFront = () => {
   };
 
   //The function that takes you to the update page
-  // const updateProduct = (id) => {
-  //   try{
-  //     //Go to
-  //     navigate(`/product/${id}/update`);
-  //   }
-  //   catch (err) {
-  //     console.log(err);
-  //   }
-  // };
+  const updateProduct = (id) => {
+    try{
+      //Go to
+      navigate(`/product/${id}/update`);
+    }
+    catch (err) {
+      console.log(err);
+    }
+  };
 
   //This function triggers when you double click a store row
   // const visitProduct = (e, id) => {
@@ -156,7 +156,7 @@ const StoreFront = () => {
                 <td>{product.product_description}</td>
                 <td>{product.price}</td>
                 <td>{product.rating_sum / product.rating_count}</td>
-                <td><button className="btn btn-warning" onClick={() => console.log("Update")}>Update</button></td>
+                <td><button className="btn btn-warning" onClick={() => updateProduct(product.product_id)}>Update</button></td>
                 <td><button className="btn btn-danger" onClick={() => deleteProduct(product.product_id)}>Delete</button></td>
               </tr>
             ))}
