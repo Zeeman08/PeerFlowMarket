@@ -32,8 +32,9 @@ const User = () => {
     };
 
     //Being called
-    setName(user.name);
+    
     getUser();
+    setName(user.name);
   }, [id, user.name]);
 
 
