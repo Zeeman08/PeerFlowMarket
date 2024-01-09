@@ -6,7 +6,7 @@ const Home = () => {
   const [searchText, setSearchText] = useState("");
 
   //Storing data for users for the table
-  //Rawdata
+  //Original data
   const[users, setUsers] = useState([]);
   //Buffer data used on table
   const[displayUsers, setDisplay] = useState([]);
