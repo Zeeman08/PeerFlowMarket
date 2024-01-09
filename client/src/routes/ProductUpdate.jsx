@@ -37,9 +37,9 @@ const ProductUpdate = () => {
 
     //Being called
     getProduct();
-
-    setName(product.name || "");
-    setDesc(product.description || "");
+    console.log(product);
+    setName(product.product_name || "");
+    setDesc(product.product_description || "");
     setImage(product.image || "");
     setPrice(product.price || 0);
     setTags(product.tags || "");
