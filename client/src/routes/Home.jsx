@@ -11,6 +11,11 @@ const Home = () => {
   //Buffer data used on table
   const[displayStores, setDisplay] = useState([]);
 
+  //Storing data for add storefront bar
+  const [storeName, setStoreName] = useState("");
+  const [storeDesc, setStoreDesc] = useState("");
+  const [storeImage, setStoreImage] = useState("");
+
   //For going to other pages
   let navigate = useNavigate();
 
@@ -88,6 +93,35 @@ const Home = () => {
   }
 
 
+  /*************************/
+  /**** ADD STORE STUFF ****/
+  /*************************/
+
+  const addStoreFront = async (e) => {
+    try {
+      e.preventDefault();
+      const body = {
+        name: storeName,
+        description: storeDesc,
+        image: storeImage
+      };
+      const response = await fetch("http://localhost:3005/createStore", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(body)
+      });
+
+      console.log(response);
+
+      //Refresh page
+      navigate("/");
+    }
+    catch (err) {
+      console.log(err);
+    }
+  }
+
+
   return (
     <div>
       {/* header */}
@@ -134,6 +168,20 @@ const Home = () => {
             ))}
           </tbody>
         </table>
+      </Fragment>
+
+
+      {/* add store button */}
+      <Fragment>
+        <form className="d-flex mt-4" onSubmit={onSearch}>
+            <input type="text" placeholder="Name" className="form-control" value={storeName} 
+            onChange={e => setStoreName(e.target.value)}/>
+            <input type="text" placeholder="Description" className="form-control" value={storeDesc} 
+            onChange={e => setStoreDesc(e.target.value)}/>
+            <input type="text" placeholder="Image" className="form-control" value={storeImage} 
+            onChange={e => setStoreImage(e.target.value)}/>
+            <button className="btn btn-primary" onClick={e => addStoreFront(e)}>+</button>
+        </form>
       </Fragment>
     </div>
   )
