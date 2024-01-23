@@ -1,5 +1,6 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {useNavigate} from 'react-router-dom';
+import '../stylesheet.css';
 
 const Home = () => {
   //Storing data for search bar
@@ -124,65 +125,66 @@ const Home = () => {
 
   return (
     <div>
-      {/* header */}
-      <Fragment>
-        <h1 className = "font-weight-light display-1 text-center mt-5">
-          Peer Flow Market
-        </h1>
-      </Fragment>
+      <div className="container">
+        {/* header */}
+        <div>
+          <h1 className = "font-weight-light display-1 text-center mt-5">
+            Peer Flow Market
+          </h1>
+        </div>
+
+
+        {/* search bar */}
+        <div>
+          <form className="d-flex mt-4 mb-4" onSubmit={onSearch}>
+              <input type="text" className="form-control" value={searchText} 
+              onChange={e => setSearchText(e.target.value)}/>
+              <button className="btn btn-outline-secondary">Search</button>
+          </form>
+        </div>
 
 
 
-      {/* search bar */}
-      <Fragment>
-        <form className="d-flex mt-4 mb-4" onSubmit={onSearch}>
-            <input type="text" className="form-control" value={searchText} 
-            onChange={e => setSearchText(e.target.value)}/>
-            <button className="btn btn-outline-secondary">Search</button>
-        </form>
-      </Fragment>
-
-
-
-      {/* table */}
-      <Fragment>
-        <table className="table table-hover table-secondary table-striped table-bordered text-center">
-          <thead className="table-dark">
-            <tr className="bg-primary">
-              <th scope="col">Name</th>
-              <th scope="col">Description</th>
-              <th scope="col">Rating</th>
-              <th scope="col">Update</th>
-              <th scope="col">Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {displayStores.map (store => (
-              <tr key={store.storefront_id} onClick={(e) => visitStore(e, store.storefront_id)}>
-                <td>{store.name}</td>
-                <td>{store.description}</td>
-                <td>{store.rating}</td>
-                <td><button className="btn btn-warning" onClick={() => updateStore(store.storefront_id)}>Update</button></td>
-                <td><button className="btn btn-danger" onClick={() => deleteStore(store.storefront_id)}>Delete</button></td>
+        {/* table */}
+        <div>
+          <table className="table table-hover table-secondary table-striped table-bordered text-center">
+            <thead className="table-dark">
+              <tr className="bg-primary">
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Rating</th>
+                <th scope="col">Update</th>
+                <th scope="col">Delete</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </Fragment>
+            </thead>
+            <tbody>
+              {displayStores.map (store => (
+                <tr key={store.storefront_id} onClick={(e) => visitStore(e, store.storefront_id)}>
+                  <td>{store.name}</td>
+                  <td>{store.description}</td>
+                  <td>{store.rating}</td>
+                  <td><button className="btn btn-warning" onClick={() => updateStore(store.storefront_id)}>Update</button></td>
+                  <td><button className="btn btn-danger" onClick={() => deleteStore(store.storefront_id)}>Delete</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
 
-      {/* add store button */}
-      <Fragment>
-        <form className="d-flex mt-4" onSubmit={onSearch}>
-            <input type="text" placeholder="Name" className="form-control" value={storeName} 
-            onChange={e => setStoreName(e.target.value)}/>
-            <input type="text" placeholder="Description" className="form-control" value={storeDesc} 
-            onChange={e => setStoreDesc(e.target.value)}/>
-            <input type="text" placeholder="Image" className="form-control" value={storeImage} 
-            onChange={e => setStoreImage(e.target.value)}/>
-            <button className="btn btn-primary" onClick={e => addStoreFront(e)}>+</button>
-        </form>
-      </Fragment>
+        {/* add store button */}
+        <div>
+          <form className="d-flex mt-4" onSubmit={onSearch}>
+              <input type="text" placeholder="Name" className="form-control" value={storeName} 
+              onChange={e => setStoreName(e.target.value)}/>
+              <input type="text" placeholder="Description" className="form-control" value={storeDesc} 
+              onChange={e => setStoreDesc(e.target.value)}/>
+              <input type="text" placeholder="Image" className="form-control" value={storeImage} 
+              onChange={e => setStoreImage(e.target.value)}/>
+              <button className="btn btn-primary" onClick={e => addStoreFront(e)}>+</button>
+          </form>
+        </div>
+      </div>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import React, {Fragment, useState, useEffect} from 'react';
+import React, { useState, useEffect} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 
 const StoreFrontUpdate = () => {
@@ -62,7 +62,7 @@ const StoreFrontUpdate = () => {
   };
 
   return (
-    <Fragment>
+    <div>
       <h1 className='text-center mt-5'>Update StoreFront</h1>
       <div>
         <label htmlFor='name'>Name:</label>
@@ -80,7 +80,7 @@ const StoreFrontUpdate = () => {
         onChange={e => setImage(e.target.value)}/>
       </div>
       <button className="btn btn-success" onClick={saveChanges}>Save Changes</button>
-    </Fragment>
+    </div>
   )
 }
 
