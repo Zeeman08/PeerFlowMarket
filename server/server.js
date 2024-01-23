@@ -27,10 +27,11 @@ app.use(express.json());
 
 
 // Global strings
-const GET_STORE1 = "SELECT S.*, AVG(PRODUCT_RATING) AS RATING FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)";
+const GET_STORE1 = "SELECT S.*, COALESCE(AVG(PRODUCT_RATING), 0) AS RATING FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)";
 const GET_STORE2 = "GROUP BY S.STOREFRONT_ID";
-
-// Route handler
+const GET_PRODUCT1 = "SELECT P.*, COALESCE(AVG(R.RATING), 0) AS PRODUCT_RATING FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID)";
+const GET_PRODUCT2 = "GROUP BY P.PRODUCT_ID";
+// get all the stores
 app.get("/getStores", async (req, res) => {
   try {
     console.log("Got get all stores request");
@@ -57,9 +58,6 @@ app.get("/getStores", async (req, res) => {
   }
 });
 
-
-
-
 //get a specific storefront
 app.get("/getStore/:id", async (req, res) => {
   try{
@@ -80,42 +78,8 @@ app.get("/getStore/:id", async (req, res) => {
     console.log(err);
   }
 });
-//get all the products of a storefront
-app.get("/getStoreProducts/:id", async (req, res) => {
-  try{
-    console.log("Got get a store products request");
-    const results = await db.query(
-      "SELECT * FROM product WHERE storefront_id = $1", [req.params.id]
-    );
-    res.status(200).json({
-      status: "success",
-      results: results.rows.length,
-      data: {
-        products: results.rows
-      }
-    });
-  }catch(err){
-    console.log(err);
-  }
-});
-//get all the announcements of a storefront
-app.get("/getStoreAnnouncements/:id", async (req, res) => {
-  try{
-    console.log("Got get a store announcements request");
-    const results = await db.query(
-      "SELECT * FROM announcements WHERE storefront_id = $1", [req.params.id]
-    );
-    res.status(200).json({
-      status: "success",
-      results: results.rows.length,
-      data: {
-        announcements: results.rows
-      }
-    });
-  }catch(err){
-    console.log(err);
-  }
-});
+
+
 //create a storefront
 app.post("/createStore", async (req, res) => {
   try{
@@ -184,11 +148,10 @@ app.delete("/deleteStore/:id", async (req, res) => {
 app.get("/getProduct/:productId", async (req, res) => {
   try {
     console.log("Got get a store products request");
-
+    const query = `${GET_PRODUCT1} WHERE P.PRODUCT_ID = ${req.params.productId} ${GET_PRODUCT2}`;
     // Use storeId and productId in your query
     const results = await db.query(
-      "SELECT * FROM product WHERE product_id = $1",
-      [req.params.productId]
+      query
     );
 
     res.status(200).json({
@@ -259,7 +222,25 @@ app.delete("/deleteProduct/:productId", async (req, res) => {
     console.log(err);
   }
 });
-
+//get all the products of a storefront
+app.get("/getStoreProducts/:id", async (req, res) => {
+  try{
+    console.log("Got get a store products request");
+    const query = `${GET_PRODUCT1} WHERE P.STOREFRONT_ID= ${req.params.id} ${GET_PRODUCT2}`;
+    const results = await db.query(
+      query
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        products: results.rows
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
 
 
 
@@ -341,7 +322,24 @@ app.get("/getAnnouncement/:announcementID", async (req, res) => {
     });
   }
 });
-
+//get all the announcements of a storefront
+app.get("/getStoreAnnouncements/:id", async (req, res) => {
+  try{
+    console.log("Got get a store announcements request");
+    const results = await db.query(
+      "SELECT * FROM announcements WHERE storefront_id = $1", [req.params.id]
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        announcements: results.rows
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
 
 
 //clear cart
