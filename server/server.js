@@ -133,6 +133,31 @@ app.delete("/deleteStore/:id", async (req, res) => {
     console.log(err);
   }
 });
+//geTINGt all the storefronts which are in a couple of categories, separated by commas, all lowercase
+app.get("/getStoreCategories/:categories", async (req, res) => {
+  try{
+    console.log("Got get a store categories request");
+    const categories = req.params.categories.split(",");
+    let query = `(${GET_STORE1} WHERE S.STOREFRONT_ID IN (SELECT STOREFRONT_ID S1 FROM CATEGORY_STOREFRONT_RELATION WHERE CATEGORY_NAME = '${categories[0]}') ${GET_STORE2})`;
+    for(let i = 1; i < categories.length; i++){
+      query += ` UNION (${GET_STORE1} WHERE S.STOREFRONT_ID IN (SELECT STOREFRONT_ID S1 FROM CATEGORY_STOREFRONT_RELATION WHERE CATEGORY_NAME = '${categories[i]}') ${GET_STORE2})`;
+    }
+    console.log(query);
+    const results = await db.query(
+      query
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        stores: results.rows
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+
 
 
 
