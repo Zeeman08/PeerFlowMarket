@@ -43,7 +43,7 @@ const Product = () => {
   return (
     <div>
       {/* Image */}
-      <div>
+      <div className="mt-4 d-flex justify-content-evenly">
         <h1>{product.image}</h1>
       </div>
 
@@ -51,21 +51,21 @@ const Product = () => {
       <div>
         <div className="mt-3">
           <span className="fs-3">{product.product_name}</span>
-          <h1 className="mt-4">Details</h1>
+          <h1 className="mt-4 text-decoration-underline">Details</h1>
         </div>
-        <p className="fs-4">
+        <p className="fs-4 mt-3">
           {product.product_description}
         </p>
         <div>
-          <h6 className="customtxt">${product.price}</h6>
+          <h6 className="customtxt mt-5">${product.price}</h6>
         </div>
         <div>
-          <div className="input-group">
+          <div className="input-group mt-3">
             <button className="btn btn-primary" type="button" onClick={reduceQuantity}>-</button>
             <span className="input-group-text">{quantity}</span>
             <button className="btn btn-primary" type="button" onClick={addQuantity}>+</button>
           </div>
-          <button className="btn btn-success mt-3">Add to Cart</button>
+          <button className="btn btn-success mt-4">Add to Cart</button>
         </div>
       </div>
     </div>
