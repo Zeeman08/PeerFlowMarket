@@ -17,10 +17,6 @@ INSERT INTO LOCATION (LOCATION_NAME, POST_CODE, COUNTRY_ID) VALUES
 -- Inserting into PERSON table
 INSERT INTO PERSON (PERSON_NAME, PASSWORD, LOCATION_ID, DATE_OF_BIRTH, PHONE, EMAIL, IMAGE) VALUES
   ('Person1', 'password1', 1, '1990-01-01', '1234567890', 'person1@example.com', 'image1.jpg'),
-  ('Person2', 'password2', 2, '1985-05-15', '9876543210', 'person2@example.com', 'image2.jpg'),
-  ('Person3', 'password3', 3, '1995-08-20', '5555555555', 'person3@example.com', 'image3.jpg'),
-  ('Person4', 'password4', 4, '1980-12-10', '1112223333', 'person4@example.com', 'image4.jpg'),
-  ('Person5', 'password5', 5, '1998-04-25', '9998887777', 'person5@example.com', 'image5.jpg');
 
 -- Inserting into STOREFRONT table
 INSERT INTO STOREFRONT (STOREFRONT_NAME, STOREFRONT_DESCRIPTION, LAST_UPDATED_ON, IMAGE) VALUES
@@ -33,10 +29,10 @@ INSERT INTO STOREFRONT (STOREFRONT_NAME, STOREFRONT_DESCRIPTION, LAST_UPDATED_ON
 -- Inserting into MANAGES table
 INSERT INTO MANAGES (PERSON_ID, STOREFRONT_ID) VALUES
   (1, 1),
-  (2, 2),
-  (3, 3),
-  (4, 4),
-  (5, 5);
+  (1, 2),
+  (1, 3),
+  (1, 4),
+  (1, 5);
 
 -- Inserting into PRODUCT table
 INSERT INTO PRODUCT (PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE, IMAGE, STOREFRONT_ID) VALUES
@@ -49,26 +45,26 @@ INSERT INTO PRODUCT (PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE, IMAGE, STOREFRONT
 -- Inserting into CART table
 INSERT INTO CART (PERSON_ID, PRODUCT_ID) VALUES
   (1, 1),
-  (2, 2),
-  (3, 3),
-  (4, 4),
-  (5, 5);
+  (1, 2),
+  (1, 3),
+  (1, 4),
+  (1, 5);
 
 -- Inserting into ORDERS table
 INSERT INTO ORDERS (PERSON_ID, ORDER_DATE, COMMENTS) VALUES
   (1, CURRENT_DATE, 'Order comments 1'),
-  (2, CURRENT_DATE, 'Order comments 2'),
-  (3, CURRENT_DATE, 'Order comments 3'),
-  (4, CURRENT_DATE, 'Order comments 4'),
-  (5, CURRENT_DATE, 'Order comments 5');
+  (1, CURRENT_DATE, 'Order comments 2'),
+  (1, CURRENT_DATE, 'Order comments 3'),
+  (1, CURRENT_DATE, 'Order comments 4'),
+  (1, CURRENT_DATE, 'Order comments 5');
 
 -- Inserting into TRANSACTIONS table
 INSERT INTO TRANSACTIONS (PERSON_ID, STOREFRONT_ID, ORDER_ID) VALUES
   (1, 1, 1),
-  (2, 2, 2),
-  (3, 3, 3),
-  (4, 4, 4),
-  (5, 5, 5);
+  (1, 2, 2),
+  (1, 3, 3),
+  (1, 4, 4),
+  (1, 5, 5);
 
 -- Inserting into ANNOUNCEMENTS table
 INSERT INTO ANNOUNCEMENTS (STOREFRONT_ID, ANNOUNCEMENT_DESCRIPTION, POSTED_ON, IMAGE) VALUES
