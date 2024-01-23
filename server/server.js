@@ -78,6 +78,26 @@ app.get("/getStore/:id", async (req, res) => {
     console.log(err);
   }
 });
+//get the stores managed by a person
+app.get("/getStoresManagedByPerson/:id", async (req, res) => {
+  try{
+    console.log("Got get a store request");
+    const fullQuery = `${GET_STORE1} WHERE S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM MANAGES WHERE PERSON_ID = ${req.params.id}) ${GET_STORE2}`;
+
+    const results = await db.query(
+      fullQuery
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        stores: results.rows[0]
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
 
 
 //create a storefront
@@ -363,6 +383,30 @@ app.get("/getStoreAnnouncements/:id", async (req, res) => {
     });
   }catch(err){
     console.log(err);
+  }
+});
+
+
+//view cart
+app.get("/getCart/:id", async (req, res) => {
+  try {
+    console.log("Got view cart request");
+    const results = await db.query(
+      "SELECT * FROM cart WHERE person_id = $1", [req.params.id]
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        cart: results.rows
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error",
+    });
   }
 });
 
