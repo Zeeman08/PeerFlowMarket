@@ -35,8 +35,8 @@ const StoreFrontUpdate = () => {
     //Being called
     getStore();
 
-    setName(store.name || "");
-    setDesc(store.description || "");
+    setName(store.storefront_name || "");
+    setDesc(store.storefront_description || "");
     setImage(store.image || "");
   }, [id, store.name, store.description, store.image]);
 
@@ -61,6 +61,10 @@ const StoreFrontUpdate = () => {
     }
   };
 
+  const goBack = () => {
+    navigate(`/stores/${1}`);
+  }
+
   return (
     <div>
       <h1 className='text-center mt-5'>Update StoreFront</h1>
@@ -79,7 +83,10 @@ const StoreFrontUpdate = () => {
         <input type="text" className="form-control mt-2 mb-2" value={image}
         onChange={e => setImage(e.target.value)}/>
       </div>
-      <button className="btn btn-success" onClick={saveChanges}>Save Changes</button>
+      <div className="d-flex justify-content-between">
+        <button className="btn btn-success mt-2" onClick={saveChanges}>Save Changes</button>
+        <button className="btn btn-danger mt-2" onClick={goBack}>Go Back</button>
+      </div>
     </div>
   )
 }

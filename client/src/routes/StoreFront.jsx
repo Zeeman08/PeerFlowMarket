@@ -140,7 +140,7 @@ const StoreFront = () => {
       </div>
 
 
-      {/* new broduct button */}
+      {/* new product button */}
       <div>
         <button className="btn btn-success mb-4" onClick={() => navigate(`/store/${id}/newProduct`)}>New Product</button>
       </div>
