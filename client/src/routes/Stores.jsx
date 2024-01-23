@@ -51,7 +51,9 @@ const Stores = () => {
   //On pressing search bar, it will search for the category
   const onSearchCat = async (e) => {
     e.preventDefault();
-    setDisplay(stores.filter(store => store.storefront_name.includes(categoryText)));
+    //setDisplay(stores.filter(store => store.storefront_name.includes(categoryText)));
+    console.log(categoryText);
+    
   };
 
   //This function triggers when you double click a store row
