@@ -8,7 +8,8 @@ import ProductUpdate from './routes/ProductUpdate';
 import NewProduct from './routes/NewProduct';
 import Product from './routes/Product';
 import YourStores from './routes/YourStores';
-import ViewCart from './routes/viewCart';
+import YourStore from './routes/YourStore';
+//import ViewCart from './routes/viewCart';
 import './stylesheet.css';
 
 const App = () => {
@@ -30,7 +31,7 @@ const App = () => {
             <div className="collapse navbar-collapse d-flex justify-content-evenly" id="navbarNavAltMarkup">
               <a className="HyperLink" href="/">Home</a>
               <a className="HyperLink" href="/stores">Stores</a>
-              <a className="HyperLink" href="/stores/1">Your Stores</a>
+              <a className="HyperLink" href="/yourstores/1">Your Stores</a>
               <a className="HyperLink" href="/stores">Cart</a>
             </div>
         </div>
@@ -42,13 +43,14 @@ const App = () => {
               <Routes>
                   <Route exact path="/" element={<Home />}/>
                   <Route exact path="/stores" element={<Stores />} />
-                  <Route exact path="/stores/:id" element={<YourStores />} />
+                  <Route exact path="/yourstores/:id" element={<YourStores />} />
+                  <Route exact path="/yourstore/:id" element={<YourStore />} />
                   <Route exact path="/store/:id" element={<StoreFront />} />
                   <Route exact path="/store/:id/update" element={<StoreFrontUpdate />} />
                   <Route exact path="/product/:id" element={<Product />} />
                   <Route exact path="/product/:id/update" element={<ProductUpdate />} />
                   <Route exact path="/store/:id/newProduct" element={<NewProduct/>} />
-                  <Route exact path="/person/:id/viewCart" element={<ViewCart/>} />
+                  {/*<Route exact path="/person/:id/viewCart" element={<ViewCart/>} />*/}
               </Routes>
           </Router>
       </div>

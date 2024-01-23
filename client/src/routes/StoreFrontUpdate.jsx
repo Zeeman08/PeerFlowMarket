@@ -38,7 +38,7 @@ const StoreFrontUpdate = () => {
     setName(store.storefront_name || "");
     setDesc(store.storefront_description || "");
     setImage(store.image || "");
-  }, [id, store.name, store.description, store.image]);
+  }, [id, store.storefront_name, store.storefront_description, store.image]);
 
   const saveChanges = async (e) => {
     try {
@@ -54,7 +54,7 @@ const StoreFrontUpdate = () => {
         });
 
         console.log(response);
-        navigate("/");
+        navigate(`/yourstores/${1}`);
     }
     catch (err) {
         console.log(err)
@@ -62,7 +62,7 @@ const StoreFrontUpdate = () => {
   };
 
   const goBack = () => {
-    navigate(`/stores/${1}`);
+    navigate(`/yourstores/${1}`);
   }
 
   return (

@@ -74,7 +74,7 @@ const Stores = () => {
 
         {/* search bar */}
         <div>
-          <h6 className="text-center mt-4">Search by name</h6>
+          <h6 className="text-center mt-4 fs-4">Search by name</h6>
           <form className="d-flex mt-4 mb-4" onSubmit={onSearchName}>
               <input type="text" className="form-control" value={searchText} 
               onChange={e => setSearchText(e.target.value)}/>

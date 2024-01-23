@@ -91,7 +91,7 @@ app.get("/getStoresManagedByPerson/:id", async (req, res) => {
       status: "success",
       results: results.rows.length,
       data: {
-        stores: results.rows[0]
+        stores: results.rows
       }
     });
   }catch(err){

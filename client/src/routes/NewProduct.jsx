@@ -1,32 +1,19 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState } from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 
 const NewProduct = () => {
   //Getting id from link
   const {id} = useParams();
 
-  //Storing the data from database into store using setStore function
-  const[product, setProduct] = useState({});
-
   //Handling form stuff
-  const[name, setName] = useState("");
-  const[desc, setDesc] = useState("");
-  const[image, setImage] = useState("");
+  const[name, setName] = useState("new product");
+  const[desc, setDesc] = useState("new description");
+  const[image, setImage] = useState("image.jpg");
   const[price, setPrice] = useState(0);
   const[tags, setTags] = useState("");
 
   //For going back to home page
   let navigate = useNavigate();
-
-
-  //The useEffect hook that calls the getStore() function
-  useEffect(() => {
-    setName(product.product_name || "");
-    setDesc(product.product_description || "");
-    setImage(product.image || "");
-    setPrice(product.price || 0);
-    setTags(product.tags || "");
-  }, [id, product]);
 
   const saveChanges = async (e) => {
     try {
@@ -44,12 +31,16 @@ const NewProduct = () => {
         });
 
         console.log(response);
-        navigate(`/store/${id}`);
+        navigate(`/yourstore/${id}`);
     }
     catch (err) {
         console.log(err)
     }
   };
+
+  const goBack = () => {
+    navigate(`/yourstore/${id}`);
+  }
 
   return (
     <div>
@@ -79,7 +70,10 @@ const NewProduct = () => {
         <input type="text" className="form-control mt-2 mb-2" value={tags}
         onChange={e => setTags(e.target.value)}/>
       </div>
-      <button className="btn btn-success" onClick={saveChanges}>Save Changes</button>
+      <div className="d-flex justify-content-between">
+        <button className="btn btn-success mt-2" onClick={saveChanges}>Save Changes</button>
+        <button className="btn btn-danger mt-2" onClick={goBack}>Go Back</button>
+      </div>
     </div>
   )
 }

@@ -5,7 +5,6 @@ import '../stylesheet.css';
 const YourStores = () => {
   //Storing data for search bars
   const [searchText, setSearchText] = useState("");
-  const [categoryText, setCategoryText] = useState("");
 
   //Storing data for stores for the table
   //Original data
@@ -23,7 +22,7 @@ const YourStores = () => {
     //The async function that fetches the data from the database
     const getStores = async () => {
       try {
-        const response = await fetch("http://localhost:3005/getStores");
+        const response = await fetch("http://localhost:3005/getStoresManagedByPerson/1");
         const jsonData = await response.json();
         setStores(jsonData.data.stores);
         setDisplay(jsonData.data.stores);
@@ -46,12 +45,6 @@ const YourStores = () => {
   const onSearchName = async (e) => {
     e.preventDefault();
     setDisplay(stores.filter(store => store.storefront_name.includes(searchText)));
-  };
-
-  //On pressing search bar, it will search for the category
-  const onSearchCat = async (e) => {
-    e.preventDefault();
-    setDisplay(stores.filter(store => store.storefront_name.includes(categoryText)));
   };
 
 
@@ -94,7 +87,7 @@ const YourStores = () => {
   //This function triggers when you double click a store row
   const visitStore = (e, id) => {
     if (e.detail > 1){
-      navigate(`/store/${id}`)
+      navigate(`/yourstore/${id}`)
     }
   }
 
@@ -111,7 +104,7 @@ const YourStores = () => {
 
         {/* search bar */}
         <div>
-          <h6 className="text-center mt-4">Search by name</h6>
+          <h6 className="text-center mt-4 fs-4">Search by name</h6>
           <form className="d-flex mt-4 mb-4" onSubmit={onSearchName}>
               <input type="text" className="form-control" value={searchText} 
               onChange={e => setSearchText(e.target.value)}/>

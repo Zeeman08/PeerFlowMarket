@@ -43,7 +43,7 @@ const ProductUpdate = () => {
     setImage(product.image || "");
     setPrice(product.price || 0);
     setTags(product.tags || "");
-  }, [id, product, product.name, product.description, product.image, product.price, product.tags]);
+  }, [id, product, product.product_name, product.product_description, product.image, product.price, product.tags]);
 
   const saveChanges = async (e) => {
     try {
@@ -61,12 +61,16 @@ const ProductUpdate = () => {
         });
 
         console.log(response);
-        navigate(`/store/${product.storefront_id}`);
+        navigate(`/yourstore/${product.storefront_id}`);
     }
     catch (err) {
         console.log(err)
     }
   };
+
+  const goBack = () => {
+    navigate(`/yourstore/${product.storefront_id}`);
+  }
 
   return (
     <div>
@@ -96,7 +100,10 @@ const ProductUpdate = () => {
         <input type="text" className="form-control mt-2 mb-2" value={tags}
         onChange={e => setTags(e.target.value)}/>
       </div>
-      <button className="btn btn-success" onClick={saveChanges}>Save Changes</button>
+      <div className="d-flex justify-content-between">
+        <button className="btn btn-success mt-2" onClick={saveChanges}>Save Changes</button>
+        <button className="btn btn-danger mt-2" onClick={goBack}>Go Back</button>
+      </div>
     </div>
   )
 }
