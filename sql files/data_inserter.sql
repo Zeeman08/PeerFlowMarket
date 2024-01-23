@@ -1,115 +1,86 @@
--- Inserting into COUNTRY table
-INSERT INTO COUNTRY (COUNTRY_NAME) VALUES
-  ('Country1'),
-  ('Country2'),
-  ('Country3'),
-  ('Country4'),
-  ('Country5');
 
--- Inserting into LOCATION table
-INSERT INTO LOCATION (LOCATION_NAME, POST_CODE, COUNTRY_ID) VALUES
-  ('Location1', 12345, 1),
-  ('Location2', 67890, 2),
-  ('Location3', 54321, 1),
-  ('Location4', 98765, 3),
-  ('Location5', 11111, 2);
+  ('London', 34234, 3);
 
--- Inserting into PERSON table
+-- Insert into PERSON table
 INSERT INTO PERSON (PERSON_NAME, PASSWORD, LOCATION_ID, DATE_OF_BIRTH, PHONE, EMAIL, IMAGE) VALUES
-  ('Person1', 'password1', 1, '1990-01-01', '1234567890', 'person1@example.com', 'image1.jpg'),
+  ('John Doe', 'password123', 1, '1990-01-15', '123-456-7890', 'john.doe@example.com', 'image_url1'),
+  ('Jane Smith', 'securepass', 2, '1985-05-20', '987-654-3210', 'jane.smith@example.com', 'image_url2'),
+  ('Alice Johnson', 'pass123', 3, '1992-09-03', '555-123-4567', 'alice.j@example.com', 'image_url3');
 
--- Inserting into STOREFRONT table
-INSERT INTO STOREFRONT (STOREFRONT_NAME, STOREFRONT_DESCRIPTION, LAST_UPDATED_ON, IMAGE) VALUES
-  ('Storefront1', 'Description1', CURRENT_TIMESTAMP, 'storefront_image1.jpg'),
-  ('Storefront2', 'Description2', CURRENT_TIMESTAMP, 'storefront_image2.jpg'),
-  ('Storefront3', 'Description3', CURRENT_TIMESTAMP, 'storefront_image3.jpg'),
-  ('Storefront4', 'Description4', CURRENT_TIMESTAMP, 'storefront_image4.jpg'),
-  ('Storefront5', 'Description5', CURRENT_TIMESTAMP, 'storefront_image5.jpg');
+-- Insert into CATEGORIES table
+INSERT INTO CATEGORIES (CATEGORY_NAME) VALUES
+  ('electronics'),
+  ('clothing'),
+  ('books');
 
--- Inserting into MANAGES table
+-- Insert into STOREFRONT table
+INSERT INTO STOREFRONT (STOREFRONT_NAME, STOREFRONT_DESCRIPTION, IMAGE) VALUES
+  ('Electronics Emporium', 'The best in gadgets', 'storefront_image1'),
+  ('Fashion Haven', 'Latest trends in clothing', 'storefront_image2'),
+  ('Book Paradise', 'A haven for book lovers', 'storefront_image3');
+
+-- Insert into CATEGORY_STOREFRONT_RELATION table
+INSERT INTO CATEGORY_STOREFRONT_RELATION (STOREFRONT_ID, CATEGORY_NAME) VALUES
+  (1, 'electronics'),
+  (2, 'clothing'),
+  (3, 'books');
+
+-- Insert into MANAGES table
 INSERT INTO MANAGES (PERSON_ID, STOREFRONT_ID) VALUES
   (1, 1),
-  (1, 2),
-  (1, 3),
-  (1, 4),
-  (1, 5);
+  (2, 2),
+  (3, 3);
 
--- Inserting into PRODUCT table
+-- Insert into PRODUCT table
 INSERT INTO PRODUCT (PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE, IMAGE, STOREFRONT_ID) VALUES
-  ('Product1', 'Description1', 19.99, 'product_image1.jpg', 1),
-  ('Product2', 'Description2', 29.99, 'product_image2.jpg', 2),
-  ('Product3', 'Description3', 39.99, 'product_image3.jpg', 3),
-  ('Product4', 'Description4', 49.99, 'product_image4.jpg', 4),
-  ('Product5', 'Description5', 59.99, 'product_image5.jpg', 5);
+  ('Smartphone', 'High-end mobile device', 799.99, 'product_image1', 1),
+  ('Designer Dress', 'Fashionable evening gown', 149.99, 'product_image2', 2),
+  ('Bestseller Book', 'Popular novel', 19.99, 'product_image3', 3);
 
--- Inserting into CART table
-INSERT INTO CART (PERSON_ID, PRODUCT_ID) VALUES
-  (1, 1),
-  (1, 2),
-  (1, 3),
-  (1, 4),
-  (1, 5);
+-- Insert into CART table
+INSERT INTO CART (PERSON_ID, PRODUCT_ID, QUANTITY) VALUES
+  (1, 1, 2),
+  (2, 3, 1),
+  (3, 2, 3);
 
--- Inserting into ORDERS table
+-- Insert into ORDERS table
 INSERT INTO ORDERS (PERSON_ID, ORDER_DATE, COMMENTS) VALUES
-  (1, CURRENT_DATE, 'Order comments 1'),
-  (1, CURRENT_DATE, 'Order comments 2'),
-  (1, CURRENT_DATE, 'Order comments 3'),
-  (1, CURRENT_DATE, 'Order comments 4'),
-  (1, CURRENT_DATE, 'Order comments 5');
+  (1, '2023-01-15', 'Order for smartphones and accessories'),
+  (2, '2023-02-20', 'Order for new fashion arrivals'),
+  (3, '2023-03-03', 'Order for favorite books');
 
--- Inserting into TRANSACTIONS table
+-- Insert into TRANSACTIONS table
 INSERT INTO TRANSACTIONS (PERSON_ID, STOREFRONT_ID, ORDER_ID) VALUES
   (1, 1, 1),
-  (1, 2, 2),
-  (1, 3, 3),
-  (1, 4, 4),
-  (1, 5, 5);
+  (2, 2, 2),
+  (3, 3, 3);
 
--- Inserting into ANNOUNCEMENTS table
-INSERT INTO ANNOUNCEMENTS (STOREFRONT_ID, ANNOUNCEMENT_DESCRIPTION, POSTED_ON, IMAGE) VALUES
-  (1, 'Announcement 1', CURRENT_TIMESTAMP, 'announcement_image1.jpg'),
-  (2, 'Announcement 2', CURRENT_TIMESTAMP, 'announcement_image2.jpg'),
-  (3, 'Announcement 3', CURRENT_TIMESTAMP, 'announcement_image3.jpg'),
-  (4, 'Announcement 4', CURRENT_TIMESTAMP, 'announcement_image4.jpg'),
-  (5, 'Announcement 5', CURRENT_TIMESTAMP, 'announcement_image5.jpg');
+-- Insert into ANNOUNCEMENTS table
+INSERT INTO ANNOUNCEMENTS (STOREFRONT_ID, ANNOUNCEMENT_DESCRIPTION, IMAGE) VALUES
+  (1, 'New arrivals in smartphones', 'announcement_image1'),
+  (2, 'Exclusive fashion discounts', 'announcement_image2'),
+  (3, 'Book signing event this weekend', 'announcement_image3');
 
--- Inserting into REVIEW table
-INSERT INTO REVIEW (PRODUCT_ID, PERSON_ID, POSTED_ON, COMMENTS, RATING) VALUES
-  (1, 1, CURRENT_TIMESTAMP, 'Great product!', 4.5),
-  (2, 2, CURRENT_TIMESTAMP, 'Not satisfied.', 2.0),
-  (3, 3, CURRENT_TIMESTAMP, 'Excellent service!', 5.0),
-  (4, 4, CURRENT_TIMESTAMP, 'Average experience.', 3.0),
-  (5, 5, CURRENT_TIMESTAMP, 'Highly recommended!', 4.8);
+-- Insert into REVIEW table
+INSERT INTO REVIEW (PRODUCT_ID, PERSON_ID, COMMENTS, RATING) VALUES
+  (1, 1, 'Great phone!', 4.5),
+  (2, 2, 'Beautiful dress, perfect fit', 5),
+  (3, 3, 'Captivating story', 4.2);
 
--- Inserting into COMPLAINTS table
-INSERT INTO COMPLAINTS (PERSON_ID, STOREFRONT_ID, POSTED_ON, COMPLAINT_DETAILS) VALUES
-  (1, 1, CURRENT_TIMESTAMP, 'Complaint details 1'),
-  (2, 2, CURRENT_TIMESTAMP, 'Complaint details 2'),
-  (3, 3, CURRENT_TIMESTAMP, 'Complaint details 3'),
-  (4, 4, CURRENT_TIMESTAMP, 'Complaint details 4'),
-  (5, 5, CURRENT_TIMESTAMP, 'Complaint details 5');
+-- Insert into COMPLAINTS table
+INSERT INTO COMPLAINTS (PERSON_ID, STOREFRONT_ID, COMPLAINT_DETAILS) VALUES
+  (1, 1, 'Issue with smartphone delivery'),
+  (2, 2, 'Received wrong dress size'),
+  (3, 3, 'Book not delivered as expected');
 
--- Inserting into TAGS table
+-- Insert into TAGS table
 INSERT INTO TAGS (TAG_NAME) VALUES
-  ('Tag1'),
-  ('Tag2'),
-  ('Tag3'),
-  ('Tag4'),
-  ('Tag5');
+  ('Popular'),
+  ('Sale'),
+  ('New Arrival');
 
--- Inserting into TAG_ASSIGNMENT table
+-- Insert into TAG_ASSIGNMENT table
 INSERT INTO TAG_ASSIGNMENT (PRODUCT_ID, TAG_NAME) VALUES
-  (1, 'Tag1'),
-  (2, 'Tag2'),
-  (3, 'Tag3'),
-  (4, 'Tag4'),
-  (5, 'Tag5');
-
--- Inserting into CATEGORIES table
-INSERT INTO CATEGORIES (STOREFRONT_ID, CATEGORY_NAME, PRODUCT_ID) VALUES
-  (1, 'Category1', 1),
-  (2, 'Category2', 2),
-  (3, 'Category3', 3),
-  (4, 'Category4', 4),
-  (5, 'Category5', 5);
+  (1, 'Popular'),
+  (2, 'Sale'),
+  (3, 'New Arrival');
