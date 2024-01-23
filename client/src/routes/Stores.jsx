@@ -48,7 +48,7 @@ const Stores = () => {
   //On pressing search bar, it will search for the description
   const onSearch = async (e) => {
     e.preventDefault();
-    setDisplay(stores.filter(store => store.name.includes(searchText)));
+    setDisplay(stores.filter(store => store.storefront_name.includes(searchText)));
   };
 
 
@@ -57,6 +57,7 @@ const Stores = () => {
   /********************/
 
   //The async function that deletes the data from the database
+  /*
   const deleteStore = async (id) => {
     try {
       const response = await fetch(`http://localhost:3005/deleteStore/${id}`, {
@@ -85,6 +86,7 @@ const Stores = () => {
       console.log(err);
     }
   };
+  */
 
   //This function triggers when you double click a store row
   const visitStore = (e, id) => {
@@ -153,18 +155,22 @@ const Stores = () => {
                 <th scope="col">Name</th>
                 <th scope="col">Description</th>
                 <th scope="col">Rating</th>
+                {/*
                 <th scope="col">Update</th>
                 <th scope="col">Delete</th>
+                */}
               </tr>
             </thead>
             <tbody>
               {displayStores.map (store => (
                 <tr key={store.storefront_id} onClick={(e) => visitStore(e, store.storefront_id)}>
-                  <td>{store.name}</td>
-                  <td>{store.description}</td>
+                  <td>{store.storefront_name}</td>
+                  <td>{store.storefront_description}</td>
                   <td>{store.rating}</td>
+                  {/*
                   <td><button className="btn btn-warning" onClick={() => updateStore(store.storefront_id)}>Update</button></td>
                   <td><button className="btn btn-danger" onClick={() => deleteStore(store.storefront_id)}>Delete</button></td>
+                  */}
                 </tr>
               ))}
             </tbody>

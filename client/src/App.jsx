@@ -6,6 +6,7 @@ import StoreFront from './routes/StoreFront';
 import StoreFrontUpdate from './routes/StoreFrontUpdate';
 import ProductUpdate from './routes/ProductUpdate';
 import NewProduct from './routes/NewProduct';
+import Product from './routes/Product';
 import './stylesheet.css';
 
 const App = () => {
@@ -48,6 +49,7 @@ const App = () => {
                   <Route exact path="/stores" element={<Stores />} />
                   <Route exact path="/store/:id" element={<StoreFront />} />
                   <Route exact path="/store/:id/update" element={<StoreFrontUpdate />} />
+                  <Route exact path="/product/:id" element={<Product />} />
                   <Route exact path="/product/:id/update" element={<ProductUpdate />} />
                   <Route exact path="/store/:id/newProduct" element={<NewProduct/>} />
               </Routes>

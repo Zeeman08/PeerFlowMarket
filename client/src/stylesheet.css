@@ -34,3 +34,34 @@
     width: 100%;
     background-color: rgb(255, 255, 255);
 }
+
+.BlueButton{
+    -fx-background-color: #002fa8c8;
+    -fx-background-radius: 4px;
+    -fx-text-fill: #FFF;
+    -fx-background-insets: 0;
+}
+.BlueButton:hover{
+    -fx-cursor: hand;
+    -fx-background-color: #1142bcc8;
+}
+.RedButton{
+    -fx-background-color: #bc2929;
+    -fx-background-radius: 4px;
+    -fx-text-fill: #FFF;
+    -fx-background-insets: 0;
+}
+.RedButton:hover{
+    -fx-cursor: hand;
+    -fx-background-color: #ce3a3a;
+}
+.GreenButton{
+    -fx-background-color: #348034;
+    -fx-background-radius: 4px;
+    -fx-text-fill: #FFF;
+    -fx-background-insets: 0;
+}
+.GreenButton:hover{
+    -fx-cursor: hand;
+    -fx-background-color: #4e8f4e;
+}

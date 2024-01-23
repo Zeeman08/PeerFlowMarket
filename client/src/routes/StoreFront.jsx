@@ -79,6 +79,7 @@ const StoreFront = () => {
   /********************/
 
   //The async function that deletes the data from the database
+  /*
   const deleteProduct = async (id) => {
     try {
       const response = await fetch(`http://localhost:3005/deleteProduct/${id}`, {
@@ -108,12 +109,14 @@ const StoreFront = () => {
     }
   };
 
+  */
+
   //This function triggers when you double click a store row
-  // const visitProduct = (e, id) => {
-  //   if (e.detail > 1){
-  //     navigate(`/product/${id}`)
-  //   }
-  // }
+  const viewProduct = (e, id) => {
+    if (e.detail > 1){
+      navigate(`/product/${id}`)
+    }
+  }
 
   const goBack = () => {
     navigate("/");
@@ -123,7 +126,7 @@ const StoreFront = () => {
     <div>
       {/* header */}
       <div>
-        <h1 className='text-center mt-5'>{store.name}</h1>
+        <h1 className='text-center mt-5'>{store.storefront_name}</h1>
       </div>
 
 
@@ -151,20 +154,26 @@ const StoreFront = () => {
               <th scope="col">Name</th>
               <th scope="col">Description</th>
               <th scope="col">Price</th>
+              <th scope="col">Image</th>
+              {/*
               <th scope="col">Rating</th>
               <th scope="col">Update</th>
               <th scope="col">Delete</th>
+              */}
             </tr>
           </thead>
           <tbody>
             {displayProducts.map (product => (
-              <tr key={product.product_id} onClick={() => console.log("View Product")}>
+              <tr key={product.product_id} onClick={(e) => viewProduct(e, store.storefront_id)}>
                 <td>{product.product_name}</td>
                 <td>{product.product_description}</td>
-                <td>{product.price}</td>
+                <td>${product.price}</td>
+                <td>{product.image}</td>
+                {/*
                 <td>{product.rating_sum / product.rating_count}</td>
                 <td><button className="btn btn-warning" onClick={() => updateProduct(product.product_id)}>Update</button></td>
                 <td><button className="btn btn-danger" onClick={() => deleteProduct(product.product_id)}>Delete</button></td>
+                */}
               </tr>
             ))}
           </tbody>
