@@ -387,12 +387,12 @@ app.get("/getStoreAnnouncements/:id", async (req, res) => {
 });
 
 
-//view cart
+//view products in cart
 app.get("/getCart/:id", async (req, res) => {
   try {
     console.log("Got view cart request");
     const results = await db.query(
-      "SELECT * FROM cart WHERE person_id = $1", [req.params.id]
+      `SELECT * FROM (${GET_PRODUCT1} WHERE P.PRODUCT_ID IN (SELECT PRODUCT_ID FROM CART WHERE PERSON_ID = ${req.params.id}) ${GET_PRODUCT2}) TEMP JOIN CART C ON (TEMP.PRODUCT_ID = C.PRODUCT_ID)`
     );
     res.status(200).json({
       status: "success",

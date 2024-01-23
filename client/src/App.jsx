@@ -7,7 +7,7 @@ import StoreFrontUpdate from './routes/StoreFrontUpdate';
 import ProductUpdate from './routes/ProductUpdate';
 import NewProduct from './routes/NewProduct';
 import Product from './routes/Product';
-import ViewCart from './routes/viewCart';
+import ViewCart from './routes/ViewCart';
 import './stylesheet.css';
 
 const App = () => {
