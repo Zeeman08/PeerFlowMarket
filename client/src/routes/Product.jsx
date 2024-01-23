@@ -8,6 +8,9 @@ const Product = () => {
   //Storing the data from database into store using setStore function
   const[product, setProduct] = useState({});
 
+  //Setting quantity
+  const[quantity, setQuantity] = useState(1);
+
   //The useEffect hook that calls the getStore() function
   useEffect(() => {
 
@@ -27,14 +30,44 @@ const Product = () => {
     getProduct();
   }, [id]);
 
+  //On pressing + button
+  const addQuantity = async (e) => {
+    setQuantity(quantity + 1);
+  };
+
+  const reduceQuantity = async (e) => {
+    if (quantity > 1)
+      setQuantity(quantity - 1);
+  };
+
   return (
     <div>
-        <h1>Product</h1>
-        <h2>{product.product_name}</h2>
-        <h2>{product.product_description}</h2>
-        <h2>${product.price}</h2>
-        <h2>{product.product_rating}</h2>
-        <h2>{product.image}</h2>
+      {/* Image */}
+      <div>
+        <h1>{product.image}</h1>
+      </div>
+
+      {/* Product Info */}
+      <div>
+        <div className="mt-3">
+          <span className="fs-3">{product.product_name}</span>
+          <h1 className="mt-4">Details</h1>
+        </div>
+        <p className="fs-4">
+          {product.product_description}
+        </p>
+        <div>
+          <h6 className="customtxt">${product.price}</h6>
+        </div>
+        <div>
+          <div className="input-group">
+            <button className="btn btn-primary" type="button" onClick={reduceQuantity}>-</button>
+            <span className="input-group-text">{quantity}</span>
+            <button className="btn btn-primary" type="button" onClick={addQuantity}>+</button>
+          </div>
+          <button className="btn btn-success mt-3">Add to Cart</button>
+        </div>
+      </div>
     </div>
   )
 }

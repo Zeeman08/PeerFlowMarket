@@ -3,12 +3,14 @@ import {useNavigate} from 'react-router-dom';
 import '../stylesheet.css';
 
 const Stores = () => {
-  //Storing data for search bar
+  //Storing data for search bars
   const [searchText, setSearchText] = useState("");
+  const [categoryText, setCategoryText] = useState("");
 
   //Storing data for stores for the table
   //Original data
   const[stores, setStores] = useState([]);
+
   //Buffer data used on table
   const[displayStores, setDisplay] = useState([]);
 
@@ -46,9 +48,15 @@ const Stores = () => {
 
 
   //On pressing search bar, it will search for the description
-  const onSearch = async (e) => {
+  const onSearchName = async (e) => {
     e.preventDefault();
     setDisplay(stores.filter(store => store.storefront_name.includes(searchText)));
+  };
+
+  //On pressing search bar, it will search for the category
+  const onSearchCat = async (e) => {
+    e.preventDefault();
+    setDisplay(stores.filter(store => store.storefront_name.includes(categoryText)));
   };
 
 
@@ -137,30 +145,22 @@ const Stores = () => {
         </div>
 
 
-
         {/* search bar */}
         <div>
-          <form className="d-flex mt-4 mb-4" onSubmit={onSearch}>
+          <h6 className="text-center mt-4">Search by name</h6>
+          <form className="d-flex mt-4 mb-4" onSubmit={onSearchName}>
               <input type="text" className="form-control" value={searchText} 
               onChange={e => setSearchText(e.target.value)}/>
               <button className="btn btn-outline-secondary">Search</button>
           </form>
+          <h6 className="text-center mt-4">Search by category</h6>
+          <form className="d-flex mt-4 mb-4" onSubmit={onSearchCat}>
+              <input type="text" className="form-control" value={categoryText} 
+              onChange={e => setCategoryText(e.target.value)}/>
+              <button className="btn btn-outline-secondary">Search</button>
+          </form>
         </div>
 
-
-        {/* filters table */}
-
-        <div>
-          <table className="table table-hover table-secondary table-striped table-bordered text-center">
-            <thead className="table-dark">
-              <tr className="bg-primary">
-                <th scope="col">Categories</th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
-        </div>
 
 
         {/* table */}
@@ -168,6 +168,7 @@ const Stores = () => {
           <table className="table table-hover table-secondary table-striped table-bordered text-center">
             <thead className="table-dark">
               <tr className="bg-primary">
+                <th scope="col">Image</th>
                 <th scope="col">Name</th>
                 <th scope="col">Description</th>
                 <th scope="col">Rating</th>
@@ -180,6 +181,7 @@ const Stores = () => {
             <tbody>
               {displayStores.map (store => (
                 <tr key={store.storefront_id} onClick={(e) => visitStore(e, store.storefront_id)}>
+                  <td>{store.image}</td>
                   <td>{store.storefront_name}</td>
                   <td>{store.storefront_description}</td>
                   <td>{store.rating}</td>
@@ -193,10 +195,9 @@ const Stores = () => {
           </table>
         </div>
 
-
         {/* add store button */}
         <div>
-          <form className="d-flex mt-4" onSubmit={onSearch}>
+          <form className="d-flex mt-4">
               <input type="text" placeholder="Name" className="form-control" value={storeName} 
               onChange={e => setStoreName(e.target.value)}/>
               <input type="text" placeholder="Description" className="form-control" value={storeDesc} 
