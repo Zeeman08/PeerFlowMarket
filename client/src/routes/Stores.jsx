@@ -51,7 +51,7 @@ const Stores = () => {
     setDisplay(stores.filter(store => store.storefront_name.includes(searchText)));
   };
 
-  
+
 
   /********************/
   /**** TABLE STUFF ***/
@@ -148,8 +148,19 @@ const Stores = () => {
         </div>
 
 
-        {/* filters */}
+        {/* filters table */}
 
+        <div>
+          <table className="table table-hover table-secondary table-striped table-bordered text-center">
+            <thead className="table-dark">
+              <tr className="bg-primary">
+                <th scope="col">Categories</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
 
 
         {/* table */}

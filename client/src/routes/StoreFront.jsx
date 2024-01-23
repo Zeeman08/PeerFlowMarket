@@ -119,7 +119,7 @@ const StoreFront = () => {
   }
 
   const goBack = () => {
-    navigate("/");
+    navigate("/stores");
   }
 
   return (
@@ -154,9 +154,9 @@ const StoreFront = () => {
               <th scope="col">Name</th>
               <th scope="col">Description</th>
               <th scope="col">Price</th>
+              <th scope="col">Rating</th>
               <th scope="col">Image</th>
               {/*
-              <th scope="col">Rating</th>
               <th scope="col">Update</th>
               <th scope="col">Delete</th>
               */}
@@ -168,9 +168,9 @@ const StoreFront = () => {
                 <td>{product.product_name}</td>
                 <td>{product.product_description}</td>
                 <td>${product.price}</td>
+                <td>{product.product_rating}</td>
                 <td>{product.image}</td>
                 {/*
-                <td>{product.rating_sum / product.rating_count}</td>
                 <td><button className="btn btn-warning" onClick={() => updateProduct(product.product_id)}>Update</button></td>
                 <td><button className="btn btn-danger" onClick={() => deleteProduct(product.product_id)}>Delete</button></td>
                 */}
