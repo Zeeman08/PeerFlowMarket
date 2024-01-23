@@ -409,14 +409,38 @@ app.get("/getCart/:id", async (req, res) => {
     });
   }
 });
-
+//get products from cart
+app.get("/getCart/:id/:productId", async (req, res) => {
+  try {
+    console.log("Got view cart request");
+    // const results = await db.query(
+    //   `SELECT * FROM (${GET_PRODUCT1} WHERE P.PRODUCT_ID IN (SELECT PRODUCT_ID FROM CART WHERE PERSON_ID = ${req.params.id} AND PRODUCT_ID = ${req.params.productId}) ${GET_PRODUCT2}) TEMP JOIN CART C ON (TEMP.PRODUCT_ID = C.PRODUCT_ID)`
+    // );
+    const results = await db.query (
+      `SELECT TEMP.*, COALESCE(C.QUANTITY, 0) AS QUANTITY FROM (SELECT * FROM PRODUCT WHERE PRODUCT_ID = ${req.params.productId}) TEMP LEFT OUTER JOIN CART C ON (TEMP.PRODUCT_ID = C.PRODUCT_ID AND C.PERSON_ID = ${req.params.id})`
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        product: results.rows[0]
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+});
 //adding a product to cart
-app.post("/addToCart/:personId/:productId/:quantity", async (req, res) => {
+app.post("/addToCart/:personId/:productId", async (req, res) => {
   try{
     console.log("Got a add to cart request");
     const results = await db.query(
-      "INSERT INTO CART (PERSON_ID, PRODUCT_ID, QUANTITY) VALUES ($1, $2, $3) ON CONFLICT (PERSON_ID, PRODUCT_ID) DO UPDATE SET QUANTITY = CART.QUANTITY + EXCLUDED.QUANTITY RETURNING *",
-      [req.params.personId, req.params.productId, req.params.quantity]
+      "INSERT INTO CART (PERSON_ID, PRODUCT_ID) VALUES ($1, $2) ON CONFLICT (PERSON_ID, PRODUCT_ID) DO UPDATE SET QUANTITY = CART.QUANTITY + EXCLUDED.QUANTITY RETURNING *",
+      [req.params.personId, req.params.productId]
     );
     res.status(201).json({
       status: "success",

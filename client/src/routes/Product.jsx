@@ -9,7 +9,7 @@ const Product = () => {
   const[product, setProduct] = useState({});
 
   //Setting quantity
-  const[quantity, setQuantity] = useState(1);
+  const[quantity, setQuantity] = useState(0);
   
   //For going to other pages
   let navigate = useNavigate();
@@ -20,9 +20,13 @@ const Product = () => {
     //The async function that fetches the data from the database
     const getProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:3005/getProduct/${id}`);
+        const response = await fetch(`http://localhost:3005/getCart/1/${id}`);
         const jsonData = await response.json();
         setProduct(jsonData.data.product);
+        setQuantity(jsonData.data.product.quantity || 0);
+        console.log("herelwer");
+        console.log(jsonData.data.product.quantity);
+        console.log(jsonData.data.product);
       }
       catch (err) {
         console.log(err);
@@ -36,16 +40,7 @@ const Product = () => {
   //On pressing + button
   const addQuantity = async (e) => {
     setQuantity(quantity + 1);
-  };
-
-  const reduceQuantity = async (e) => {
-    if (quantity > 1)
-      setQuantity(quantity - 1);
-  };
-
-  const addToCart = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:3005/addToCart/1/${id}/${quantity}`, {
+    const response = await fetch(`http://localhost:3005/addToCart/1/${id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -54,6 +49,22 @@ const Product = () => {
       });
       const jsonData = await response.json();
       console.log(jsonData);
+  };
+
+  const reduceQuantity = async (e) => {
+    if (quantity >= 1) {
+      setQuantity(quantity - 1);
+      const response0 = await fetch(`http://localhost:3005/removeFromCart/1/${id}`, {
+          method: "DELETE",
+          headers: {"Content-Type": "application/json"}
+      });
+      console.log(response0);
+    }
+  };
+
+  const addToCart = async (id) => {
+    try {
+      
       navigate(`/store/${product.storefront_id}`);
     }
     catch (err) {

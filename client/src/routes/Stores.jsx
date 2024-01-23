@@ -53,7 +53,10 @@ const Stores = () => {
     e.preventDefault();
     //setDisplay(stores.filter(store => store.storefront_name.includes(categoryText)));
     console.log(categoryText);
-    
+    const response = await fetch("http://localhost:3005/getStoreCategories/" + categoryText);
+    const jsonData = await response.json();
+    setStores(jsonData.data.stores);
+    setDisplay(jsonData.data.stores);
   };
 
   //This function triggers when you double click a store row
