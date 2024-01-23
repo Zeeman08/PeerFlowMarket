@@ -1,4 +1,13 @@
+-- Insert into COUNTRY table
+INSERT INTO COUNTRY (COUNTRY_NAME) VALUES
+  ('United States'),
+  ('Canada'),
+  ('United Kingdom');
 
+-- Insert into LOCATION table
+INSERT INTO LOCATION (LOCATION_NAME, POST_CODE, COUNTRY_ID) VALUES
+  ('New York', 10001, 1),
+  ('Toronto',  1000, 2),
   ('London', 34234, 3);
 
 -- Insert into PERSON table
