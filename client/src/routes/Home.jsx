@@ -125,14 +125,6 @@ const Home = () => {
 
   return (
     <div>
-      
-      {/* sidebar */}
-      <div className="Sidebar">
-        <h1>
-          Hello there
-        </h1>
-      </div>
-      
       <div className="container">
         {/* header */}
         <div>

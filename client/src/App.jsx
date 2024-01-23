@@ -5,11 +5,10 @@ import StoreFront from './routes/StoreFront';
 import StoreFrontUpdate from './routes/StoreFrontUpdate';
 import ProductUpdate from './routes/ProductUpdate';
 import NewProduct from './routes/NewProduct';
-import './stylesheet.css';
 
 const App = () => {
   return (
-    <div className="Main">
+    <div className="container">
         <Router>
             <Routes>
                 <Route exact path="/" element={<Home />} />

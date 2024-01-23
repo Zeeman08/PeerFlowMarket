@@ -43,7 +43,7 @@ const ProductUpdate = () => {
     setImage(product.image || "");
     setPrice(product.price || 0);
     setTags(product.tags || "");
-  }, [id, product.name, product.description, product.image, product.price, product.tags]);
+  }, [id, product, product.name, product.description, product.image, product.price, product.tags]);
 
   const saveChanges = async (e) => {
     try {
