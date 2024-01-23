@@ -1,7 +1,7 @@
 import React, { useState, useEffect} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 
-const StoreFront = () => {
+const YourStore = () => {
   //Getting id from link
   const {id} = useParams();
 
@@ -79,7 +79,7 @@ const StoreFront = () => {
   /********************/
 
   //The async function that deletes the data from the database
-  /*
+
   const deleteProduct = async (id) => {
     try {
       const response = await fetch(`http://localhost:3005/deleteProduct/${id}`, {
@@ -109,17 +109,8 @@ const StoreFront = () => {
     }
   };
 
-  */
-
-  //This function triggers when you double click a store row
-  const viewProduct = (e, id) => {
-    if (e.detail > 1){
-      navigate(`/product/${id}`)
-    }
-  }
-
   const goBack = () => {
-    navigate("/stores");
+    navigate("/yourstores/1");
   }
 
   return (
@@ -156,24 +147,20 @@ const StoreFront = () => {
               <th scope="col">Price</th>
               <th scope="col">Rating</th>
               <th scope="col">Image</th>
-              {/*
               <th scope="col">Update</th>
               <th scope="col">Delete</th>
-              */}
             </tr>
           </thead>
           <tbody>
             {displayProducts.map (product => (
-              <tr key={product.product_id} onClick={(e) => viewProduct(e, store.storefront_id)}>
+              <tr key={product.product_id} onClick={(e) => console.log("Nothin happens :p")}>
                 <td>{product.product_name}</td>
                 <td>{product.product_description}</td>
                 <td>${product.price}</td>
                 <td>{product.product_rating}</td>
                 <td>{product.image}</td>
-                {/*
                 <td><button className="btn btn-warning" onClick={() => updateProduct(product.product_id)}>Update</button></td>
                 <td><button className="btn btn-danger" onClick={() => deleteProduct(product.product_id)}>Delete</button></td>
-                */}
               </tr>
             ))}
           </tbody>
@@ -184,4 +171,4 @@ const StoreFront = () => {
   )
 }
 
-export default StoreFront
+export default YourStore;

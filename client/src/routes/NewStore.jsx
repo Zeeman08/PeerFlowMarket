@@ -1,60 +1,37 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState } from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 
-const StoreFrontUpdate = () => {
+const NewStore = () => {
   //Getting id from link
   const {id} = useParams();
 
-  //Storing the data from database into store using setStore function
-  const[store, setStore] = useState({});
-
   //Handling form stuff
-  const[name, setName] = useState("");
-  const[desc, setDesc] = useState("");
-  const[image, setImage] = useState("");
+  const[name, setName] = useState("new store");
+  const[desc, setDesc] = useState("new description");
+  const[image, setImage] = useState("image.jpg");
 
   //For going back to home page
   let navigate = useNavigate();
 
-
-  //The useEffect hook that calls the getStore() function
-  useEffect(() => {
-
-    //The async function that fetches the data from the database
-    const getStore = async () => {
-      try {
-        const response = await fetch(`http://localhost:3005/getStore/${id}`);
-        const jsonData = await response.json();
-        setStore(jsonData.data.stores);
-      }
-      catch (err) {
-        console.log(err);
-      }
-    };
-
-    //Being called
-    getStore();
-
-    setName(store.storefront_name || "");
-    setDesc(store.storefront_description || "");
-    setImage(store.image || "");
-  }, [id, store.storefront_name, store.storefront_description, store.image]);
+  /*************************/
+  /**** ADD STORE STUFF ****/
+  /*************************/
 
   const saveChanges = async (e) => {
     try {
         const body = {
             name: name,
             description: desc,
-            image: image
+            image: image,
         };
-        const response = await fetch(`http://localhost:3005/updateStore/${id}`, {
-            method: "PUT",
+        const response = await fetch("http://localhost:3005/createStore", {
+            method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body)
         });
 
         console.log(response);
-        navigate(`/yourstores/${1}`);
+        navigate(`/yourstores/${id}`);
     }
     catch (err) {
         console.log(err)
@@ -62,12 +39,12 @@ const StoreFrontUpdate = () => {
   };
 
   const goBack = () => {
-    navigate(`/yourstores/${1}`);
+    navigate(`/yourstore/${id}`);
   }
 
   return (
     <div>
-      <h1 className='text-center mt-5'>Update StoreFront</h1>
+      <h1 className='text-center mt-5'>New Store</h1>
       <div>
         <label htmlFor='name'>Name:</label>
         <input type="text" className="form-control mt-2 mb-2" value={name}
@@ -91,4 +68,4 @@ const StoreFrontUpdate = () => {
   )
 }
 
-export default StoreFrontUpdate;
+export default NewStore;
