@@ -10,7 +10,7 @@ import Product from './routes/Product';
 import YourStores from './routes/YourStores';
 import YourStore from './routes/YourStore';
 import NewStore from './routes/NewStore';
-//import ViewCart from './routes/viewCart';
+import ViewCart from './routes/ViewCart';
 import './stylesheet.css';
 
 const App = () => {
@@ -33,7 +33,7 @@ const App = () => {
               <a className="HyperLink" href="/">Home</a>
               <a className="HyperLink" href="/stores">Stores</a>
               <a className="HyperLink" href="/yourstores/1">Your Stores</a>
-              <a className="HyperLink" href="/stores">Cart</a>
+              <a className="HyperLink" href="/person/1/viewCart">Cart</a>
             </div>
         </div>
       </nav>
@@ -52,7 +52,7 @@ const App = () => {
                   <Route exact path="/product/:id" element={<Product />} />
                   <Route exact path="/product/:id/update" element={<ProductUpdate />} />
                   <Route exact path="/store/:id/newProduct" element={<NewProduct/>} />
-                  {/*<Route exact path="/person/:id/viewCart" element={<ViewCart/>} />*/}
+                  <Route exact path="/person/:id/viewCart" element={<ViewCart/>} />
               </Routes>
           </Router>
       </div>
