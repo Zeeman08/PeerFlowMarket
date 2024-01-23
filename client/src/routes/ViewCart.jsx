@@ -79,7 +79,7 @@ const ViewCart = () => {
         //return;
         try {
             //await fetch(`http://localhost:3005/removeFromCart/${id}/${product_id}`);
-            const response0 = await fetch(`http://localhost:3005/removeFromCart/${id}/${product_id}`, {
+            const response0 = await fetch(`http://localhost:3005/clearCart/${id}`, {
                 method: "DELETE",
                 headers: {"Content-Type": "application/json"}
             });
