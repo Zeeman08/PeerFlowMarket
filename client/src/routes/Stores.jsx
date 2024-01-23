@@ -51,6 +51,7 @@ const Stores = () => {
     setDisplay(stores.filter(store => store.storefront_name.includes(searchText)));
   };
 
+  
 
   /********************/
   /**** TABLE STUFF ***/
@@ -126,14 +127,15 @@ const Stores = () => {
 
 
   return (
-    <div>
-      <div className="container">
+    <div className="container">
+      <div>
         {/* header */}
         <div>
-          <h1 className = "font-weight-light display-1 text-center mt-5">
+          <h1 className = "font-weight-light display-1 text-center mt-4">
             Peer Flow Market
           </h1>
         </div>
+
 
 
         {/* search bar */}
@@ -144,6 +146,9 @@ const Stores = () => {
               <button className="btn btn-outline-secondary">Search</button>
           </form>
         </div>
+
+
+        {/* filters */}
 
 
 
