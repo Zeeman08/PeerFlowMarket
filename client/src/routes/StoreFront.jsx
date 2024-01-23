@@ -135,9 +135,14 @@ const StoreFront = () => {
             <button className="btn btn-outline-secondary">Search</button>
         </form>
       </Fragment>
+
+
+      {/* new broduct button */}
       <Fragment>
         <button className="btn btn-success mb-4" onClick={() => navigate(`/store/${id}/newProduct`)}>New Product</button>
       </Fragment>
+
+
       {/* table */}
       <Fragment>
         <table className="table table-hover table-secondary table-striped table-bordered text-center">
