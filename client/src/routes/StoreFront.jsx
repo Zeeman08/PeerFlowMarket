@@ -1,4 +1,4 @@
-import React, {Fragment, useState, useEffect} from 'react';
+import React, { useState, useEffect} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 
 const StoreFront = () => {
@@ -122,29 +122,29 @@ const StoreFront = () => {
   return (
     <div>
       {/* header */}
-      <Fragment>
+      <div>
         <h1 className='text-center mt-5'>{store.name}</h1>
-      </Fragment>
+      </div>
 
 
     {/* search bar */}
-      <Fragment>
+      <div>
         <form className="d-flex mt-4 mb-4" onSubmit={onSearch}>
             <input type="text" className="form-control" value={searchText} 
             onChange={e => setSearchText(e.target.value)}/>
             <button className="btn btn-outline-secondary">Search</button>
         </form>
-      </Fragment>
+      </div>
 
 
       {/* new broduct button */}
-      <Fragment>
+      <div>
         <button className="btn btn-success mb-4" onClick={() => navigate(`/store/${id}/newProduct`)}>New Product</button>
-      </Fragment>
+      </div>
 
 
       {/* table */}
-      <Fragment>
+      <div>
         <table className="table table-hover table-secondary table-striped table-bordered text-center">
           <thead className="table-dark">
             <tr className="bg-primary">
@@ -170,7 +170,7 @@ const StoreFront = () => {
           </tbody>
         </table>
         <button className="btn btn-danger" onClick={goBack}>Go Back</button>
-      </Fragment>
+      </div>
     </div>
   )
 }
