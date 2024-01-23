@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import {useParams} from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const Product = () => {
   //Getting id from link
@@ -10,6 +10,9 @@ const Product = () => {
 
   //Setting quantity
   const[quantity, setQuantity] = useState(1);
+  
+  //For going to other pages
+  let navigate = useNavigate();
 
   //The useEffect hook that calls the getStore() function
   useEffect(() => {
@@ -40,6 +43,24 @@ const Product = () => {
       setQuantity(quantity - 1);
   };
 
+  const addToCart = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:3005/addToCart/1/${id}/${quantity}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quantity: quantity
+        })
+      });
+      const jsonData = await response.json();
+      console.log(jsonData);
+      navigate(`/store/${product.storefront_id}`);
+    }
+    catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <div>
       {/* Image */}
@@ -65,7 +86,7 @@ const Product = () => {
             <span className="input-group-text">{quantity}</span>
             <button className="btn btn-primary" type="button" onClick={addQuantity}>+</button>
           </div>
-          <button className="btn btn-success mt-4">Add to Cart</button>
+          <button className="btn btn-success mt-4" onClick={() => addToCart(id)}>Add to Cart</button>
         </div>
       </div>
     </div>

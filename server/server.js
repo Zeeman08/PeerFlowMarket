@@ -411,12 +411,12 @@ app.get("/getCart/:id", async (req, res) => {
 });
 
 //adding a product to cart
-app.post("/addToCart/:personId/:productId", async (req, res) => {
+app.post("/addToCart/:personId/:productId/:quantity", async (req, res) => {
   try{
     console.log("Got a add to cart request");
     const results = await db.query(
-      "INSERT INTO CART (PERSON_ID, PRODUCT_ID) VALUES ($1, $2) ON CONFLICT (PERSON_ID, PRODUCT_ID) DO UPDATE SET QUANTITY = CART.QUANTITY + EXCLUDED.QUANTITY RETURNING *",
-      [req.params.personId, req.params.productId]
+      "INSERT INTO CART (PERSON_ID, PRODUCT_ID, QUANTITY) VALUES ($1, $2, $3) ON CONFLICT (PERSON_ID, PRODUCT_ID) DO UPDATE SET QUANTITY = CART.QUANTITY + EXCLUDED.QUANTITY RETURNING *",
+      [req.params.personId, req.params.productId, req.params.quantity]
     );
     res.status(201).json({
       status: "success",

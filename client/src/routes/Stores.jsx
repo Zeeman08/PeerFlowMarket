@@ -59,7 +59,7 @@ const Stores = () => {
   //This function triggers when you double click a store row
   const visitStore = (e, id) => {
     if (e.detail > 1){
-      navigate(`/store/${id}`)
+      navigate(`/store/${id}`);
     }
   }
 
