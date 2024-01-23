@@ -7,6 +7,7 @@ import StoreFrontUpdate from './routes/StoreFrontUpdate';
 import ProductUpdate from './routes/ProductUpdate';
 import NewProduct from './routes/NewProduct';
 import Product from './routes/Product';
+import ViewCart from './routes/viewCart';
 import './stylesheet.css';
 
 const App = () => {
@@ -52,6 +53,7 @@ const App = () => {
                   <Route exact path="/product/:id" element={<Product />} />
                   <Route exact path="/product/:id/update" element={<ProductUpdate />} />
                   <Route exact path="/store/:id/newProduct" element={<NewProduct/>} />
+                  <Route exact path="/person/:id/viewCart" element={<ViewCart/>} />
               </Routes>
           </Router>
       </div>
