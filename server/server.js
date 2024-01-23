@@ -341,13 +341,31 @@ app.get("/getStoreAnnouncements/:id", async (req, res) => {
   }
 });
 
-
+//adding a product to cart
+app.post("/addToCart/:personId/:productId", async (req, res) => {
+  try{
+    console.log("Got a add to cart request");
+    const results = await db.query(
+      "INSERT INTO CART (PERSON_ID, PRODUCT_ID) VALUES ($1, $2) ON CONFLICT (PERSON_ID, PRODUCT_ID) DO UPDATE SET QUANTITY = CART.QUANTITY + EXCLUDED.QUANTITY RETURNING *",
+      [req.params.personId, req.params.productId]
+    );
+    res.status(201).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        cart: results.rows[0]
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
 //clear cart
 app.delete("/clearCart/:id", async (req, res) => {
   try{
     console.log("Got a clear cart request");
     const results = await db.query(
-      "DELETE FROM cart where customer_id = $1",
+      "DELETE FROM CART WHERE PERSON_ID = $1",
       [req.params.id]
     );
     res.status(204).json({
@@ -357,13 +375,17 @@ app.delete("/clearCart/:id", async (req, res) => {
     console.log(err);
   }
 });
+
 //remove from cart
-app.delete("/removeFromCart/:id", async (req, res) => {
+app.delete("/removeFromCart/:personId/:productId", async (req, res) => {
   try{
     console.log("Got a remove from cart request");
     const results = await db.query(
-      "DELETE FROM cart where customer_id = $1 AND product_id = $2",
-      [req.params.id, req.body.productId]
+      "UPDATE CART SET QUANTITY = QUANTITY - 1 WHERE PERSON_ID = $1 AND PRODUCT_ID = $2",
+      [req.params.personId, req.params.productId]
+    );
+    db.query(
+      "DELETE FROM CART WHERE QUANTITY = 0"
     );
     res.status(204).json({
       status: "success"
@@ -372,6 +394,7 @@ app.delete("/removeFromCart/:id", async (req, res) => {
     console.log(err);
   }
 });
+
 
 
 
