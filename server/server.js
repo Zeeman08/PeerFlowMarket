@@ -8,11 +8,39 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 
-//get all the storefronts
+// //get all the storefronts
+// app.get("/getStores", async (req, res) => {
+//   try{
+//     console.log("Got get all stores request");
+//     const results = await db.query("SELECT S.*, AVG(PRODUCT_RATING) AS RATING FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID) GROUP BY S.STOREFRONT_ID");
+//     res.status(200).json({
+//       status: "success",
+//       results: results.rows.length,
+//       data: {
+//         stores: results.rows
+//       }
+//     });
+//   }catch(err){
+//     console.log(err);
+//   }
+// });
+
+
+// Global strings
+const GET_STORE1 = "SELECT S.*, AVG(PRODUCT_RATING) AS RATING FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)";
+const GET_STORE2 = "GROUP BY S.STOREFRONT_ID";
+
+// Route handler
 app.get("/getStores", async (req, res) => {
-  try{
+  try {
     console.log("Got get all stores request");
-    const results = await db.query("SELECT * FROM storefront");
+    
+    // Construct the full SQL query by concatenating the two parts
+    const fullQuery = `${GET_STORE1} ${GET_STORE2}`;
+
+    // Execute the query
+    const results = await db.query(fullQuery);
+
     res.status(200).json({
       status: "success",
       results: results.rows.length,
@@ -20,16 +48,26 @@ app.get("/getStores", async (req, res) => {
         stores: results.rows
       }
     });
-  }catch(err){
-    console.log(err);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      status: "error",
+      error: "Internal Server Error"
+    });
   }
 });
+
+
+
+
 //get a specific storefront
 app.get("/getStore/:id", async (req, res) => {
   try{
     console.log("Got get a store request");
+    const fullQuery = `${GET_STORE1} WHERE S.STOREFRONT_ID = ${req.params.id} ${GET_STORE2}`;
+
     const results = await db.query(
-      "SELECT * FROM storefront WHERE storefront_id = $1", [req.params.id]
+      fullQuery
     );
     res.status(200).json({
       status: "success",
@@ -306,7 +344,36 @@ app.get("/getAnnouncement/:announcementID", async (req, res) => {
 
 
 
-
+//clear cart
+app.delete("/clearCart/:id", async (req, res) => {
+  try{
+    console.log("Got a clear cart request");
+    const results = await db.query(
+      "DELETE FROM cart where customer_id = $1",
+      [req.params.id]
+    );
+    res.status(204).json({
+      status: "success"
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+//remove from cart
+app.delete("/removeFromCart/:id", async (req, res) => {
+  try{
+    console.log("Got a remove from cart request");
+    const results = await db.query(
+      "DELETE FROM cart where customer_id = $1 AND product_id = $2",
+      [req.params.id, req.body.productId]
+    );
+    res.status(204).json({
+      status: "success"
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
 
 
 
