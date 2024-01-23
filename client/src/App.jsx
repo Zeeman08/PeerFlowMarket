@@ -9,6 +9,7 @@ import NewProduct from './routes/NewProduct';
 import Product from './routes/Product';
 import YourStores from './routes/YourStores';
 import YourStore from './routes/YourStore';
+import NewStore from './routes/NewStore';
 //import ViewCart from './routes/viewCart';
 import './stylesheet.css';
 
@@ -45,6 +46,7 @@ const App = () => {
                   <Route exact path="/stores" element={<Stores />} />
                   <Route exact path="/yourstores/:id" element={<YourStores />} />
                   <Route exact path="/yourstore/:id" element={<YourStore />} />
+                  <Route exact path="/newstore/:id" element={<NewStore />} />
                   <Route exact path="/store/:id" element={<StoreFront />} />
                   <Route exact path="/store/:id/update" element={<StoreFrontUpdate />} />
                   <Route exact path="/product/:id" element={<Product />} />

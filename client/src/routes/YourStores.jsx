@@ -113,11 +113,11 @@ const YourStores = () => {
         </div>
 
 
-        {/* new store button
+        {/* new store button */}
         <div>
-            <button className="btn btn-success mb-4" onClick={() => navigate(`/store/${id}/newProduct`)}>New Product</button>
+            <button className="btn btn-success mb-4" onClick={() => navigate(`/newstore/1`)}>New Store</button>
         </div>
-        */}
+        
 
 
         {/* table */}
