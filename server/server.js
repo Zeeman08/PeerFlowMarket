@@ -119,6 +119,27 @@ app.post("/createStore", async (req, res) => {
     console.log(err);
   }
 });
+// app.post("/createStore", async (req, res) => {
+//   try{
+//     console.log("Got a create store request");
+//     const results = await db.query(
+//       "INSERT INTO storefront (STOREFRONT_NAME, STOREFRONT_DESCRIPTION, IMAGE) VALUES ($1, $2, $3) RETURNING *",
+//       [req.body.name, req.body.description, req.body.image]
+//     );
+//     const results1 = await db.query (
+//       "INSERT INTO manages (person_id, storefront_id) VALUES ($1, $2) RETURNING *",
+//        [1, results.rows[0].storefront_id]
+//     res.status(201).json({
+//       status: "success",
+//       results: results.rows.length,
+//       data: {
+//         stores: results.rows[0]
+//       }
+//     });
+//   }catch(err){
+//     console.log(err);
+//   }
+// });
 //update a storefront
 app.put("/updateStore/:id", async (req, res) => {
   try{
