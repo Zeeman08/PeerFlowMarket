@@ -20,7 +20,7 @@ const Product = () => {
     //The async function that fetches the data from the database
     const getProduct = async (e) => {
       try {
-        const response = await fetch(`http://localhost:3005/getCart/1/${id}`);
+        const response = await fetch(`http://localhost:3005/getProduct/1/${id}`);
         const jsonData = await response.json();
         setProduct(jsonData.data.product);
         setQuantity(jsonData.data.product.quantity || 0);
