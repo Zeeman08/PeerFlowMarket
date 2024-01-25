@@ -77,27 +77,27 @@ const ProductUpdate = () => {
       <h1 className='text-center mt-5'>Update Product</h1>
       <div>
         <label htmlFor='name'>Name:</label>
-        <input type="text" className="form-control mt-2 mb-2" value={name}
+        <input type="text" className="form-control mt-2 mb-2" placeholder={name}
         onChange={e => setName(e.target.value)}/>
       </div>
       <div>
       <label htmlFor='description'>Description:</label>
-        <input type="text" className="form-control mt-2 mb-2" value={desc}
+        <input type="text" className="form-control mt-2 mb-2" placeholder={desc}
         onChange={e => setDesc(e.target.value)}/>
       </div>
       <div>
       <label htmlFor='image'>Image:</label>
-        <input type="text" className="form-control mt-2 mb-2" value={image}
+        <input type="text" className="form-control mt-2 mb-2" placeholder={image}
         onChange={e => setImage(e.target.value)}/>
       </div>
       <div>
       <label htmlFor='Price'>Price:</label>
-        <input type="number" className="form-control mt-2 mb-2" value={price}
+        <input type="number" className="form-control mt-2 mb-2" placeholder={price}
         onChange={e => setPrice(e.target.value)}/>
       </div>
       <div>
       <label htmlFor='tags'>Tags:</label>
-        <input type="text" className="form-control mt-2 mb-2" value={tags}
+        <input type="text" className="form-control mt-2 mb-2" placeholder={tags}
         onChange={e => setTags(e.target.value)}/>
       </div>
       <div className="d-flex justify-content-between">
