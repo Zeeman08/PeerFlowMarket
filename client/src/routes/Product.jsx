@@ -23,9 +23,6 @@ const Product = () => {
         const response = await fetch(`http://localhost:3005/getProduct/1/${id}`);
         const jsonData = await response.json();
         setProduct(jsonData.data.product);
-        setQuantity(jsonData.data.product.quantity || 0);
-        console.log("herelwer");
-        console.log(jsonData.data.product.quantity);
         console.log(jsonData.data.product);
       }
       catch (err) {
