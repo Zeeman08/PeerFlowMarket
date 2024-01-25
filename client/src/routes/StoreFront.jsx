@@ -164,7 +164,7 @@ const StoreFront = () => {
           </thead>
           <tbody>
             {displayProducts.map (product => (
-              <tr key={product.product_id} onClick={(e) => viewProduct(e, store.storefront_id)}>
+              <tr key={product.product_id} onClick={(e) => viewProduct(e, product.product_id)}>
                 <td>{product.product_name}</td>
                 <td>{product.product_description}</td>
                 <td>${product.price}</td>
