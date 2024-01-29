@@ -1,95 +1,79 @@
--- Insert into COUNTRY table
-INSERT INTO COUNTRY (COUNTRY_NAME) VALUES
-  ('United States'),
-  ('Canada'),
-  ('United Kingdom');
+INSERT INTO LOCATION (DIVISION, CITY) VALUES
+('North', 'New York'),
+('South', 'Miami'),
+('East', 'Boston');
 
--- Insert into LOCATION table
-INSERT INTO LOCATION (LOCATION_NAME, POST_CODE, COUNTRY_ID) VALUES
-  ('New York', 10001, 1),
-  ('Toronto',  1000, 2),
-  ('London', 34234, 3);
+INSERT INTO PERSON (PERSON_NAME, PASSWORD, DATE_OF_BIRTH, PHONE, EMAIL) VALUES
+('John Doe', 'password123', '1990-05-15', '1234567890', 'john@example.com'),
+('Jane Smith', 'pass456', '1985-08-22', '9876543210', 'jane@example.com'),
+('Alice Johnson', 'abc123', '1995-03-10', '5551234567', 'alice@example.com');
 
--- Insert into PERSON table
-INSERT INTO PERSON (PERSON_NAME, PASSWORD, LOCATION_ID, DATE_OF_BIRTH, PHONE, EMAIL, IMAGE) VALUES
-  ('John Doe', 'password123', 1, '1990-01-15', '123-456-7890', 'john.doe@example.com', 'image_url1'),
-  ('Jane Smith', 'securepass', 2, '1985-05-20', '987-654-3210', 'jane.smith@example.com', 'image_url2'),
-  ('Alice Johnson', 'pass123', 3, '1992-09-03', '555-123-4567', 'alice.j@example.com', 'image_url3');
+INSERT INTO ADDRESS (PERSON_ID, LOCATION_ID, STREET_NAME, HOUSE_NUMBER, POST_CODE) VALUES
+(1, 1, 'Main Street', '123', 10001),
+(2, 2, 'Ocean Avenue', '456', 33101),
+(3, 3, 'Elm Street', '789', 22002);
 
--- Insert into CATEGORIES table
 INSERT INTO CATEGORIES (CATEGORY_NAME) VALUES
-  ('electronics'),
-  ('clothing'),
-  ('books');
+('Electronics'),
+('Clothing'),
+('Books');
 
--- Insert into STOREFRONT table
 INSERT INTO STOREFRONT (STOREFRONT_NAME, STOREFRONT_DESCRIPTION, IMAGE) VALUES
-  ('Electronics Emporium', 'The best in gadgets', 'storefront_image1'),
-  ('Fashion Haven', 'Latest trends in clothing', 'storefront_image2'),
-  ('Book Paradise', 'A haven for book lovers', 'storefront_image3');
+('ElectroMart', 'Your one-stop electronics shop', 'electromart.jpg'),
+('FashionEmporium', 'Latest trends in clothing', 'fashionemporium.jpg'),
+('BookBarn', 'A treasure trove for book lovers', 'bookbarn.jpg');
 
--- Insert into CATEGORY_STOREFRONT_RELATION table
-INSERT INTO CATEGORY_STOREFRONT_RELATION (STOREFRONT_ID, CATEGORY_NAME) VALUES
-  (1, 'electronics'),
-  (2, 'clothing'),
-  (3, 'books');
+INSERT INTO CATEGORY_ASSIGNMENT (STOREFRONT_ID, CATEGORY_NAME) VALUES
+(1, 'Electronics'),
+(2, 'Clothing'),
+(3, 'Books');
 
--- Insert into MANAGES table
 INSERT INTO MANAGES (PERSON_ID, STOREFRONT_ID) VALUES
-  (1, 1),
-  (2, 2),
-  (3, 3);
+(1, 1),
+(2, 2),
+(3, 3);
 
--- Insert into PRODUCT table
-INSERT INTO PRODUCT (PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE, IMAGE, STOREFRONT_ID) VALUES
-  ('Smartphone', 'High-end mobile device', 799.99, 'product_image1', 1),
-  ('Designer Dress', 'Fashionable evening gown', 149.99, 'product_image2', 2),
-  ('Bestseller Book', 'Popular novel', 19.99, 'product_image3', 3);
+INSERT INTO PRODUCT (STOREFRONT_ID, PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE, IMAGE) VALUES
+(1, 'Smartphone', 'High-performance smartphone', 599.99, 'smartphone.jpg'),
+(2, 'T-shirt', 'Comfortable cotton t-shirt', 29.99, 'tshirt.jpg'),
+(3, 'Novel', 'Bestseller novel', 19.99, 'novel.jpg');
 
--- Insert into CART table
 INSERT INTO CART (PERSON_ID, PRODUCT_ID, QUANTITY) VALUES
-  (1, 1, 2),
-  (2, 3, 1),
-  (3, 2, 3);
+(1, 1, 2),
+(2, 2, 1),
+(3, 3, 3);
 
--- Insert into ORDERS table
-INSERT INTO ORDERS (PERSON_ID, ORDER_DATE, COMMENTS) VALUES
-  (1, '2023-01-15', 'Order for smartphones and accessories'),
-  (2, '2023-02-20', 'Order for new fashion arrivals'),
-  (3, '2023-03-03', 'Order for favorite books');
+INSERT INTO TRANSACTIONS (PERSON_ID, STOREFRONT_ID, AMOUNT) VALUES
+(1, 1, 1199.98),
+(2, 2, 29.99),
+(3, 3, 59.97);
 
--- Insert into TRANSACTIONS table
-INSERT INTO TRANSACTIONS (PERSON_ID, STOREFRONT_ID, ORDER_ID) VALUES
-  (1, 1, 1),
-  (2, 2, 2),
-  (3, 3, 3);
+INSERT INTO ORDERS (PRODUCT_ID, PERSON_ID, TRANSACTION_ID) VALUES
+(1, 1, 1),
+(2, 2, 2),
+(3, 3, 3);
 
--- Insert into ANNOUNCEMENTS table
 INSERT INTO ANNOUNCEMENTS (STOREFRONT_ID, ANNOUNCEMENT_DESCRIPTION, IMAGE) VALUES
-  (1, 'New arrivals in smartphones', 'announcement_image1'),
-  (2, 'Exclusive fashion discounts', 'announcement_image2'),
-  (3, 'Book signing event this weekend', 'announcement_image3');
+(1, 'New arrivals in smartphones!', 'new_arrivals.jpg'),
+(2, 'Summer collection now available!', 'summer_collection.jpg'),
+(3, 'Special discount on bestsellers!', 'discount.jpg');
 
--- Insert into REVIEW table
 INSERT INTO REVIEW (PRODUCT_ID, PERSON_ID, COMMENTS, RATING) VALUES
-  (1, 1, 'Great phone!', 4.5),
-  (2, 2, 'Beautiful dress, perfect fit', 5),
-  (3, 3, 'Captivating story', 4.2);
+(1, 1, 'Great phone!', 4.5),
+(2, 2, 'Comfortable and stylish', 5),
+(3, 3, 'Loved the story!', 4.8);
 
--- Insert into COMPLAINTS table
 INSERT INTO COMPLAINTS (PERSON_ID, STOREFRONT_ID, COMPLAINT_DETAILS) VALUES
-  (1, 1, 'Issue with smartphone delivery'),
-  (2, 2, 'Received wrong dress size'),
-  (3, 3, 'Book not delivered as expected');
+(1, 1, 'Delayed delivery'),
+(2, 2, 'Wrong size delivered'),
+(3, 3, 'Product damaged upon delivery');
 
--- Insert into TAGS table
 INSERT INTO TAGS (TAG_NAME) VALUES
-  ('Popular'),
-  ('Sale'),
-  ('New Arrival');
+('New'),
+('Sale'),
+('Bestseller');
 
--- Insert into TAG_ASSIGNMENT table
 INSERT INTO TAG_ASSIGNMENT (PRODUCT_ID, TAG_NAME) VALUES
-  (1, 'Popular'),
-  (2, 'Sale'),
-  (3, 'New Arrival');
+(1, 'New'),
+(2, 'Sale'),
+(3, 'Bestseller');
