@@ -8,6 +8,26 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 
+
+// ROUTES //
+
+
+//register and login
+
+app.use("/auth", require("./routes/jwtAuth"));
+
+//dashbaoard route
+
+app.use("/dashboard", require("./routes/dashboard"));
+
+
+
+
+
+
+
+
+
 // //get all the storefronts
 // app.get("/getStores", async (req, res) => {
 //   try{
@@ -210,6 +230,18 @@ app.get("/getStoreCategories/:categories", async (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 //get a product
 app.get("/getProduct/:productId", async (req, res) => {
   try {
@@ -311,6 +343,23 @@ app.get("/getStoreProducts/:id", async (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //create an announcement 
 app.post("/createAnnouncement/:id", async (req, res) => {
   try{
@@ -406,6 +455,17 @@ app.get("/getStoreAnnouncements/:id", async (req, res) => {
     console.log(err);
   }
 });
+
+
+
+
+
+
+
+
+
+
+
 
 
 //view products in cart
