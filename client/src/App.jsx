@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
 
-// import login register
+// import routes
 
-import Dashboard from './components/Dashboard';
-import Login from './components/Login';
-import Register from './components/Register';
-
-// import components
-
-import Home from './routes/Home';
+import Dashboard from './routes/Dashboard';
+import Login from './routes/Login';
+import Register from './routes/Register';
 import Stores from './routes/Stores';
 import StoreFront from './routes/StoreFront';
 import StoreFrontUpdate from './routes/StoreFrontUpdate';
@@ -69,7 +65,7 @@ const App = () => {
       <nav className="navbar navbar-expand-lg navbar-light Navbar">
         <div className="container-fluid">
             <div className="collapse navbar-collapse d-flex justify-content-evenly" id="navbarNavAltMarkup">
-              <a className="HyperLink" href="/">Home</a>
+              <a className="HyperLink" href="/">Dashboard</a>
               <a className="HyperLink" href="/stores">Stores</a>
               <a className="HyperLink" href="/yourstores/1">Your Stores</a>
               <a className="HyperLink" href="/person/1/viewCart">Cart</a>
@@ -81,20 +77,19 @@ const App = () => {
       <div className="container">
           <Router>
               <Routes>
-                  <Route exact path="/" element={ !isAuthenticated ? <Login setAuth={setAuth} /> : <Navigate to="/dashboard"/>}/>
-                  <Route exact path="/register" element={ !isAuthenticated ? <Register setAuth={setAuth}/> : <Navigate to="/"/>}/>
-                  <Route exact path="/dashboard" element={ isAuthenticated ? <Dashboard setAuth={setAuth}/> : <Navigate to="/"/>}/>
-                  <Route exact path="/home" element={<Home />}/>
-                  <Route exact path="/stores" element={<Stores />} />
-                  <Route exact path="/yourstores/:id" element={<YourStores />} />
-                  <Route exact path="/yourstore/:id" element={<YourStore />} />
-                  <Route exact path="/newstore/:id" element={<NewStore />} />
-                  <Route exact path="/store/:id" element={<StoreFront />} />
-                  <Route exact path="/store/:id/update" element={<StoreFrontUpdate />} />
-                  <Route exact path="/product/:id" element={<Product />} />
-                  <Route exact path="/product/:id/update" element={<ProductUpdate />} />
-                  <Route exact path="/store/:id/newProduct" element={<NewProduct/>} />
-                  <Route exact path="/person/:id/viewCart" element={<ViewCart/>} />
+                  <Route exact path="/" element={ isAuthenticated ? <Dashboard setAuth={setAuth}/> : <Navigate to="/login"/>}/>
+                  <Route exact path="/login" element={ !isAuthenticated ? <Login setAuth={setAuth} /> : <Navigate to="/"/>}/>
+                  <Route exact path="/register" element={ !isAuthenticated ? <Register setAuth={setAuth}/> : <Navigate to="/login"/>}/>
+                  <Route exact path="/stores" element={ isAuthenticated ? <Stores /> : <Navigate to="/login"/>} />
+                  <Route exact path="/yourstores/:id" element={isAuthenticated ? <YourStores /> : <Navigate to="/login"/>} />
+                  <Route exact path="/yourstore/:id" element={isAuthenticated ? <YourStore /> : <Navigate to="/login"/>} />
+                  <Route exact path="/newstore/:id" element={isAuthenticated ? <NewStore /> : <Navigate to="/login"/>} />
+                  <Route exact path="/store/:id" element={isAuthenticated ? <StoreFront /> : <Navigate to="/login"/>} />
+                  <Route exact path="/store/:id/update" element={isAuthenticated ? <StoreFrontUpdate /> : <Navigate to="/login"/>} />
+                  <Route exact path="/product/:id" element={isAuthenticated ? <Product /> : <Navigate to="/login"/>} />
+                  <Route exact path="/product/:id/update" element={isAuthenticated ? <ProductUpdate /> : <Navigate to="/login"/>} />
+                  <Route exact path="/store/:id/newProduct" element={isAuthenticated ? <NewProduct/> : <Navigate to="/login"/>} />
+                  <Route exact path="/person/:id/viewCart" element={isAuthenticated ? <ViewCart/> : <Navigate to="/login"/>} />
               </Routes>
           </Router>
       </div>
