@@ -1,5 +1,14 @@
-import React from 'react';
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import {BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
+
+// import login register
+
+import Dashboard from './components/Dashboard';
+import Login from './components/Login';
+import Register from './components/Register';
+
+// import components
+
 import Home from './routes/Home';
 import Stores from './routes/Stores';
 import StoreFront from './routes/StoreFront';
@@ -11,9 +20,39 @@ import YourStores from './routes/YourStores';
 import YourStore from './routes/YourStore';
 import NewStore from './routes/NewStore';
 import ViewCart from './routes/ViewCart';
+
+// import styles
+
 import './stylesheet.css';
 
 const App = () => {
+
+  const [isAuthenticated, setAuthenticated] = useState(false);
+
+  const setAuth = boolean => {
+    setAuthenticated(boolean);
+  }
+
+  useEffect(() => {
+
+    const isAuth = async () => {
+      try {
+        const response = await fetch("http://localhost:3005/auth/is-verify", {
+          method: "GET",
+          headers: { token: localStorage.token }
+        });
+  
+        const parseRes = await response.json();
+  
+        parseRes === true ? setAuth(true) : setAuth(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    isAuth();
+  }, []);
+
   return (
     <div>
       {/* navbar */}
@@ -42,7 +81,10 @@ const App = () => {
       <div className="container">
           <Router>
               <Routes>
-                  <Route exact path="/" element={<Home />}/>
+                  <Route exact path="/" element={ !isAuthenticated ? <Login setAuth={setAuth} /> : <Navigate to="/dashboard"/>}/>
+                  <Route exact path="/register" element={ !isAuthenticated ? <Register setAuth={setAuth}/> : <Navigate to="/"/>}/>
+                  <Route exact path="/dashboard" element={ isAuthenticated ? <Dashboard setAuth={setAuth}/> : <Navigate to="/"/>}/>
+                  <Route exact path="/home" element={<Home />}/>
                   <Route exact path="/stores" element={<Stores />} />
                   <Route exact path="/yourstores/:id" element={<YourStores />} />
                   <Route exact path="/yourstore/:id" element={<YourStore />} />
