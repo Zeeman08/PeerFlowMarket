@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react'
 
-const Dashboard = ({setAuth}) => {
+const Home = ({setAuth}) => {
   
   const [name, setName] = useState("");
 
-  const getName = async () => {
+  const getDetails = async () => {
     try {
         const response = await fetch("http://localhost:3005/dashboard/", {
             method: "GET",
@@ -14,6 +14,7 @@ const Dashboard = ({setAuth}) => {
         const parseRes = await response.json();
 
         setName(parseRes.person_name);
+        localStorage.setItem("person_id", parseRes.person_id);
     } catch (error) {
         console.log(error);
     }
@@ -22,11 +23,12 @@ const Dashboard = ({setAuth}) => {
   const logout = (e) => {
     e.preventDefault();
     localStorage.removeItem("token");
+    localStorage.removeItem("person_id");
     setAuth(false);
   };
 
   useEffect(() => {
-    getName();
+    getDetails();
   }, []);
 
   return (
@@ -37,4 +39,4 @@ const Dashboard = ({setAuth}) => {
   )
 }
 
-export default Dashboard;
+export default Home;

@@ -3,7 +3,7 @@ import {BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom
 
 // import routes
 
-import Dashboard from './routes/Dashboard';
+import Home from './routes/Home';
 import Login from './routes/Login';
 import Register from './routes/Register';
 import Stores from './routes/Stores';
@@ -23,7 +23,7 @@ import './stylesheet.css';
 
 const App = () => {
 
-  const [isAuthenticated, setAuthenticated] = useState(false);
+  const [isAuthenticated, setAuthenticated] = useState(true);
 
   const setAuth = boolean => {
     setAuthenticated(boolean);
@@ -49,6 +49,8 @@ const App = () => {
     isAuth();
   }, []);
 
+  console.log(isAuthenticated);
+
   return (
     <div>
       {/* navbar */}
@@ -65,10 +67,10 @@ const App = () => {
       <nav className="navbar navbar-expand-lg navbar-light Navbar">
         <div className="container-fluid">
             <div className="collapse navbar-collapse d-flex justify-content-evenly" id="navbarNavAltMarkup">
-              <a className="HyperLink" href="/">Dashboard</a>
+              <a className="HyperLink" href="/">Home</a>
               <a className="HyperLink" href="/stores">Stores</a>
-              <a className="HyperLink" href="/yourstores/1">Your Stores</a>
-              <a className="HyperLink" href="/person/1/viewCart">Cart</a>
+              <a className="HyperLink" href={`/yourstores/${localStorage.personID}`}>Your Stores</a>
+              <a className="HyperLink" href={`/person/${localStorage.personID}/viewCart`}>Cart</a>
             </div>
         </div>
       </nav>
@@ -77,9 +79,9 @@ const App = () => {
       <div className="container">
           <Router>
               <Routes>
-                  <Route exact path="/" element={ isAuthenticated ? <Dashboard setAuth={setAuth}/> : <Navigate to="/login"/>}/>
+                  <Route exact path="/" element={ isAuthenticated ? <Home setAuth={setAuth} /> : <Navigate to="/login"/>}/>
                   <Route exact path="/login" element={ !isAuthenticated ? <Login setAuth={setAuth} /> : <Navigate to="/"/>}/>
-                  <Route exact path="/register" element={ !isAuthenticated ? <Register setAuth={setAuth}/> : <Navigate to="/login"/>}/>
+                  <Route exact path="/register" element={ !isAuthenticated ? <Register setAuth={setAuth}/> : <Navigate to="/"/>}/>
                   <Route exact path="/stores" element={ isAuthenticated ? <Stores /> : <Navigate to="/login"/>} />
                   <Route exact path="/yourstores/:id" element={isAuthenticated ? <YourStores /> : <Navigate to="/login"/>} />
                   <Route exact path="/yourstore/:id" element={isAuthenticated ? <YourStore /> : <Navigate to="/login"/>} />
