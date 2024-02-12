@@ -14,7 +14,6 @@ const Home = ({setAuth}) => {
         const parseRes = await response.json();
 
         setName(parseRes.person_name);
-        localStorage.setItem("person_id", parseRes.person_id);
     } catch (error) {
         console.log(error);
     }
@@ -23,7 +22,6 @@ const Home = ({setAuth}) => {
   const logout = (e) => {
     e.preventDefault();
     localStorage.removeItem("token");
-    localStorage.removeItem("person_id");
     setAuth(false);
   };
 
