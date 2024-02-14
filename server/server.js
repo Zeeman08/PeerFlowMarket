@@ -101,7 +101,7 @@ app.get("/getStore/:id", async (req, res) => {
 //get the stores managed by a person
 app.get("/getStoresManagedByPerson/:id", async (req, res) => {
   try{
-    console.log("Got get a store request");
+    console.log("Got get a store request by person");
     const fullQuery = `${GET_STORE1} WHERE S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM MANAGES WHERE PERSON_ID = ${req.params.id}) ${GET_STORE2}`;
 
     const results = await db.query(
@@ -128,11 +128,17 @@ app.post("/createStore", async (req, res) => {
       "INSERT INTO storefront (STOREFRONT_NAME, STOREFRONT_DESCRIPTION, IMAGE) VALUES ($1, $2, $3) RETURNING *",
       [req.body.name, req.body.description, req.body.image]
     );
+
+    console.log(results.rows[0].storefront_id);
+
+    const resultsb = await db.query("INSERT INTO manages (PERSON_ID, STOREFRONT_ID) VALUES ($1, $2) RETURNING *", [req.body.owner, results.rows[0].storefront_id]);
+    
     res.status(201).json({
       status: "success",
       results: results.rows.length,
       data: {
-        stores: results.rows[0]
+        stores: results.rows[0],
+        manages: resultsb.rows[0]
       }
     });
   }catch(err){
