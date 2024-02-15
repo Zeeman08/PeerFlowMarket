@@ -23,6 +23,7 @@ const NewStore = () => {
             name: name,
             description: desc,
             image: image,
+            owner: id
         };
         const response = await fetch("http://localhost:3005/createStore", {
             method: "POST",
@@ -31,7 +32,7 @@ const NewStore = () => {
         });
 
         console.log(response);
-        navigate(`/yourstores/${id}`);
+        navigate("/yourstores");
     }
     catch (err) {
         console.log(err)
@@ -39,7 +40,7 @@ const NewStore = () => {
   };
 
   const goBack = () => {
-    navigate(`/yourstore/${id}`);
+    navigate(`/yourstores`);
   }
 
   return (

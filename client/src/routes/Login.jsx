@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {Link} from 'react-router-dom';
+import {useData} from '../context/PersonContext';
 
 const Login = ({setAuth}) => {
 
@@ -8,6 +9,7 @@ const Login = ({setAuth}) => {
     password: ""
   });
 
+  const {PID, setPID} = useData();
   const {email, password} = inputs;
 
   const onChange = (e) => {
@@ -24,8 +26,14 @@ const Login = ({setAuth}) => {
         });
 
         const parseRes = await response.json();
+
+        if (parseRes.token === undefined)
+          return;
+
         localStorage.setItem("token", parseRes.token);
         setAuth(true);
+
+        setPID(parseRes.person_id);
         
         console.log(parseRes);
     } catch (error) {

@@ -1,13 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useData } from '../context/PersonContext';
 
 const ViewCart = () => {
     console.log("Hello, world!");
 
     // Getting id from link
-    const { id } = useParams();
-    console.log(id);
+    const { person } = useData();
+    console.log(person.person_id);
 
     const [products, setProducts] = useState([]);
     // Buffer data used on table
@@ -20,7 +21,7 @@ const ViewCart = () => {
     useEffect(() => {
         const getProducts = async () => {
             try {
-                const response = await fetch(`http://localhost:3005/getCart/${id}`);
+                const response = await fetch(`http://localhost:3005/getCart/${person.person_id}`);
                 const jsonData = await response.json();
                 setProducts(jsonData.data.cart);
                 setDisplay(jsonData.data.cart);
@@ -39,18 +40,18 @@ const ViewCart = () => {
 
         // Being called
         getProducts();
-    }, [id]);
+    }, [person.person_id]);
     const handleIncreaseCount = async (product_id) => {
         console.log("high");
         //return;
         try {
             //await fetch(`http://localhost:3005/addToCart/${id}/${product_id}`);
-            const response0 = await fetch(`http://localhost:3005/addToCart/${id}/${product_id}`, {
+            const response0 = await fetch(`http://localhost:3005/addToCart/${person.person_id}/${product_id}`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"}
             });
             console.log(response0);
-            const response = await fetch(`http://localhost:3005/getCart/${id}`);
+            const response = await fetch(`http://localhost:3005/getCart/${person.person_id}`);
             const jsonData = await response.json();
             setProducts(jsonData.data.cart);
             setDisplay(jsonData.data.cart);
@@ -70,12 +71,12 @@ const ViewCart = () => {
         //return;
         try {
             //await fetch(`http://localhost:3005/removeFromCart/${id}/${product_id}`);
-            const response0 = await fetch(`http://localhost:3005/removeFromCart/${id}/${product_id}`, {
+            const response0 = await fetch(`http://localhost:3005/removeFromCart/${person.person_id}/${product_id}`, {
                 method: "DELETE",
                 headers: {"Content-Type": "application/json"}
             });
             console.log(response0);
-            const response = await fetch(`http://localhost:3005/getCart/${id}`);
+            const response = await fetch(`http://localhost:3005/getCart/${person.person_id}`);
             const jsonData = await response.json();
             setProducts(jsonData.data.cart);
             setDisplay(jsonData.data.cart);
@@ -95,12 +96,12 @@ const ViewCart = () => {
         //return;
         try {
             //await fetch(`http://localhost:3005/removeFromCart/${id}/${product_id}`);
-            const response0 = await fetch(`http://localhost:3005/clearCart/${id}`, {
+            const response0 = await fetch(`http://localhost:3005/clearCart/${person.person_id}`, {
                 method: "DELETE",
                 headers: {"Content-Type": "application/json"}
             });
             console.log(response0);
-            const response = await fetch(`http://localhost:3005/getCart/${id}`);
+            const response = await fetch(`http://localhost:3005/getCart/${person.person_id}`);
             const jsonData = await response.json();
             setProducts(jsonData.data.cart);
             setDisplay(jsonData.data.cart);

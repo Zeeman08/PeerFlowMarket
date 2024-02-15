@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {useNavigate} from 'react-router-dom';
+import {useData} from '../context/PersonContext';
 import '../stylesheet.css';
 
 const YourStores = () => {
@@ -9,6 +10,13 @@ const YourStores = () => {
   //Storing data for stores for the table
   //Original data
   const[stores, setStores] = useState([]);
+
+  //Getting data from context
+  const {person} = useData();
+
+  console.log(person);
+
+  //console.log(person);
 
   //Buffer data used on table
   const[displayStores, setDisplay] = useState([]);
@@ -22,8 +30,12 @@ const YourStores = () => {
     //The async function that fetches the data from the database
     const getStores = async () => {
       try {
-        const response = await fetch("http://localhost:3005/getStoresManagedByPerson/1");
+        if (person === undefined){
+          console.log("person is undefined");
+        }
+        const response = await fetch(`http://localhost:3005/getStoresManagedByPerson/${person.person_id}`);
         const jsonData = await response.json();
+        console.log(jsonData);
         setStores(jsonData.data.stores);
         setDisplay(jsonData.data.stores);
       }
@@ -33,7 +45,7 @@ const YourStores = () => {
     };
     
     getStores();
-  }, []);
+  }, [person]);
 
 
   /********************/
@@ -115,7 +127,7 @@ const YourStores = () => {
 
         {/* new store button */}
         <div>
-            <button className="btn btn-success mb-4" onClick={() => navigate(`/newstore/1`)}>New Store</button>
+            <button className="btn btn-success mb-4" onClick={() => navigate(`/newstore/${person.person_id}`)}>New Store</button>
         </div>
         
 

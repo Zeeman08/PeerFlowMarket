@@ -1,23 +1,11 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
+import {useData} from '../context/PersonContext';
 
 const Home = ({setAuth}) => {
   
   const [name, setName] = useState("");
 
-  const getDetails = async () => {
-    try {
-        const response = await fetch("http://localhost:3005/dashboard/", {
-            method: "GET",
-            headers: {token: localStorage.token}
-        });
-
-        const parseRes = await response.json();
-
-        setName(parseRes.person_name);
-    } catch (error) {
-        console.log(error);
-    }
-  }
+  const {person, setPerson} = useData();
 
   const logout = (e) => {
     e.preventDefault();
@@ -26,8 +14,25 @@ const Home = ({setAuth}) => {
   };
 
   useEffect(() => {
+    const getDetails = async () => {
+      try {
+          const response = await fetch("http://localhost:3005/dashboard/", {
+              method: "GET",
+              headers: {token: localStorage.token}
+          });
+  
+          const parseRes = await response.json();
+          console.log(parseRes);
+          setPerson(parseRes);
+
+          setName(person.person_name);
+      } catch (error) {
+          console.log(error);
+      }
+    };
+
     getDetails();
-  }, []);
+  }, [setPerson, person.person_name]);
 
   return (
     <div>
