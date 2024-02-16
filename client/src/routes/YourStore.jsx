@@ -110,7 +110,7 @@ const YourStore = () => {
   };
 
   const goBack = () => {
-    navigate("/yourstores/1");
+    navigate("/yourstores");
   }
 
   return (
