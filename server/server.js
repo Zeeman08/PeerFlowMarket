@@ -47,7 +47,7 @@ app.use("/dashboard", require("./routes/dashboard"));
 
 
 // Global strings
-const GET_STORE1 = "SELECT S.*, COALESCE(AVG(PRODUCT_RATING), 0) AS RATING FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)";
+const GET_STORE1 = "SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)";
 const GET_STORE2 = "GROUP BY S.STOREFRONT_ID";
 const GET_PRODUCT1 = "SELECT P.*, COALESCE(AVG(R.RATING), 0) AS PRODUCT_RATING FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID)";
 const GET_PRODUCT2 = "GROUP BY P.PRODUCT_ID";
@@ -55,12 +55,9 @@ const GET_PRODUCT2 = "GROUP BY P.PRODUCT_ID";
 app.get("/getStores", async (req, res) => {
   try {
     console.log("Got get all stores request");
-    
-    // Construct the full SQL query by concatenating the two parts
-    const fullQuery = `${GET_STORE1} ${GET_STORE2}`;
 
     // Execute the query
-    const results = await db.query(fullQuery);
+    const results = await db.query("SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORY_ASSIGNMENT C WHERE S.storefront_id = C.storefront_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID) GROUP BY S.STOREFRONT_ID");
 
     res.status(200).json({
       status: "success",
@@ -102,11 +99,8 @@ app.get("/getStore/:id", async (req, res) => {
 app.get("/getStoresManagedByPerson/:id", async (req, res) => {
   try{
     console.log("Got get a store request by person");
-    const fullQuery = `${GET_STORE1} WHERE S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM MANAGES WHERE PERSON_ID = ${req.params.id}) ${GET_STORE2}`;
 
-    const results = await db.query(
-      fullQuery
-    );
+    const results = await db.query(`SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORY_ASSIGNMENT C WHERE S.storefront_id = C.storefront_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID) WHERE S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM MANAGES WHERE PERSON_ID = ${req.params.id}) GROUP BY S.STOREFRONT_ID`);
     res.status(200).json({
       status: "success",
       results: results.rows.length,
@@ -132,13 +126,16 @@ app.post("/createStore", async (req, res) => {
     console.log(results.rows[0].storefront_id);
 
     const resultsb = await db.query("INSERT INTO manages (PERSON_ID, STOREFRONT_ID) VALUES ($1, $2) RETURNING *", [req.body.owner, results.rows[0].storefront_id]);
+
+    const resultsc = await db.query("INSERT INTO category_assignment (storefront_id, category_name) VALUES ($1, $2) RETURNING *", [results.rows[0].storefront_id, req.body.category]);
     
     res.status(201).json({
       status: "success",
       results: results.rows.length,
       data: {
         stores: results.rows[0],
-        manages: resultsb.rows[0]
+        manages: resultsb.rows[0],
+        category: resultsc.rows[0]
       }
     });
   }catch(err){

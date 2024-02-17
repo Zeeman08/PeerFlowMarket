@@ -127,7 +127,7 @@ const YourStores = () => {
 
         {/* new store button */}
         <div>
-            <button className="btn btn-success mb-4" onClick={() => navigate(`/newstore/${person.person_id}`)}>New Store</button>
+            <button className="btn btn-success mb-4" onClick={() => navigate(`/newstore`)}>New Store</button>
         </div>
         
 
@@ -139,6 +139,7 @@ const YourStores = () => {
               <tr className="bg-primary">
                 <th scope="col">Image</th>
                 <th scope="col">Name</th>
+                <th scope="col">Category</th>
                 <th scope="col">Description</th>
                 <th scope="col">Rating</th>
                 <th scope="col">Update</th>
@@ -150,6 +151,7 @@ const YourStores = () => {
                 <tr key={store.storefront_id} onClick={(e) => visitStore(e, store.storefront_id)}>
                   <td>{store.image}</td>
                   <td>{store.storefront_name}</td>
+                  <td>{store.category}</td>
                   <td>{store.storefront_description}</td>
                   <td>{store.rating}</td>
                   <td><button className="btn btn-warning" onClick={() => updateStore(store.storefront_id)}>Update</button></td>

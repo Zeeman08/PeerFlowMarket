@@ -54,7 +54,7 @@ const StoreFrontUpdate = () => {
         });
 
         console.log(response);
-        navigate(`/yourstores/${1}`);
+        navigate(`/yourstores`);
     }
     catch (err) {
         console.log(err)
@@ -62,7 +62,7 @@ const StoreFrontUpdate = () => {
   };
 
   const goBack = () => {
-    navigate(`/yourstores/${1}`);
+    navigate(`/yourstores`);
   }
 
   return (

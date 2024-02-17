@@ -102,6 +102,7 @@ const Stores = () => {
               <tr className="bg-primary">
                 <th scope="col">Image</th>
                 <th scope="col">Name</th>
+                <th scope="col">Category</th>
                 <th scope="col">Description</th>
                 <th scope="col">Rating</th>
               </tr>
@@ -111,6 +112,7 @@ const Stores = () => {
                 <tr key={store.storefront_id} onClick={(e) => visitStore(e, store.storefront_id)}>
                   <td>{store.image}</td>
                   <td>{store.storefront_name}</td>
+                  <td>{store.category}</td>
                   <td>{store.storefront_description}</td>
                   <td>{store.rating}</td>
                 </tr>

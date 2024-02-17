@@ -6,10 +6,12 @@ const Register = ({setAuth}) => {
   const [inputs, setInputs] = useState({
     email: "gawwy@gmail.com",
     password: "123",
-    name: "Gawwy"
+    name: "Gawwy",
+    dob: "2001-05-01",
+    phone: "123456789"
   });
 
-  const { email, password, name } = inputs;
+  const { email, password, name, dob, phone } = inputs;
 
   const onChange = e => {
     setInputs({...inputs, [e.target.name]: e.target.value})
@@ -18,7 +20,7 @@ const Register = ({setAuth}) => {
   const onSubmitForm = async(e) => {
     e.preventDefault();
 
-    const body = { name, password, email, dob : "2001-05-01", phone : "123456789"}
+    const body = { name, password, email, dob, phone}
 
     try {
         const response = await fetch("http://localhost:3005/auth/register", {
@@ -45,6 +47,8 @@ const Register = ({setAuth}) => {
         <input type="email" name="email" placeholder="email" className="form-control my-3" value={email} onChange={e => onChange(e)}/>
         <input type="password" name="password" placeholder="password" className="form-control my-3" value={password} onChange={e => onChange(e)}/>
         <input type="text" name="name" placeholder="name" className="form-control my-3" value={name} onChange={e => onChange(e)}/>
+        <input type="dob" name="dob" placeholder="2002-05-01" className="form-control my-3" value={dob} onChange={e => onChange(e)}/>
+        <input type="phone" name="phone" placeholder="password" className="form-control my-3" value={phone} onChange={e => onChange(e)}/>
         <button className="btn btn-success">Submit</button>
       </form>
       <Link to="/">Login</Link>

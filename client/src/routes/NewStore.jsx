@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import {useParams, useNavigate} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
+import {useData} from '../context/PersonContext';
 
 const NewStore = () => {
   //Getting id from link
-  const {id} = useParams();
+  const {person} = useData();
 
   //Handling form stuff
   const[name, setName] = useState("new store");
+  const[category, setCat] = useState("Hardware");
   const[desc, setDesc] = useState("new description");
   const[image, setImage] = useState("image.jpg");
 
@@ -21,9 +23,10 @@ const NewStore = () => {
     try {
         const body = {
             name: name,
+            category: category,
             description: desc,
             image: image,
-            owner: id
+            owner: person.person_id
         };
         const response = await fetch("http://localhost:3005/createStore", {
             method: "POST",
@@ -50,6 +53,11 @@ const NewStore = () => {
         <label htmlFor='name'>Name:</label>
         <input type="text" className="form-control mt-2 mb-2" value={name}
         onChange={e => setName(e.target.value)}/>
+      </div>
+      <div>
+      <label htmlFor='description'>Category:</label>
+        <input type="text" className="form-control mt-2 mb-2" value={category}
+        onChange={e => setCat(e.target.value)}/>
       </div>
       <div>
       <label htmlFor='description'>Description:</label>

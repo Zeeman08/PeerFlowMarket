@@ -140,13 +140,7 @@ const StoreFront = () => {
       </div>
 
 
-      {/* new product button */}
-      <div>
-        <button className="btn btn-success mb-4" onClick={() => navigate(`/store/${id}/newProduct`)}>New Product</button>
-      </div>
-
-
-      {/* table */}
+    {/* table */}
       <div>
         <table className="table table-hover table-secondary table-striped table-bordered text-center">
           <thead className="table-dark">

@@ -90,7 +90,7 @@ const App = () => {
                     <Route exact path="/stores" element={ isAuthenticated ? <Stores /> : <Navigate to="/login"/>} />
                     <Route exact path="/yourstores" element={isAuthenticated ? <YourStores /> : <Navigate to="/login"/>} />
                     <Route exact path="/yourstore/:id" element={isAuthenticated ? <YourStore /> : <Navigate to="/login"/>} />
-                    <Route exact path="/newstore/:id" element={isAuthenticated ? <NewStore /> : <Navigate to="/login"/>} />
+                    <Route exact path="/newstore" element={isAuthenticated ? <NewStore /> : <Navigate to="/login"/>} />
                     <Route exact path="/store/:id" element={isAuthenticated ? <StoreFront /> : <Navigate to="/login"/>} />
                     <Route exact path="/store/:id/update" element={isAuthenticated ? <StoreFrontUpdate /> : <Navigate to="/login"/>} />
                     <Route exact path="/product/:id" element={isAuthenticated ? <Product /> : <Navigate to="/login"/>} />
