@@ -4,11 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/PersonContext';
 
 const ViewCart = () => {
-    console.log("Hello, world!");
-
     // Getting id from link
     const { person } = useData();
-    console.log(person.person_id);
 
     const [products, setProducts] = useState([]);
     // Buffer data used on table
@@ -25,8 +22,6 @@ const ViewCart = () => {
                 const jsonData = await response.json();
                 setProducts(jsonData.data.cart);
                 setDisplay(jsonData.data.cart);
-                console.log(jsonData);
-                console.log(jsonData.data.cart)
                 //update total
                 let x = 0;
                 jsonData.data.cart.forEach(product => {
@@ -38,6 +33,7 @@ const ViewCart = () => {
             }
         };
 
+        console.log(person);
         // Being called
         getProducts();
     }, [person.person_id]);

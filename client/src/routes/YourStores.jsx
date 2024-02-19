@@ -14,8 +14,6 @@ const YourStores = () => {
   //Getting data from context
   const {person} = useData();
 
-  console.log(person);
-
   //console.log(person);
 
   //Buffer data used on table
@@ -43,7 +41,6 @@ const YourStores = () => {
         }
         const response = await fetch(`http://localhost:3005/getStoresManagedByPerson/${person.person_id}`);
         const jsonData = await response.json();
-        console.log(jsonData.data.stores);
         setStores(jsonData.data.stores);
         setDisplay(jsonData.data.stores);
       }
@@ -58,8 +55,6 @@ const YourStores = () => {
         const response = await fetch("http://localhost:3005/getCategories");
         const jsonData = await response.json();
         setOptions(jsonData.data.categories);
-
-        console.log(options);
 
       } catch (error) {
         console.log(error);

@@ -53,8 +53,6 @@ const App = () => {
     isAuth();
   }, []);
 
-  console.log(isAuthenticated);
-
   return (
     <div>
       {/* navbar */}

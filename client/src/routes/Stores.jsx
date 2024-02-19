@@ -48,8 +48,6 @@ const Stores = () => {
         const jsonData = await response.json();
         setOptions(jsonData.data.categories);
 
-        console.log(options);
-
       } catch (error) {
         console.log(error);
       }
