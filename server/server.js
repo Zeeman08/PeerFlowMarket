@@ -198,30 +198,55 @@ app.delete("/deleteStore/:id", async (req, res) => {
   }
 });
 //geTINGt all the storefronts which are in a couple of categories, separated by commas, all lowercase
-app.get("/getStoreCategories/:categories", async (req, res) => {
-  try{
-    console.log("Got get a store categories request");
-    const categories = req.params.categories.split(",");
-    let query = `(${GET_STORE1} WHERE S.STOREFRONT_ID IN (SELECT STOREFRONT_ID S1 FROM CATEGORY_STOREFRONT_RELATION WHERE CATEGORY_NAME = '${categories[0]}') ${GET_STORE2})`;
-    for(let i = 1; i < categories.length; i++){
-      query += ` UNION (${GET_STORE1} WHERE S.STOREFRONT_ID IN (SELECT STOREFRONT_ID S1 FROM CATEGORY_STOREFRONT_RELATION WHERE CATEGORY_NAME = '${categories[i]}') ${GET_STORE2})`;
-    }
-    console.log(query);
+// app.get("/getStoreCategories/:categories", async (req, res) => {
+//   try{
+//     console.log("Got get a store categories request");
+//     const categories = req.params.categories.split(",");
+//     let query = `(${GET_STORE1} WHERE S.STOREFRONT_ID IN (SELECT STOREFRONT_ID S1 FROM CATEGORY_STOREFRONT_RELATION WHERE CATEGORY_NAME = '${categories[0]}') ${GET_STORE2})`;
+//     for(let i = 1; i < categories.length; i++){
+//       query += ` UNION (${GET_STORE1} WHERE S.STOREFRONT_ID IN (SELECT STOREFRONT_ID S1 FROM CATEGORY_STOREFRONT_RELATION WHERE CATEGORY_NAME = '${categories[i]}') ${GET_STORE2})`;
+//     }
+//     console.log(query);
+//     const results = await db.query(
+//       query
+//     );
+//     res.status(200).json({
+//       status: "success",
+//       results: results.rows.length,
+//       data: {
+//         stores: results.rows
+//       }
+//     });
+//   }catch(err){
+//     console.log(err);
+//   }
+// });
+
+//Getting categories
+app.get("/getCategories", async (req, res) => {
+  try {
+
+    console.log("Sending all cats");
+    // Getting all categories
     const results = await db.query(
-      query
+      "SELECT * FROM categories"
     );
+
     res.status(200).json({
       status: "success",
       results: results.rows.length,
       data: {
-        stores: results.rows
-      }
+        categories: results.rows
+      },
     });
-  }catch(err){
+  } catch (err) {
     console.log(err);
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error",
+    });
   }
 });
-
 
 
 
@@ -297,6 +322,10 @@ app.post("/createProduct/:id", async (req, res) => {
       "INSERT INTO product (product_name, product_description, price, image, storefront_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
       [req.body.name, req.body.description, req.body.price, req.body.image, req.params.id]
     );
+    const results2 = await db.query(
+      "INSERT INTO tag_assignment (product_id, tag_name) VALUES ($1, $2) RETURNING *",
+      [results.rows[0].product_id, req.body.tags]
+    );
     res.status(201).json({
       status: "success",
       results: results.rows.length,
@@ -329,7 +358,8 @@ app.get("/getStoreProducts/:id", async (req, res) => {
     console.log("Got get a store products request");
     const query = `${GET_PRODUCT1} WHERE P.STOREFRONT_ID= ${req.params.id} ${GET_PRODUCT2}`;
     const results = await db.query(
-      query
+      "SELECT P.*, COALESCE(ROUND(AVG(R.RATING)), 0) AS PRODUCT_RATING, (SELECT tag_name FROM tag_assignment T WHERE T.product_id = P.product_id) AS tags FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) WHERE P.STOREFRONT_ID = $1 GROUP BY P.PRODUCT_ID",
+      [req.params.id]
     );
     res.status(200).json({
       status: "success",

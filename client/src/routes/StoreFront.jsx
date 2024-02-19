@@ -78,38 +78,6 @@ const StoreFront = () => {
   /**** TABLE STUFF ***/
   /********************/
 
-  //The async function that deletes the data from the database
-  /*
-  const deleteProduct = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:3005/deleteProduct/${id}`, {
-        method: "DELETE"
-      });
-
-      //Resetting data in stores by removing or not keep any stores that have the same id as the one deleted
-      //!= means value not equal, !== means value and type not equal
-      //JS just prefers !== over !=
-      setProducts(products.filter(product => product.product_id !== id));
-      setDisplay(displayProducts.filter(product => product.product_id !== id));
-      console.log(response);
-    }
-    catch (err) {
-      console.log(err);
-    }
-  };
-
-  //The function that takes you to the update page
-  const updateProduct = (id) => {
-    try{
-      //Go to
-      navigate(`/product/${id}/update`);
-    }
-    catch (err) {
-      console.log(err);
-    }
-  };
-
-  */
 
   //This function triggers when you double click a store row
   const viewProduct = (e, id) => {

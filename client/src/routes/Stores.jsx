@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {useNavigate} from 'react-router-dom';
 import '../stylesheet.css';
+import './dropdown.css';
 
 const Stores = () => {
   //Storing data for search bars
   const [searchText, setSearchText] = useState("");
-  const [categoryText, setCategoryText] = useState("");
 
   //Storing data for stores for the table
   //Original data
@@ -13,6 +13,14 @@ const Stores = () => {
 
   //Buffer data used on table
   const[displayStores, setDisplay] = useState([]);
+
+  /*******************/
+  /* DROP DOWN STUFF */
+  /*******************/
+
+  const [isActive, setIsActive] = useState(false);
+  const [selected, setSelected] = useState({category_name: "Select a category"});
+  const [options, setOptions] = useState([]);
 
   //For going to other pages
   let navigate = useNavigate();
@@ -32,8 +40,23 @@ const Stores = () => {
         console.log(err);
       }
     };
+
+    //The async function that fetches available categories
+    const getCat = async () => {
+      try {
+        const response = await fetch("http://localhost:3005/getCategories");
+        const jsonData = await response.json();
+        setOptions(jsonData.data.categories);
+
+        console.log(options);
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
     
     getStores();
+    getCat();
   }, []);
 
 
@@ -45,19 +68,17 @@ const Stores = () => {
   //On pressing search bar, it will search for the description
   const onSearchName = async (e) => {
     e.preventDefault();
-    setDisplay(stores.filter(store => store.storefront_name.includes(searchText)));
+    if (selected.category_name !== "Select a category"){
+      setDisplay(stores.filter(store => store.storefront_name.toLowerCase().includes(searchText.toLowerCase()) && store.category === selected.category_name));
+    }
+    else{
+      setDisplay(stores.filter(store => store.storefront_name.toLowerCase().includes(searchText.toLowerCase())));
+    }
   };
 
-  //On pressing search bar, it will search for the category
-  const onSearchCat = async (e) => {
-    e.preventDefault();
-    //setDisplay(stores.filter(store => store.storefront_name.includes(categoryText)));
-    console.log(categoryText);
-    const response = await fetch("http://localhost:3005/getStoreCategories/" + categoryText);
-    const jsonData = await response.json();
-    setStores(jsonData.data.stores);
-    setDisplay(jsonData.data.stores);
-  };
+  /*******************/
+  /****TABLE STUFF****/
+  /*******************/
 
   //This function triggers when you double click a store row
   const visitStore = (e, id) => {
@@ -85,15 +106,26 @@ const Stores = () => {
               onChange={e => setSearchText(e.target.value)}/>
               <button className="btn btn-outline-secondary">Search</button>
           </form>
-          <h6 className="text-center mt-4">Search by category</h6>
-          <form className="d-flex mt-4 mb-4" onSubmit={onSearchCat}>
-              <input type="text" className="form-control" value={categoryText} 
-              onChange={e => setCategoryText(e.target.value)}/>
-              <button className="btn btn-outline-secondary">Search</button>
-          </form>
+          <button className="resetbtn btn btn-outline-danger" onClick={e => {setSelected({category_name: "Select a category"})}}>Reset Categories</button>
+
+          {/* drop down */}
+          <div className="dropdown">
+            <div className="dropdown-btn" onClick={e => setIsActive(!isActive)}>
+              {selected.category_name}
+              <span className="fas fa-caret-down"></span>
+            </div>
+            {isActive && (
+              <div className="dropdown-content">
+                {options.map(option => (
+                  <div key={option.category_name} className="dropdown-item" onClick={e => {
+                    setSelected(option);
+                    setIsActive(false);
+                  }}>{option.category_name}</div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-
-
 
         {/* table */}
         <div>

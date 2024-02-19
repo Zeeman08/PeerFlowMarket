@@ -143,6 +143,7 @@ const YourStore = () => {
           <thead className="table-dark">
             <tr className="bg-primary">
               <th scope="col">Name</th>
+              <th scope="col">Tags</th>
               <th scope="col">Description</th>
               <th scope="col">Price</th>
               <th scope="col">Rating</th>
@@ -155,6 +156,7 @@ const YourStore = () => {
             {displayProducts.map (product => (
               <tr key={product.product_id} onClick={(e) => console.log("Nothin happens :p")}>
                 <td>{product.product_name}</td>
+                <td>{product.tags}</td>
                 <td>{product.product_description}</td>
                 <td>${product.price}</td>
                 <td>{product.product_rating}</td>
