@@ -21,6 +21,14 @@ const YourStores = () => {
   //Buffer data used on table
   const[displayStores, setDisplay] = useState([]);
 
+  /*******************/
+  /* DROP DOWN STUFF */
+  /*******************/
+
+  const [isActive, setIsActive] = useState(false);
+  const [selected, setSelected] = useState({category_name: "Select a category"});
+  const [options, setOptions] = useState([]);
+
   //For going to other pages
   let navigate = useNavigate();
 
@@ -43,8 +51,23 @@ const YourStores = () => {
         console.log(err);
       }
     };
+
+    //The async function that fetches available categories
+    const getCat = async () => {
+      try {
+        const response = await fetch("http://localhost:3005/getCategories");
+        const jsonData = await response.json();
+        setOptions(jsonData.data.categories);
+
+        console.log(options);
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
     
     getStores();
+    getCat();
   }, [person]);
 
 
@@ -56,7 +79,12 @@ const YourStores = () => {
   //On pressing search bar, it will search for the description
   const onSearchName = async (e) => {
     e.preventDefault();
-    setDisplay(stores.filter(store => store.storefront_name.includes(searchText)));
+    if (selected.category_name !== "Select a category"){
+      setDisplay(stores.filter(store => store.storefront_name.toLowerCase().includes(searchText.toLowerCase()) && store.category === selected.category_name));
+    }
+    else{
+      setDisplay(stores.filter(store => store.storefront_name.toLowerCase().includes(searchText.toLowerCase())));
+    }
   };
 
 
@@ -122,6 +150,25 @@ const YourStores = () => {
               onChange={e => setSearchText(e.target.value)}/>
               <button className="btn btn-outline-secondary">Search</button>
           </form>
+          <button className="resetbtn btn btn-outline-danger" onClick={e => {setSelected({category_name: "Select a category"})}}>Reset Categories</button>
+
+          {/* drop down */}
+          <div className="dropdown">
+            <div className="dropdown-btn" onClick={e => setIsActive(!isActive)}>
+              {selected.category_name}
+              <span className="fas fa-caret-down"></span>
+            </div>
+            {isActive && (
+              <div className="dropdown-content">
+                {options.map(option => (
+                  <div key={option.category_name} className="dropdown-item" onClick={e => {
+                    setSelected(option);
+                    setIsActive(false);
+                  }}>{option.category_name}</div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
 
