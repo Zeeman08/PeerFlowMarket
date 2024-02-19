@@ -1,9 +1,12 @@
 import React, { useState, useEffect} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useData } from '../context/PersonContext';
 
 const Product = () => {
   //Getting id from link
   const {id} = useParams();
+
+  const {person} = useData();
 
   //Storing the data from database into store using setStore function
   const[product, setProduct] = useState({});
@@ -46,7 +49,7 @@ const Product = () => {
 
   const addToCart = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3005/addToCart/1/${id}/${quantity}`, {
+      const response = await fetch(`http://localhost:3005/addToCart/${person.person_id}/${id}/${quantity}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
