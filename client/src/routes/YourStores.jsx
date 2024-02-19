@@ -43,7 +43,7 @@ const YourStores = () => {
         }
         const response = await fetch(`http://localhost:3005/getStoresManagedByPerson/${person.person_id}`);
         const jsonData = await response.json();
-        console.log(jsonData);
+        console.log(jsonData.data.stores);
         setStores(jsonData.data.stores);
         setDisplay(jsonData.data.stores);
       }
@@ -150,7 +150,12 @@ const YourStores = () => {
               onChange={e => setSearchText(e.target.value)}/>
               <button className="btn btn-outline-secondary">Search</button>
           </form>
-          <button className="resetbtn btn btn-outline-danger" onClick={e => {setSelected({category_name: "Select a category"})}}>Reset Categories</button>
+
+            {/* new store button */}
+            <div>
+                <button className="btn btn-success mb-4" onClick={() => navigate(`/newstore`)}>New Store</button>
+            </div>
+            <button className="resetbtn btn btn-outline-danger" onClick={e => {setSelected({category_name: "Select a category"})}}>Reset Categories</button>
 
           {/* drop down */}
           <div className="dropdown">
@@ -170,14 +175,7 @@ const YourStores = () => {
             )}
           </div>
         </div>
-
-
-        {/* new store button */}
-        <div>
-            <button className="btn btn-success mb-4" onClick={() => navigate(`/newstore`)}>New Store</button>
-        </div>
         
-
 
         {/* table */}
         <div>

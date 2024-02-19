@@ -110,6 +110,7 @@ app.get("/getStoresManagedByPerson/:id", async (req, res) => {
     });
   }catch(err){
     console.log(err);
+    console.log("here");
   }
 });
 
