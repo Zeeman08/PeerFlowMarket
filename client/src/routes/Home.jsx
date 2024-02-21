@@ -22,7 +22,6 @@ const Home = ({setAuth}) => {
           });
   
           const parseRes = await response.json();
-          console.log(parseRes);
           setPerson(parseRes);
 
           setName(person.person_name);

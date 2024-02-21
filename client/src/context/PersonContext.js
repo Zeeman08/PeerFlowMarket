@@ -15,7 +15,6 @@ export const PersonContextProvider = ({children}) => {
               });
       
               const parseRes = await response.json();
-              console.log(parseRes);
               setPerson(parseRes);
     
           } catch (error) {
