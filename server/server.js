@@ -506,9 +506,15 @@ app.get("/getStoreAnnouncements/:id", async (req, res) => {
 app.get("/getCart/:id", async (req, res) => {
   try {
     console.log("Got view cart request");
-    const results = await db.query(
-      `SELECT * FROM (${GET_PRODUCT1} WHERE P.PRODUCT_ID IN (SELECT PRODUCT_ID FROM CART WHERE PERSON_ID = ${req.params.id}) ${GET_PRODUCT2}) TEMP JOIN CART C ON (TEMP.PRODUCT_ID = C.PRODUCT_ID)`
+    console.log(req.params.id);
+    // const results = await db.query(
+    //   `SELECT * FROM (${GET_PRODUCT1} WHERE P.PRODUCT_ID IN (SELECT PRODUCT_ID FROM CART WHERE PERSON_ID = ${req.params.id}) ${GET_PRODUCT2}) TEMP JOIN CART C ON (TEMP.PRODUCT_ID = C.PRODUCT_ID)`
+    // );
+    const results = await db.query (
+        `SELECT P.product_name , P.product_description , P.price, C.quantity FROM PRODUCT P JOIN CART C ON (P.PRODUCT_ID = C.PRODUCT_ID)WHERE C.PERSON_ID = ${req.params.id}`
     );
+    //console.log(results.rows);
+    //console.log(`SELECT * FROM (${GET_PRODUCT1} WHERE P.PRODUCT_ID IN (SELECT PRODUCT_ID FROM CART WHERE PERSON_ID = ${req.params.id}) ${GET_PRODUCT2}) TEMP JOIN CART C ON (TEMP.PRODUCT_ID = C.PRODUCT_ID)`);
     res.status(200).json({
       status: "success",
       results: results.rows.length,

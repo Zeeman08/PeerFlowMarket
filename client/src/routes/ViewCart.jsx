@@ -8,6 +8,8 @@ const ViewCart = () => {
 
     // Getting id from link
     const { person } = useData();
+    
+    console.log(person);
     console.log(person.person_id);
 
     const [products, setProducts] = useState([]);
@@ -21,6 +23,10 @@ const ViewCart = () => {
     useEffect(() => {
         const getProducts = async () => {
             try {
+                // a while loop to wait until person is non null
+                // while (!person || !person.person_id) {
+                //     await new Promise(resolve => setTimeout(resolve, 1000));        // make sure this is ok
+                // }
                 const response = await fetch(`http://localhost:3005/getCart/${person.person_id}`);
                 const jsonData = await response.json();
                 setProducts(jsonData.data.cart);

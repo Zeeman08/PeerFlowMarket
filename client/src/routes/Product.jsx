@@ -7,7 +7,7 @@ const Product = () => {
   const {id} = useParams();
 
   const {person} = useData();
-
+  console.log(person);
   //Storing the data from database into store using setStore function
   const[product, setProduct] = useState({});
 
