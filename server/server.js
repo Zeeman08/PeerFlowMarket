@@ -506,7 +506,6 @@ app.get("/getStoreAnnouncements/:id", async (req, res) => {
 app.get("/getCart/:id", async (req, res) => {
   try {
     console.log("Got view cart request");
-    console.log(req.params.id);
     // const results = await db.query(
     //   `SELECT * FROM (${GET_PRODUCT1} WHERE P.PRODUCT_ID IN (SELECT PRODUCT_ID FROM CART WHERE PERSON_ID = ${req.params.id}) ${GET_PRODUCT2}) TEMP JOIN CART C ON (TEMP.PRODUCT_ID = C.PRODUCT_ID)`
     // );
@@ -523,7 +522,7 @@ app.get("/getCart/:id", async (req, res) => {
       }
     });
   } catch (err) {
-    //console.log(err);
+    console.log(err);
     res.status(500).json({
       status: "error",
       message: "Internal Server Error",
@@ -572,7 +571,7 @@ app.post("/addToCart/:personId/:productId/:quantity", async (req, res) => {
       }
     });
   }catch(err){
-    //console.log(err);
+    console.log(err);
   }
 });
 //clear cart
