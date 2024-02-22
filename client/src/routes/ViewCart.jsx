@@ -19,6 +19,7 @@ const ViewCart = () => {
                 // while (!person || !person.person_id) {
                 //     await new Promise(resolve => setTimeout(resolve, 1000));        // make sure this is ok
                 // }
+                if (person.person_id === undefined) return;
                 const response = await fetch(`http://localhost:3005/getCart/${person.person_id}`);
                 const jsonData = await response.json();
                 setProducts(jsonData.data.cart);

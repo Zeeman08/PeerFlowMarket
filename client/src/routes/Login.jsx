@@ -9,7 +9,6 @@ const Login = ({setAuth}) => {
     password: ""
   });
 
-  const {PID, setPID} = useData();
   const {email, password} = inputs;
 
   const onChange = (e) => {
@@ -32,10 +31,7 @@ const Login = ({setAuth}) => {
 
         localStorage.setItem("token", parseRes.token);
         setAuth(true);
-
-        setPID(parseRes.person_id);
         
-        console.log(parseRes);
     } catch (error) {
         console.log(error);
     }
