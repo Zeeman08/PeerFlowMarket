@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useData } from '../context/PersonContext';
-
+import {useParams, useNavigate} from 'react-router-dom';
+import './dropdown.css';
 const ViewCart = () => {
     // Getting id from link
     const { person } = useData();
@@ -11,6 +12,15 @@ const ViewCart = () => {
     const [displayProducts, setDisplay] = useState([]);
     const [total, setTotal] = useState(0);
 
+    /*******************/
+    /* DROP DOWN STUFF */
+    /*******************/
+
+    const [isActive, setIsActive] = useState(false);
+    const [selected, setSelected] = useState({category_name: "Payment Method"});
+    const [options, setOptions] = useState([]);
+
+    let navigate = useNavigate();
     // The useEffect hook that calls the getProducts() function
     useEffect(() => {
         const getProducts = async () => {
@@ -30,6 +40,11 @@ const ViewCart = () => {
                     x += product.price * product.quantity;
                 });
                 setTotal(x);
+                setOptions([
+                    {category_name: "Bkash"},
+                    {category_name: "Nagad"},
+                    {category_name: "Cash On Delivery"}
+                ]);
             } catch (err) {
                 console.log(err);
             }
@@ -81,6 +96,28 @@ const ViewCart = () => {
             console.log(err);
         }
     }
+    const checkout = async() => {
+      if(selected.category_name == "Payment Method"){
+        alert("Please select a payment method");
+        return;
+      }
+      if(total == 0){
+        alert("Your cart is empty");
+        return;
+      }
+      console.log("high");
+      console.log(selected);
+      const response = await fetch(`http://localhost:3005/checkout/${person.person_id}`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          payment_method: selected.category_name
+        })
+      });
+      
+      navigate("/stores");
+        
+    }
     const clearCart = async () => {
         console.log("high");
         //return;
@@ -107,7 +144,7 @@ const ViewCart = () => {
       <h1 className = "font-weight-light display-1 text-center mt-4">Your Cart</h1>
       <div className="d-flex justify-content-between">
         <button className="btn btn-danger mt-4" onClick={() => clearCart()}>Clear the cart</button>
-        <button className="btn btn-success mt-4">Confirm</button>
+        
       </div>
       
       <table className="table table-hover table-secondary table-striped table-bordered text-center mt-4">
@@ -147,6 +184,25 @@ const ViewCart = () => {
           </tr>
         </tbody>
       </table>
+
+      <div className="dropdown">
+        <div className="dropdown-btn" onClick={e => setIsActive(!isActive)}>
+          {selected.category_name}
+          <span className="fas fa-caret-down"></span>
+        </div>
+        {isActive && (
+          <div className="dropdown-content">
+            {options.map(option => (
+              <div key={option.category_name} className="dropdown-item" onClick={e => {
+                setSelected(option);
+                setIsActive(false);
+              }}>{option.category_name}</div>
+            ))}
+          </div>
+        )}
+      </div>
+      <button className="btn btn-success mt-4" onClick={() => checkout()} style={{ display: 'block', margin: 'auto' }}>Checkout</button>
+
     </div>
     );
 };

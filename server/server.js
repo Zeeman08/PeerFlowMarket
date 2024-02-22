@@ -554,7 +554,7 @@ app.get("/getCart/:id/:productId", async (req, res) => {
     });
   }
 });
-//adding a product to cart
+//adding a product to cart - old version
 app.post("/addToCart/:personId/:productId/:quantity", async (req, res) => {
   try{
     console.log("Got a add to cart request");
@@ -574,6 +574,9 @@ app.post("/addToCart/:personId/:productId/:quantity", async (req, res) => {
     console.log(err);
   }
 });
+
+//adding a product to cart - new version
+
 //clear cart
 app.delete("/clearCart/:id", async (req, res) => {
   try{
@@ -610,112 +613,24 @@ app.delete("/removeFromCart/:personId/:productId", async (req, res) => {
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//Create a person
-app.post("/createPeople", async (req, res) => {
+//checkout of a person
+app.post("/checkout/:id", async (req, res) => {
   try{
-    console.log("Got a create person request");
-    const results = await db.query(
-      "INSERT INTO test (id, name) VALUES ($1, $2) RETURNING *",
-      [req.body.id, req.body.description]
-    );
+    console.log("Got a checkout request");
+    // const results = await db.query(
+    //   "INSERT INTO ORDERS (PERSON_ID, STOREFRONT_ID, ORDER_DATE) VALUES ($1, $2, CURRENT_TIMESTAMP) RETURNING *",
+    //   [req.params.id, req.body.storefront_id]
+    // );
+    // const results = await db.query (
+    //   `DO $$ DECLARE row_data RECORD; BEGIN FOR row_data IN (SELECT STOREFRONT_ID, person_id, SUM(quantity * price) AS total_amount FROM CART C JOIN PRODUCT P USING (PRODUCT_ID) WHERE person_id = ${req.params.id} GROUP BY storefront_id, PERSON_ID) LOOP INSERT INTO TRANSACTIONS (PERSON_ID, STOREFRONT_ID, AMOUNT) VALUES (row_data.person_id, row_data.storefront_id, row_data.total_amount); END LOOP; END $$`
+    // )
+    const results = await db.query (
+      `CALL process_cart_and_transactions(${req.params.id});`
+    )
     res.status(201).json({
       status: "success",
       results: results.rows.length,
       data: {
-        people: results.rows[0]
-      }
-    });
-  }catch(err){
-    console.log(err);
-  }
-});
-
-//Update a person
-app.put("/updatePeople/:id", async (req, res) => {
-  try{
-    console.log("Got an update person request");
-    const results = await db.query(
-      "UPDATE test SET name = $2 WHERE id = $1 RETURNING *",
-      [req.params.id, req.body.name]
-    );
-    res.status(200).json({
-      status: "success",
-      results: results.rows.length,
-      data: {
-        people: results.rows[0]
-      }
-    });
-  }catch(err){
-    console.log(err);
-  }
-});
-
-//Delete a person
-app.delete("/deletePeople/:id", async (req, res) => {
-  try{
-    console.log("Got a delete person request");
-    const results = await db.query(
-      "DELETE FROM test where id = $1",
-      [req.params.id]
-    );
-    res.status(204).json({
-      status: "success"
-    });
-  }catch(err){
-    console.log(err);
-  }
-});
-//Get all people
-app.get("/getPeople", async (req, res) => {
-  try{
-    console.log("Got get all people request");
-    const results = await db.query("SELECT * FROM test");
-    res.status(200).json({
-      status: "success",
-      results: results.rows.length,
-      data: {
-        people: results.rows
-      }
-    });
-  }catch(err){
-    console.log(err);
-  }
-});
-//Get a person
-app.get("/getPeople/:id", async (req, res) => {
-  try{
-    console.log("Got get a person request");
-    const results = await db.query(
-      "SELECT * FROM test WHERE id = $1", [req.params.id]
-    );
-    res.status(200).json({
-      status: "success",
-      results: results.rows.length,
-      data: {
-        people: results.rows[0]
       }
     });
   }catch(err){
@@ -726,3 +641,96 @@ const port = 3005;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+
+
+
+// //Create a person
+// app.post("/createPeople", async (req, res) => {
+//   try{
+//     console.log("Got a create person request");
+//     const results = await db.query(
+//       "INSERT INTO test (id, name) VALUES ($1, $2) RETURNING *",
+//       [req.body.id, req.body.description]
+//     );
+//     res.status(201).json({
+//       status: "success",
+//       results: results.rows.length,
+//       data: {
+//         people: results.rows[0]
+//       }
+//     });
+//   }catch(err){
+//     console.log(err);
+//   }
+// });
+
+// //Update a person
+// app.put("/updatePeople/:id", async (req, res) => {
+//   try{
+//     console.log("Got an update person request");
+//     const results = await db.query(
+//       "UPDATE test SET name = $2 WHERE id = $1 RETURNING *",
+//       [req.params.id, req.body.name]
+//     );
+//     res.status(200).json({
+//       status: "success",
+//       results: results.rows.length,
+//       data: {
+//         people: results.rows[0]
+//       }
+//     });
+//   }catch(err){
+//     console.log(err);
+//   }
+// });
+
+// //Delete a person
+// app.delete("/deletePeople/:id", async (req, res) => {
+//   try{
+//     console.log("Got a delete person request");
+//     const results = await db.query(
+//       "DELETE FROM test where id = $1",
+//       [req.params.id]
+//     );
+//     res.status(204).json({
+//       status: "success"
+//     });
+//   }catch(err){
+//     console.log(err);
+//   }
+// });
+// //Get all people
+// app.get("/getPeople", async (req, res) => {
+//   try{
+//     console.log("Got get all people request");
+//     const results = await db.query("SELECT * FROM test");
+//     res.status(200).json({
+//       status: "success",
+//       results: results.rows.length,
+//       data: {
+//         people: results.rows
+//       }
+//     });
+//   }catch(err){
+//     console.log(err);
+//   }
+// });
+// //Get a person
+// app.get("/getPeople/:id", async (req, res) => {
+//   try{
+//     console.log("Got get a person request");
+//     const results = await db.query(
+//       "SELECT * FROM test WHERE id = $1", [req.params.id]
+//     );
+//     res.status(200).json({
+//       status: "success",
+//       results: results.rows.length,
+//       data: {
+//         people: results.rows[0]
+//       }
+//     });
+//   }catch(err){
+//     console.log(err);
+//   }
+// });
