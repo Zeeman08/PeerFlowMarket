@@ -24,7 +24,7 @@ const YourStores = () => {
   /*******************/
 
   const [isActive, setIsActive] = useState(false);
-  const [selected, setSelected] = useState({category_name: "Select a category"});
+  const [selected, setSelected] = useState({category_name: "All"});
   const [options, setOptions] = useState([]);
 
   //For going to other pages
@@ -74,7 +74,7 @@ const YourStores = () => {
   //On pressing search bar, it will search for the description
   const onSearchName = async (e) => {
     e.preventDefault();
-    if (selected.category_name !== "Select a category"){
+    if (selected.category_name !== "All"){
       setDisplay(stores.filter(store => store.storefront_name.toLowerCase().includes(searchText.toLowerCase()) && store.category === selected.category_name));
     }
     else{
@@ -150,7 +150,7 @@ const YourStores = () => {
             <div>
                 <button className="btn btn-success mb-4" onClick={() => navigate(`/newstore`)}>New Store</button>
             </div>
-            <button className="resetbtn btn btn-outline-danger" onClick={e => {setSelected({category_name: "Select a category"})}}>Reset Categories</button>
+            <button className="resetbtn btn btn-outline-danger" onClick={e => {setSelected({category_name: "All"})}}>Reset Categories</button>
 
           {/* drop down */}
           <div className="dropdown">
