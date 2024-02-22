@@ -103,39 +103,44 @@ const ViewCart = () => {
         }
         }
     return (
-        <div>
-      <button onClick={() => clearCart()}>Clear the cart</button>
+    <div>
+      <h1 className = "font-weight-light display-1 text-center mt-4">Your Cart</h1>
+      <button className="btn btn-outline-danger mt-4" onClick={() => clearCart()}>Clear the cart</button>
 
-      <table style={{ border: '1px solid black', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>
-            <th style={{ border: '1px solid black' }}>Name</th>
-            <th style={{ border: '1px solid black' }}>Product_ID</th>
-            <th style={{ border: '1px solid black' }}>Description</th>
-            <th style={{ border: '1px solid black' }}>Price</th>
-            <th style={{ border: '1px solid black' }}>Quantity</th>
-            <th style={{ border: '1px solid black' }}>Actions</th>
+      <table className="table table-hover table-secondary table-striped table-bordered text-center mt-4">
+        <thead className="table-dark">
+          <tr className="bg-primary">
+            <th scope="col">Name</th>
+            <th scope="col">Product_ID</th>
+            <th scope="col">Description</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+            <th scope="col-3">Add</th>
+            <th scope="col-3">Remove</th>
           </tr>
         </thead>
         <tbody>
           {displayProducts.map(product => (
-            <tr key={product.product_id} style={{ border: '1px solid black' }}>
-              <td style={{ border: '1px solid black' }}>{product.product_name}</td>
-              <td style={{ border: '1px solid black' }}>{product.product_id}</td>
-              <td style={{ border: '1px solid black' }}>{product.product_description}</td>
-              <td style={{ border: '1px solid black' }}>{product.price}</td>
-              <td style={{ border: '1px solid black' }}>{product.quantity}</td>
-              <td style={{ border: '1px solid black' }}>
-                <button onClick={() => handleDecreaseCount(product.product_id)}>-</button>
-                <button onClick={() => handleIncreaseCount(product.product_id, product.quantity)}>+</button>
+            <tr key={product.product_id}>
+              <td>{product.product_name}</td>
+              <td>{product.product_id}</td>
+              <td>{product.product_description}</td>
+              <td>{product.price}</td>
+              <td>{product.quantity}</td>
+              <td>
+                <button className="btn btn-success" onClick={() => handleIncreaseCount(product.product_id, product.quantity)}>+</button>
+              </td>
+              <td>
+                <button className="btn btn-danger" onClick={() => handleDecreaseCount(product.product_id)}>-</button>
               </td>
             </tr>
           ))}
           <tr>
-            <td colSpan="2" style={{ border: '1px solid black' }}></td>
-            <td style={{ border: '1px solid black' }}>Total:</td>
-            <td style={{ border: '1px solid black' }}>{total.toFixed(2)}</td>
-            <td style={{ border: '1px solid black' }}></td>
+            <td colSpan="2"></td>
+            <td>Total:</td>
+            <td>{total.toFixed(2)}</td>
+            <td></td>
+            <td colSpan="2"></td>
           </tr>
         </tbody>
       </table>
