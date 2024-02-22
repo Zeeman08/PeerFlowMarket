@@ -105,8 +105,11 @@ const ViewCart = () => {
     return (
     <div>
       <h1 className = "font-weight-light display-1 text-center mt-4">Your Cart</h1>
-      <button className="btn btn-outline-danger mt-4" onClick={() => clearCart()}>Clear the cart</button>
-
+      <div className="d-flex justify-content-between">
+        <button className="btn btn-danger mt-4" onClick={() => clearCart()}>Clear the cart</button>
+        <button className="btn btn-success mt-4">Confirm</button>
+      </div>
+      
       <table className="table table-hover table-secondary table-striped table-bordered text-center mt-4">
         <thead className="table-dark">
           <tr className="bg-primary">
