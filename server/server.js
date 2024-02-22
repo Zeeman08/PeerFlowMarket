@@ -511,7 +511,7 @@ app.get("/getCart/:id", async (req, res) => {
     //   `SELECT * FROM (${GET_PRODUCT1} WHERE P.PRODUCT_ID IN (SELECT PRODUCT_ID FROM CART WHERE PERSON_ID = ${req.params.id}) ${GET_PRODUCT2}) TEMP JOIN CART C ON (TEMP.PRODUCT_ID = C.PRODUCT_ID)`
     // );
     const results = await db.query (
-        `SELECT P.product_name , P.product_description , P.price, C.quantity FROM PRODUCT P JOIN CART C ON (P.PRODUCT_ID = C.PRODUCT_ID)WHERE C.PERSON_ID = ${req.params.id}`
+        `SELECT * FROM PRODUCT P JOIN CART C ON (P.PRODUCT_ID = C.PRODUCT_ID)WHERE C.PERSON_ID = ${req.params.id}`
     );
     //console.log(results.rows);
     //console.log(`SELECT * FROM (${GET_PRODUCT1} WHERE P.PRODUCT_ID IN (SELECT PRODUCT_ID FROM CART WHERE PERSON_ID = ${req.params.id}) ${GET_PRODUCT2}) TEMP JOIN CART C ON (TEMP.PRODUCT_ID = C.PRODUCT_ID)`);
@@ -523,7 +523,7 @@ app.get("/getCart/:id", async (req, res) => {
       }
     });
   } catch (err) {
-    console.log(err);
+    //console.log(err);
     res.status(500).json({
       status: "error",
       message: "Internal Server Error",
@@ -559,6 +559,7 @@ app.get("/getCart/:id/:productId", async (req, res) => {
 app.post("/addToCart/:personId/:productId/:quantity", async (req, res) => {
   try{
     console.log("Got a add to cart request");
+    console.log(req.params.personId, req.params.productId, req.params.quantity);
     const results = await db.query(
       "INSERT INTO CART (PERSON_ID, PRODUCT_ID, QUANTITY) VALUES ($1, $2, $3) ON CONFLICT (PERSON_ID, PRODUCT_ID) DO UPDATE SET QUANTITY = CART.QUANTITY + EXCLUDED.QUANTITY RETURNING *",
       [req.params.personId, req.params.productId, req.params.quantity]
@@ -571,7 +572,7 @@ app.post("/addToCart/:personId/:productId/:quantity", async (req, res) => {
       }
     });
   }catch(err){
-    console.log(err);
+    //console.log(err);
   }
 });
 //clear cart
@@ -598,7 +599,7 @@ app.delete("/removeFromCart/:personId/:productId", async (req, res) => {
       "UPDATE CART SET QUANTITY = QUANTITY - 1 WHERE PERSON_ID = $1 AND PRODUCT_ID = $2",
       [req.params.personId, req.params.productId]
     );
-    db.query(
+    const res2 = await db.query(
       "DELETE FROM CART WHERE QUANTITY = 0"
     );
     res.status(204).json({

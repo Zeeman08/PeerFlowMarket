@@ -7,7 +7,6 @@ const Product = () => {
   const {id} = useParams();
 
   const {person} = useData();
-  console.log(person);
   //Storing the data from database into store using setStore function
   const[product, setProduct] = useState({});
 
@@ -26,7 +25,6 @@ const Product = () => {
         const response = await fetch(`http://localhost:3005/getProduct/${id}`);
         const jsonData = await response.json();
         setProduct(jsonData.data.product);
-        console.log(product);
       }
       catch (err) {
         console.log(err);
@@ -57,7 +55,6 @@ const Product = () => {
         })
       });
       const jsonData = await response.json();
-      console.log(jsonData);
       navigate(`/store/${product.storefront_id}`);
     }
     catch (err) {
