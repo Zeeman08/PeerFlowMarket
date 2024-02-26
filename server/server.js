@@ -617,16 +617,15 @@ app.delete("/removeFromCart/:personId/:productId", async (req, res) => {
 app.post("/checkout/:id", async (req, res) => {
   try{
     console.log("Got a checkout request");
-    // const results = await db.query(
-    //   "INSERT INTO ORDERS (PERSON_ID, STOREFRONT_ID, ORDER_DATE) VALUES ($1, $2, CURRENT_TIMESTAMP) RETURNING *",
-    //   [req.params.id, req.body.storefront_id]
-    // );
-    // const results = await db.query (
-    //   `DO $$ DECLARE row_data RECORD; BEGIN FOR row_data IN (SELECT STOREFRONT_ID, person_id, SUM(quantity * price) AS total_amount FROM CART C JOIN PRODUCT P USING (PRODUCT_ID) WHERE person_id = ${req.params.id} GROUP BY storefront_id, PERSON_ID) LOOP INSERT INTO TRANSACTIONS (PERSON_ID, STOREFRONT_ID, AMOUNT) VALUES (row_data.person_id, row_data.storefront_id, row_data.total_amount); END LOOP; END $$`
-    // )
-    const results = await db.query (
-      `CALL process_cart_and_transactions(${req.params.id});`
-    )
+    console.log(req.body);
+    //const results = await db.query (
+    //  `CALL process_cart_and_transactions(${req.params.id}, ${req.body.payment_method});`
+    //)
+    const results = await db.query(
+      'CALL process_cart_and_transactions($1, $2)',
+      [req.params.id, req.body.payment_method]
+    );
+    
     res.status(201).json({
       status: "success",
       results: results.rows.length,
@@ -637,9 +636,127 @@ app.post("/checkout/:id", async (req, res) => {
     console.log(err);
   }
 });
+
+//get all the transactions
+app.get("/getTransactions/:id", async (req, res) => {
+  try{
+    console.log("Got get all transactions request");
+    console.log(req.params.id);
+    const results = await db.query(`SELECT * FROM TRANSACTIONS JOIN storefront USING(STOREFRONT_ID) WHERE PERSON_ID = ${req.params.id}`);
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        transactions: results.rows
+      }
+    });
+    console.log(results.rows);
+  }catch(err){
+    console.log(err);
+  }
+});
 const port = 3005;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
+});
+//get details of a specific order GROUP 
+app.get("/getGroupOrder/:id", async (req, res) => {
+  try{
+    console.log("Got get a order request");
+    const results = await db.query(`SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_DATE, DELIVERY_STATUS FROM ORDERS JOIN PRODUCT USING(PRODUCT_ID) WHERE GROUP_ID = ${req.params.id}`);
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        orders: results.rows
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+//get details of a specific order group when the second parameter is the shopkeepr id
+app.get("/getGroupOrder/:id/:shopkeeperId", async (req, res) => {
+  try{
+    console.log("Got get a order request");
+    const results = await db.query(`SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_DATE, DELIVERY_STATUS FROM ORDERS JOIN PRODUCT USING(PRODUCT_ID) WHERE GROUP_ID = ${req.params.id} AND STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM MANAGES WHERE PERSON_ID = ${req.params.shopkeeperId})`);
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        orders: results.rows
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+// change the delivery status of a specific order group when the second parameter is the shopkeeper id
+app.put("/changeDeliveryStatus/:id/:shopkeeperId", async (req, res) => {
+  try{
+    console.log("Got a change delivery status request");
+    const results = await db.query(`UPDATE ORDERS SET DELIVERY_STATUS = $1 WHERE GROUP_ID = $2 AND STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM MANAGES WHERE PERSON_ID = $3)`, [req.body.delivery_status, req.params.id, req.params.shopkeeperId]);
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        orders: results.rows
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+
+//get all the order groups of a person
+app.get("/getGroupOrders/:id", async (req, res) => {
+  try{
+    console.log("Got get all orders request");
+    console.log(req.body);
+    let results = "";
+    if(req.body.order_type == "incoming"){
+      if(req.body.delivery_status == "not delivered") {
+        results = await db.query(`
+        SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS ORDER_DATE FROM ORDERS WHERE PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = 0 GROUP BY GROUP_ID;`);
+      }
+      else if(req.body.delivery_status == "delivered not paid") {
+        results = await db.query(`
+        SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS ORDER_DATE FROM ORDERS WHERE PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = 1 GROUP BY GROUP_ID;`);
+      }
+      else if(req.body.delivery_status == "paid"){
+        results = await db.query(`
+        SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS ORDER_DATE FROM ORDERS WHERE PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = 2 GROUP BY GROUP_ID;`);
+      }
+      else {
+        results = await db.query(`
+        SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS ORDER_DATE FROM ORDERS WHERE PERSON_ID = ${req.params.id} GROUP BY GROUP_ID;`);
+      }
+    }
+    else {
+      if(req.body.delivery_status == "not delivered") {
+        results = await db.query(`SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS DELIVERY_DATE FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) WHERE MANAGES.PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = 0 GROUP BY GROUP_ID;`);
+      }
+      else if(req.body.delivery_status == "delivered not paid") {
+        results = await db.query(`SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS DELIVERY_DATE FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) WHERE MANAGES.PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = 1 GROUP BY GROUP_ID;`);
+      }
+      else if(req.body.delivery_status == "paid"){
+        results = await db.query(`SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS DELIVERY_DATE FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) WHERE MANAGES.PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = 2 GROUP BY GROUP_ID;`);
+      }
+      else {
+        results = await db.query(`SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS DELIVERY_DATE FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) WHERE MANAGES.PERSON_ID = ${req.params.id} GROUP BY GROUP_ID;`);
+      }
+    }
+    //const results = await db.query("SELECT * FROM ORDERS WHERE PERSON_ID = $1", [req.params.id]);
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        groups: results.rows
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
 });
 
 
