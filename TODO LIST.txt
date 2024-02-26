@@ -55,3 +55,21 @@ At least 2 queries should join 3 or more tables
 0/2 functions done
 see plsql_builder
 need to create log for procedures and functions for tracking
+
+
+
+--implement address
+
+--implement reviews
+--implement complaints
+--implement announcements
+
+--implement create tags
+--implement adding multiple tags
+
+--implement create categories
+--implement adding multiple categories
+
+--implement order page
+--implement transactions page
+--implement admin side
