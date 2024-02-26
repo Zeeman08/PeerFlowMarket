@@ -301,7 +301,7 @@ app.put("/updateProduct/:productId", async (req, res) => {
   try{
     console.log("Got an update product request");
     const results = await db.query(
-      "UPDATE product SET product_name = $2, product_description = $3, price = $4, image = $5 WHERE product_id = $1 RETURNING *",
+      "UPDATE product SET product_name = $2, product_description = $3, price = $4, image = $5, last_updated_on = CURRENT_TIMESTAMP WHERE product_id = $1 RETURNING *",
       [req.params.productId, req.body.name, req.body.description, req.body.price, req.body.image]
     );
     res.status(200).json({

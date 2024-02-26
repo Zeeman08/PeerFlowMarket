@@ -26,8 +26,10 @@ const Login = ({setAuth}) => {
 
         const parseRes = await response.json();
 
-        if (parseRes.token === undefined)
+        if (parseRes.token === undefined){
+          alert("Invalid credentials");
           return;
+        }
 
         localStorage.setItem("token", parseRes.token);
         setAuth(true);

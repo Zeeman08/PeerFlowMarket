@@ -1,13 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useData } from '../context/PersonContext';
-import {useParams, useNavigate} from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import './dropdown.css';
 const ViewCart = () => {
     // Getting id from link
     const { person } = useData();
 
-    const [products, setProducts] = useState([]);
     // Buffer data used on table
     const [displayProducts, setDisplay] = useState([]);
     const [total, setTotal] = useState(0);
@@ -32,7 +31,6 @@ const ViewCart = () => {
                 if (person.person_id === undefined) return;
                 const response = await fetch(`http://localhost:3005/getCart/${person.person_id}`);
                 const jsonData = await response.json();
-                setProducts(jsonData.data.cart);
                 setDisplay(jsonData.data.cart);
                 //update total
                 let x = 0;
@@ -65,7 +63,6 @@ const ViewCart = () => {
               });
             const response2 = await fetch(`http://localhost:3005/getCart/${person.person_id}`);
             const jsonData = await response2.json();
-            setProducts(jsonData.data.cart);
             setDisplay(jsonData.data.cart);
             let x = 0;
                 jsonData.data.cart.forEach(product => {
@@ -85,7 +82,6 @@ const ViewCart = () => {
             });
             const response = await fetch(`http://localhost:3005/getCart/${person.person_id}`);
             const jsonData = await response.json();
-            setProducts(jsonData.data.cart);
             setDisplay(jsonData.data.cart);
             let x = 0;
                 jsonData.data.cart.forEach(product => {
@@ -97,11 +93,11 @@ const ViewCart = () => {
         }
     }
     const checkout = async() => {
-      if(selected.category_name == "Payment Method"){
+      if(selected.category_name === "Payment Method"){
         alert("Please select a payment method");
         return;
       }
-      if(total == 0){
+      if(total === 0){
         alert("Your cart is empty");
         return;
       }
@@ -116,8 +112,8 @@ const ViewCart = () => {
       });
       
       navigate("/stores");
-        
     }
+    
     const clearCart = async () => {
         console.log("high");
         //return;
@@ -130,7 +126,6 @@ const ViewCart = () => {
             console.log(response0);
             const response = await fetch(`http://localhost:3005/getCart/${person.person_id}`);
             const jsonData = await response.json();
-            setProducts(jsonData.data.cart);
             setDisplay(jsonData.data.cart);
             console.log(jsonData);
             console.log(jsonData.data.cart);
@@ -165,7 +160,7 @@ const ViewCart = () => {
               <td>{product.product_name}</td>
               <td>{product.product_id}</td>
               <td>{product.product_description}</td>
-              <td>{product.price}</td>
+              <td>${product.price}</td>
               <td>{product.quantity}</td>
               <td>
                 <button className="btn btn-success" onClick={() => handleIncreaseCount(product.product_id, product.quantity)}>+</button>
@@ -178,7 +173,7 @@ const ViewCart = () => {
           <tr>
             <td colSpan="2"></td>
             <td>Total:</td>
-            <td>{total.toFixed(2)}</td>
+            <td>${total.toFixed(2)}</td>
             <td></td>
             <td colSpan="2"></td>
           </tr>

@@ -1,0 +1,48 @@
+5 INSERT QUERIES
+-insert store
+-insert product
+-insert into manages
+-insert into person
+-insert into orders
+
+At least 2 user actions that cause insertions spanning 3 or more tables.
+-Create store
+-Create product TO BE DONE
+
+3 UPDATE QUERIES
+-update store
+-update product
+-update user_info TO BE DONE
+
+At least 2 user actions that cause updates spanning 2 or more tables.
+???
+
+At least 3 DELETE queries
+-delete store
+-delete product
+
+At least 1 delete query should initiate cascade delete.
+-deleting store deletes all products
+
+
+
+--ADVANCED SQL
+At least 5 such queries
+--getStore with ID subquery
+--getStoreProducts
+--getCart
+
+
+At least 2 queries should join 3 or more tables
+-getAllStores
+-getStoresManagedByPerson
+-?delivery status checking
+
+
+
+--PLSQL
+3 triggers gonna be done
+1/3 procedures done
+0/2 functions done
+see plsql_builder
+need to create log for procedures and functions for tracking
