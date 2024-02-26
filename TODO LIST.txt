@@ -43,10 +43,11 @@ At least 2 queries should join 3 or more tables
 
 
 --PLSQL
-3/3 triggers
+4/3 triggers
 -registration
 -add store
 -add product
+-product purchase
 
 
 1/3 procedures
