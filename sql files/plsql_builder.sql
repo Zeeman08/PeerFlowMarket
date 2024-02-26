@@ -1,6 +1,5 @@
 --PROCEDURES
 
-
 --procedure for checkout
 CREATE OR REPLACE PROCEDURE process_cart_and_transactions(input_person_id INT, X TEXT)
 LANGUAGE plpgsql
@@ -64,7 +63,6 @@ EXECUTE FUNCTION person_insert_trigger_function();
 
 
 
-
 --person delete trigger
 CREATE OR REPLACE FUNCTION person_delete_trigger_function()
 RETURNS TRIGGER AS $$
@@ -84,6 +82,56 @@ BEFORE DELETE ON PERSON
 FOR EACH ROW
 EXECUTE FUNCTION person_delete_trigger_function();
 
+
+
+
+
+
+--store create trigger
+CREATE OR REPLACE FUNCTION store_insert_trigger_function()
+RETURNS TRIGGER AS $$
+BEGIN
+		IF (SELECT COUNT(*) FROM manages WHERE storefront_id = NEW.storefront_id) > 1 THEN
+			-- Inserting data into ACTION_LOG table
+			INSERT INTO ACTION_LOG (person_id, storefront_id, action_type)
+			VALUES (NEW.person_id, NEW.storefront_id, 'ADDED');
+		ELSE
+			INSERT INTO ACTION_LOG (person_id, storefront_id, action_type)
+			VALUES (NEW.person_id, NEW.storefront_id, 'CREATED');
+		END IF;
+    -- Returning the NEW row, as this is an INSERT trigger
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Creating the trigger
+CREATE OR REPLACE TRIGGER store_insert_trigger
+AFTER INSERT ON manages
+FOR EACH ROW
+EXECUTE FUNCTION store_insert_trigger_function();
+
+
+
+
+
+--product create trigger
+CREATE OR REPLACE FUNCTION product_insert_trigger_function()
+RETURNS TRIGGER AS $$
+BEGIN
+
+		-- Inserting data into ACTION_LOG table
+		INSERT INTO ACTION_LOG (storefront_id, product_id, action_type)
+		VALUES (NEW.storefront_id, NEW.product_id, 'CREATED');
+		-- Returning the NEW row, as this is an INSERT trigger
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Creating the trigger
+CREATE OR REPLACE TRIGGER product_insert_trigger
+AFTER INSERT ON product
+FOR EACH ROW
+EXECUTE FUNCTION product_insert_trigger_function();
 
 
 

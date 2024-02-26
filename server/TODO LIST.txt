@@ -28,9 +28,11 @@ At least 1 delete query should initiate cascade delete.
 
 --ADVANCED SQL
 At least 5 such queries
---getStore with ID subquery
---getStoreProducts
---getCart
+-getStore with ID subquery
+-getStoreProducts
+-getCart
+-getAllStores
+-getStoresManagedByPerson
 
 
 At least 2 queries should join 3 or more tables
@@ -41,8 +43,15 @@ At least 2 queries should join 3 or more tables
 
 
 --PLSQL
-3 triggers gonna be done
-1/3 procedures done
+3/3 triggers
+-registration
+-add store
+-add product
+
+
+1/3 procedures
+-checkout
+
 0/2 functions done
 see plsql_builder
 need to create log for procedures and functions for tracking
