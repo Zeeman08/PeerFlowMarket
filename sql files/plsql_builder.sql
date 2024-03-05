@@ -36,6 +36,91 @@ BEGIN
 END $$;
 
 
+--delete person procedure
+
+CREATE OR REPLACE PROCEDURE delete_person_procedure(IN pid INT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+	act_typ INTEGER;
+BEGIN
+	INSERT INTO DELETED_PERSON (PERSON_ID, PERSON_NAME, DATE_OF_BIRTH, PHONE, EMAIL)
+		SELECT PERSON_ID, PERSON_NAME, DATE_OF_BIRTH, PHONE, EMAIL FROM PERSON WHERE PERSON_ID = pid;
+
+	INSERT INTO ACTION_LOG (person_id, action_type) VALUES(pid, 'DELETE');
+
+	DELETE FROM PERSON WHERE PERSON_ID = pid;
+END $$;
+
+
+--delete product procedure
+
+CREATE OR REPLACE PROCEDURE delete_product_procedure(IN pid INT, IN prdid INT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+BEGIN
+	INSERT INTO DELETED_PRODUCT (PRODUCT_ID, STOREFRONT_ID, PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE)
+		SELECT PRODUCT_ID, STOREFRONT_ID, PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE FROM PRODUCT WHERE PRODUCT_ID = prdid;
+
+	INSERT INTO ACTION_LOG (person_id, product_id, action_type) VALUES(pid, prdid, 'DELETE');
+
+	DELETE FROM PRODUCT WHERE PRODUCT_ID = prdid;
+END $$;
+
+
+--delete store procedure
+
+CREATE OR REPLACE PROCEDURE delete_storefront_procedure(IN pid INT, IN strid INT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+BEGIN
+	INSERT INTO DELETED_STOREFRONT (STOREFRONT_ID, STOREFRONT_NAME, STOREFRONT_DESCRIPTION)
+		SELECT STOREFRONT_ID, STOREFRONT_NAME, STOREFRONT_DESCRIPTION FROM STOREFRONT WHERE STOREFRONT_ID = strid;
+
+	INSERT INTO ACTION_LOG (person_id, storefront_id, action_type) VALUES(pid, strid, 'DELETE');
+
+	FOR i IN (SELECT PRODUCT_ID FROM PRODUCT WHERE STOREFRONT_ID = strid)
+	LOOP
+		PERFORM delete_product_procedure(pid, i.product_id);
+	END LOOP;
+
+	DELETE FROM STOREFRONT WHERE STOREFRONT_ID = pid;
+END $$;
+
+
+
+
+
+
+--FUNCTIONS
+
+--check reg parameters
+CREATE OR REPLACE FUNCTION check_credentials_function(
+    IN phone_in TEXT,
+	IN email_in TEXT
+)
+RETURNS BOOLEAN AS
+$$
+DECLARE
+	emailcount INT;
+	phonecount INT;
+	phonelen INT;
+BEGIN
+    phonelen := LENGTH(phone);
+	SELECT COUNT(*) INTO phonecount FROM PERSON WHERE PHONE = phone_in;
+	SELECT COUNT(*) INTO emailcount FROM PERSON WHERE EMAIL = email_in;
+	IF phonecount > 0 OR emailcount > 0 OR phonelen != 11 THEN
+		RETURN FALSE;
+	ELSE
+		RETURN TRUE;
+	END IF;
+END;
+$$
+LANGUAGE plpgsql;
+
+
 
 
 
@@ -48,7 +133,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     -- Inserting data into ACTION_LOG table
     INSERT INTO ACTION_LOG (person_id, action_type)
-    VALUES (NEW.person_id, 'CREATED');
+    VALUES (NEW.person_id, 'CREATE');
     
     -- Returning the NEW row, as this is an INSERT trigger
     RETURN NEW;
@@ -62,31 +147,6 @@ FOR EACH ROW
 EXECUTE FUNCTION person_insert_trigger_function();
 
 
-
---person delete trigger
-CREATE OR REPLACE FUNCTION person_delete_trigger_function()
-RETURNS TRIGGER AS $$
-BEGIN
-    -- Inserting data into ACTION_LOG table
-    INSERT INTO ACTION_LOG (person_id, action_type)
-    VALUES (OLD.person_id, 'DELETED');
-    
-    -- Returning the OLD row, as this is a DELETE trigger
-    RETURN OLD;
-END;
-$$ LANGUAGE plpgsql;
-
--- Creating the trigger
-CREATE OR REPLACE TRIGGER person_delete_trigger
-BEFORE DELETE ON PERSON
-FOR EACH ROW
-EXECUTE FUNCTION person_delete_trigger_function();
-
-
-
-
-
-
 --store create trigger
 CREATE OR REPLACE FUNCTION store_insert_trigger_function()
 RETURNS TRIGGER AS $$
@@ -94,10 +154,10 @@ BEGIN
 		IF (SELECT COUNT(*) FROM manages WHERE storefront_id = NEW.storefront_id) > 1 THEN
 			-- Inserting data into ACTION_LOG table
 			INSERT INTO ACTION_LOG (person_id, storefront_id, action_type)
-			VALUES (NEW.person_id, NEW.storefront_id, 'ADDED');
+			VALUES (NEW.person_id, NEW.storefront_id, 'ADD');
 		ELSE
 			INSERT INTO ACTION_LOG (person_id, storefront_id, action_type)
-			VALUES (NEW.person_id, NEW.storefront_id, 'CREATED');
+			VALUES (NEW.person_id, NEW.storefront_id, 'CREATE');
 		END IF;
     -- Returning the NEW row, as this is an INSERT trigger
     RETURN NEW;
@@ -111,9 +171,6 @@ FOR EACH ROW
 EXECUTE FUNCTION store_insert_trigger_function();
 
 
-
-
-
 --product create trigger
 CREATE OR REPLACE FUNCTION product_insert_trigger_function()
 RETURNS TRIGGER AS $$
@@ -121,7 +178,7 @@ BEGIN
 
 		-- Inserting data into ACTION_LOG table
 		INSERT INTO ACTION_LOG (storefront_id, product_id, action_type)
-		VALUES (NEW.storefront_id, NEW.product_id, 'CREATED');
+		VALUES (NEW.storefront_id, NEW.product_id, 'CREATE');
 		-- Returning the NEW row, as this is an INSERT trigger
     RETURN NEW;
 END;
@@ -132,10 +189,6 @@ CREATE OR REPLACE TRIGGER product_insert_trigger
 AFTER INSERT ON product
 FOR EACH ROW
 EXECUTE FUNCTION product_insert_trigger_function();
-
-
-
-
 
 
 --product purchase trigger
@@ -155,3 +208,44 @@ CREATE OR REPLACE TRIGGER product_purchase_trigger
 AFTER INSERT ON ORDERS
 FOR EACH ROW
 EXECUTE FUNCTION product_purchase_trigger_function();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--person delete trigger
+CREATE OR REPLACE FUNCTION person_delete_trigger_function()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Inserting data into ACTION_LOG table
+    INSERT INTO ACTION_LOG (person_id, action_type)
+    VALUES (OLD.person_id, 'DELETE');
+    
+    -- Returning the OLD row, as this is a DELETE trigger
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Creating the trigger
+CREATE OR REPLACE TRIGGER person_delete_trigger
+BEFORE DELETE ON PERSON
+FOR EACH ROW
+EXECUTE FUNCTION person_delete_trigger_function();

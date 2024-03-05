@@ -91,8 +91,10 @@ const YourStores = () => {
   //The async function that deletes the data from the database
   const deleteStore = async (id) => {
     try {
+      const body = {person_id: person.person_id};
       const response = await fetch(`http://localhost:3005/deleteStore/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        body: JSON.stringify(body)
       });
 
       //Resetting data in stores by removing or not keep any stores that have the same id as the one deleted

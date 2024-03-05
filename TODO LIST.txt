@@ -7,12 +7,12 @@
 
 At least 2 user actions that cause insertions spanning 3 or more tables.
 -Create store
--Create product TO BE DONE
+##################-Create product TO BE DONE
 
 3 UPDATE QUERIES
 -update store
 -update product
--update user_info TO BE DONE
+##################-update user_info TO BE DONE
 
 At least 2 user actions that cause updates spanning 2 or more tables.
 ???
@@ -22,7 +22,7 @@ At least 3 DELETE queries
 -delete product
 
 At least 1 delete query should initiate cascade delete.
--deleting store deletes all products
+-deleting store deletes all products inside it
 
 
 
@@ -42,7 +42,8 @@ At least 2 queries should join 3 or more tables
 
 
 
---PLSQL
+--PLSQL see plsql_builder
+
 4/3 triggers
 -registration
 -add store
@@ -50,14 +51,18 @@ At least 2 queries should join 3 or more tables
 -product purchase
 
 
-1/3 procedures
+4/3 procedures
 -checkout
+-delete person
+-delete store
+-delete product
 
-0/2 functions done
-see plsql_builder
-need to create log for procedures and functions for tracking
+1/2 functions
+-check_credentials_function
 
 
+
+--implement log for procedures and functions for tracking
 
 --implement address
 

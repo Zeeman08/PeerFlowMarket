@@ -13,12 +13,12 @@ router.post("/register", validInfo, async (req, res) => {
 
         const { name, password, dob, phone, email } = req.body;
 
-        //2. if user exists, throw error
+        //2. check credentials for duplicacy or invalid phone number length
 
-        const user = await db.query("SELECT * FROM person WHERE email = $1", [email]);
+        const flag = await db.query("SELECT check_credentials_function($1, $2)", [phone, email]);
 
-        if (user.rows.length !== 0) {
-            return res.status(401).json("User already exists");
+        if (!flag) {
+            return res.status(401).json("Invalid credentials");
         }
 
         //3. Bcrypt the user password

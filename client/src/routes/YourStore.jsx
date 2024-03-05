@@ -1,5 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
+import {useData} from '../context/PersonContext';
 
 const YourStore = () => {
   //Getting id from link
@@ -10,6 +11,9 @@ const YourStore = () => {
 
   //Storing data for search bar
   const [searchText, setSearchText] = useState("");
+
+  //Getting data from context
+  const {person} = useData();
 
   //Storing data for products for the table
   //Original data
@@ -82,8 +86,10 @@ const YourStore = () => {
 
   const deleteProduct = async (id) => {
     try {
+      const body = {person_id: person.person_id};
       const response = await fetch(`http://localhost:3005/deleteProduct/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        body: JSON.stringify(body)
       });
 
       //Resetting data in stores by removing or not keep any stores that have the same id as the one deleted
