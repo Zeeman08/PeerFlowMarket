@@ -23,8 +23,8 @@ BEGIN
 			row_data.person_id, row_data.storefront_id, row_data.total_amount, X
 		) returning * into row_data2;
 		
-		INSERT INTO ORDERS (PRODUCT_ID, QUANTITY, PERSON_ID, TRANSACTION_ID, GROUP_ID)
-		SELECT PRODUCT_ID, QUANTITY, PERSON_ID, row_data2.transaction_id, CURR_GROUP
+		INSERT INTO ORDERS (PRODUCT_ID, QUANTITY, PERSON_ID, TRANSACTION_ID, GROUP_ID, PRICE)
+		SELECT PRODUCT_ID, QUANTITY, PERSON_ID, row_data2.transaction_id, CURR_GROUP, P.PRICE
 		FROM CART C JOIN PRODUCT P USING(PRODUCT_ID)
 		WHERE PERSON_ID = row_data2.person_id AND STOREFRONT_ID = row_data2.storefront_id;
 		

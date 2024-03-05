@@ -1,87 +1,213 @@
 import React, { useState, useEffect } from 'react';
-import {useNavigate} from 'react-router-dom';
-import {useData} from '../context/PersonContext';
+import { useNavigate } from 'react-router-dom';
+import { useData } from '../context/PersonContext';
 import '../stylesheet.css';
 import './dropdown.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes, faMoneyCheckAlt, faCheck } from '@fortawesome/free-solid-svg-icons';
 
 const Orders = () => {
-  //Storing data for search bars
+  const [groups, setGroups] = useState([]);
+  const [groupDetails, setGroupDetails] = useState({});
+  const [displayGroups, setDisplay] = useState([]);
+  const [expandedGroups, setExpandedGroups] = useState([]);
+  const [filterOption, setFilterOption] = useState(3); // Default: Show all groups
+  const [buttonPressed, setButtonPressed] = useState('Buyer'); // Newly added state for tracking button press
+  const [selectedDeliveryStatus, setSelectedDeliveryStatus] = useState('0'); // Selected delivery status for buyer
 
-  //Storing data for transactions for the table
-  //Original data
-  const[groups, setGroups] = useState([]);
-
-  //Buffer data used on table
-  const[displayGroups, setDisplay] = useState([]);
-
-  //For going to other pages
   let navigate = useNavigate();
-  const {person} = useData();
-  //The useEffect hook that calls the getStores() function
-  useEffect(() => {
+  const { person } = useData();
 
-    //The async function that fetches the data from the database
+  useEffect(() => {
     const getOrders = async () => {
       try {
-        const response = await fetch(`http://localhost:3005/getGroupOrders/${person.person_id}/0`, {
-        method: "GET",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            order_type : "incoming" ,
-            delivery_status : "not delivered"
-        })
+        let requestBody;
+        console.log("second");
+        console.log(filterOption);
+        if (buttonPressed === 'Buyer') {
+          requestBody = { order_type: 'incoming', delivery_status: filterOption };
+        } else {
+          requestBody = { order_type: 'outgoing', delivery_status: filterOption };
+        }
+        
+        const response = await fetch(`http://localhost:3005/getGroupOrders/${person.person_id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
       });
         const jsonData = await response.json();
+        console.log(jsonData.data.groups);
         setGroups(jsonData.data.groups);
         setDisplay(jsonData.data.groups);
-        console.log("before");
-        console.log(groups);
-        console.log("after");
-      }
-      catch (err) {
+      } catch (err) {
         console.log(err);
       }
     };
-
-    
+    console.log(buttonPressed);
     getOrders();
-  }, [person]);
+    //setDisplay(groups);
 
-  /*******************/
-  /****TABLE STUFF****/
-  /*******************/
+  }, [person, filterOption, buttonPressed, selectedDeliveryStatus]); // Add filterOption to dependency array
 
+  const toggleGroupDetails = async (groupId) => {
+    if (expandedGroups.includes(groupId)) {
+      setExpandedGroups((prevExpandedGroups) => prevExpandedGroups.filter((id) => id !== groupId));
+    } else {
+      try {
+        let response;
+        if(buttonPressed === 'Buyer'){
+          response = await fetch(`http://localhost:3005/getGroupOrder/${groupId}`);
+        }
+        else {
+          response = await fetch(`http://localhost:3005/getGroupOrder/${groupId}/${person.person_id}`);
+        }
+          const jsonData = await response.json();
+        setGroupDetails((prevGroupDetails) => {
+          const updatedGroupDetails = { ...prevGroupDetails, [groupId]: jsonData.data.orders };
+          return updatedGroupDetails;
+        });
+
+        setExpandedGroups((prevExpandedGroups) => [...prevExpandedGroups, groupId]);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+
+  const calculateTotalCost = (orders) => {
+    return orders.reduce((total, order) => total + order.price * order.quantity, 0);
+  };
+
+  const renderDeliveryStatusIcon = (status) => {
+    switch (status) {
+      case 0:
+        return <FontAwesomeIcon icon={faTimes} color="red" title="Not Delivered" />;
+      case 1:
+        return <FontAwesomeIcon icon={faMoneyCheckAlt} color="orange" title="Delivered but not paid" />;
+      case 2:
+        return <FontAwesomeIcon icon={faCheck} color="green" title="Paid" />;
+      default:
+        return null;
+    }
+  };
+
+  const handleFilterChange = (event) => {
+    setFilterOption(event.currentTarget.value);
+    console.log("first");
+    console.log(filterOption);
+  };
+
+  const handleButtonPress = (button) => {
+    setButtonPressed(button);
+  };
+
+  const handleDropdownSelect = async (groupId, selectedOption) => {
+    try {
+      console.log(`GroupID: ${groupId}, Selected Option: ${selectedOption}`);
+      if(selectedOption === '3') return; // If the default option is selected, do nothing
+      const shopkeeperId = person.person_id; // Replace with the actual shopkeeper ID
+  
+      const response = await fetch(`http://localhost:3005/changeDeliveryStatus/${groupId}/${shopkeeperId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          delivery_status: selectedOption, // Assuming selectedOption is the new delivery status
+        }),
+      });
+      
+      const jsonData = await response.json();
+      console.log(jsonData);
+  
+      // You can handle the response accordingly, update state, or perform any additional actions.
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
 
   return (
     <div className="container">
       <div>
-        {/* header */}
         <div>
-          <h1 className = "font-weight-light display-1 text-center mt-4">
-            Orders
-          </h1>
+          {/* Buttons for Left and Right */}
+          <button onClick={() => handleButtonPress('Buyer')}>As a buyer</button>
+          <button onClick={() => handleButtonPress('Seller')}>As a seller</button>
+          
+          <h1 className="font-weight-light display-1 text-center mt-4">Orders</h1>
         </div>
-
-        {/* table */}
         <div>
+          {/* Dropdown menu for filtering */}
+          <select value={filterOption} onChange={handleFilterChange} className="form-select mb-3">
+            <option value="3">Show All</option>
+            <option value="0">Not Delivered</option>
+            <option value="1">Delivered but not Paid</option>
+            <option value="2">Paid</option>
+          </select>
           <table className="table table-hover table-secondary table-striped table-bordered text-center">
             <thead className="table-dark">
-            <tr className="bg-primary">
-                <th scope="col">Orders</th>
+              <tr className="bg-primary">
+                <th scope="col">ID</th>
+                <th scope="col">Order Time</th>
+                <th scope="col">Delivery Status</th>
               </tr>
             </thead>
             <tbody>
-              {displayGroups.map (group => (
-                <tr key={group.group_id}>
+              {displayGroups.map((group) => (
+                <React.Fragment key={group.group_id}>
+                  <tr onDoubleClick={() => toggleGroupDetails(group.group_id)}>
                     <td>{group.group_id}</td>
-                </tr>
+                    <td>{group.order_time}</td>
+                    <td>{renderDeliveryStatusIcon(group.delivery_status)}  {buttonPressed === 'Seller' && (
+                      //make a drop down menu here with different options a method to handle the option change 
+                      <select
+                          value={selectedDeliveryStatus}
+                          onChange={(e) => setSelectedDeliveryStatus(e.target.value)}
+                          onClick={() => handleDropdownSelect(group.group_id, selectedDeliveryStatus)}
+                        >
+                          <option value="3">Change Delivery Status</option>
+                          <option value="0">Not Delivered</option>
+                          <option value="1">Delivered but not paid</option>
+                          <option value="2">Paid</option>
+                        </select>
+
+
+                      
+                      )}</td>
+                  </tr>
+                  {expandedGroups.includes(group.group_id) && (
+                    <tr>
+                      <td colSpan="3">
+                        {groupDetails[group.group_id] && (
+                          <div>
+                            {/* Render additional details here */}
+                            <ul>
+                              {groupDetails[group.group_id].map((order) => (
+                                <li key={order.order_id} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                  <div style={{ textAlign: 'left' }}>{order.product_name}</div>
+                                  <div style={{ textAlign: 'right' }}>
+                                    Quantity: {order.quantity} (${order.price * order.quantity})
+                                  </div>
+                                </li>
+                              ))}
+                              <li style={{ textAlign: 'right' }}>
+                                Total Cost: ${calculateTotalCost(groupDetails[group.group_id])}
+                              </li>
+                            </ul>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Orders;
