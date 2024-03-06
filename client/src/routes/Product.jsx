@@ -37,7 +37,8 @@ const Product = () => {
 
   //On pressing + button
   const addQuantity = async (e) => {
-    setQuantity(quantity + 1);
+    if (product.stock_count < quantity)
+      setQuantity(quantity + 1);
   };
 
   const reduceQuantity = async (e) => {
