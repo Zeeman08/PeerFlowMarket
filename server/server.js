@@ -184,12 +184,12 @@ app.put("/updateStore/:id", async (req, res) => {
   }
 });
 //delete a storefront
-app.delete("/deleteStore/:id", async (req, res) => {
+app.delete("/deleteStore/:id/:personid", async (req, res) => {
   try{
     console.log("Got a delete store request");
     const results = await db.query(
-      "DELETE FROM storefront where storefront_id = $1",
-      [req.params.id]
+      'CALL delete_storefront_procedure($1, $2)',
+      [req.params.personid, req.params.id]
     );
     res.status(204).json({
       status: "success"
@@ -320,8 +320,8 @@ app.post("/createProduct/:id", async (req, res) => {
   try{
     console.log("Got a create product request");
     const results = await db.query(
-      "INSERT INTO product (product_name, product_description, price, image, storefront_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-      [req.body.name, req.body.description, req.body.price, req.body.image, req.params.id]
+      "INSERT INTO product (product_name, product_description, stock_count, price, image, storefront_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+      [req.body.name, req.body.description, req.body.stock, req.body.price, req.body.image, req.params.id]
     );
     const results2 = await db.query(
       "INSERT INTO tag_assignment (product_id, tag_name) VALUES ($1, $2) RETURNING *",
@@ -343,7 +343,7 @@ app.delete("/deleteProduct/:productId", async (req, res) => {
   try{
     console.log("Got a delete product request");
     const results = await db.query(
-      "DELETE FROM product where product_id = $1",
+      'CALL delete_product_procedure($1)',
       [req.params.productId]
     );
     res.status(204).json({
@@ -357,9 +357,8 @@ app.delete("/deleteProduct/:productId", async (req, res) => {
 app.get("/getStoreProducts/:id", async (req, res) => {
   try{
     console.log("Got get a store products request");
-    const query = `${GET_PRODUCT1} WHERE P.STOREFRONT_ID= ${req.params.id} ${GET_PRODUCT2}`;
     const results = await db.query(
-      "SELECT P.*, COALESCE(ROUND(AVG(R.RATING)), 0) AS PRODUCT_RATING, (SELECT tag_name FROM tag_assignment T WHERE T.product_id = P.product_id) AS tags FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) WHERE P.STOREFRONT_ID = $1 AND P.STOCK_COUNT > 0 GROUP BY P.PRODUCT_ID",
+      "SELECT P.*, COALESCE(ROUND(AVG(R.RATING)), 0) AS PRODUCT_RATING, (SELECT tag_name FROM tag_assignment T WHERE T.product_id = P.product_id) AS tags FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) WHERE P.STOREFRONT_ID = $1 GROUP BY P.PRODUCT_ID",
       [req.params.id]
     );
     res.status(200).json({
@@ -597,7 +596,7 @@ app.delete("/clearCart/:id", async (req, res) => {
   try{
     console.log("Got a clear cart request");
     const results = await db.query(
-      "DELETE FROM CART WHERE PERSON_ID = $1",
+      "CALL clear_cart_procedure($1)",
       [req.params.id]
     );
     res.status(204).json({
@@ -617,6 +616,10 @@ app.delete("/removeFromCart/:personId/:productId", async (req, res) => {
       [req.params.personId, req.params.productId]
     );
     const res2 = await db.query(
+      "UPDATE PRODUCT SET STOCK_COUNT = STOCK_COUNT + 1 WHERE PRODUCT_ID = $1",
+      [req.params.productId]
+    );
+    const res3 = await db.query(
       "DELETE FROM CART WHERE QUANTITY = 0"
     );
     res.status(204).json({

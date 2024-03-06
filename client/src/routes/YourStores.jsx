@@ -92,7 +92,7 @@ const YourStores = () => {
   const deleteStore = async (id) => {
     try {
       const body = {person_id: person.person_id};
-      const response = await fetch(`http://localhost:3005/deleteStore/${id}`, {
+      const response = await fetch(`http://localhost:3005/deleteStore/${id}/${person.person_id}`, {
         method: "DELETE",
         body: JSON.stringify(body)
       });

@@ -15,7 +15,8 @@ At least 2 user actions that cause insertions spanning 3 or more tables.
 ##################-update user_info TO BE DONE
 
 At least 2 user actions that cause updates spanning 2 or more tables.
-ideas: 
+-removefromcart
+-updatefromcart
 
 At least 3 DELETE queries
 -delete store
@@ -51,16 +52,18 @@ At least 2 queries should join 3 or more tables
 -product purchase
 
 
-4/3 procedures
+5/3 procedures
 -checkout
 -delete person
 -delete store
 -delete product
+-clear cart
 
 3/2 functions
 -check_credentials_function
 -is_manager_of_product
 -addtocart
+-clearcart
 
 
 --implement log for procedures and functions for tracking

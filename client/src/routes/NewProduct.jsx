@@ -9,6 +9,7 @@ const NewProduct = () => {
   const[name, setName] = useState("new product");
   const[desc, setDesc] = useState("new description");
   const[image, setImage] = useState("image.jpg");
+  const[stock, setStock] = useState(0);
   const[price, setPrice] = useState(0);
   const[tags, setTags] = useState("");
 
@@ -22,8 +23,15 @@ const NewProduct = () => {
             description: desc,
             price: price,
             image: image,
+            stock: stock,
             tags: tags
         };
+
+        if (stock < 0 || price < 0){
+          alert("Stock and price cannot be negative!");
+          return;
+        }
+
         const response = await fetch(`http://localhost:3005/createProduct/${id}`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -59,6 +67,11 @@ const NewProduct = () => {
       <label htmlFor='image'>Image:</label>
         <input type="text" className="form-control mt-2 mb-2" value={image}
         onChange={e => setImage(e.target.value)}/>
+      </div>
+      <div>
+      <label htmlFor='stock'>Starting Stock:</label>
+        <input type="number" className="form-control mt-2 mb-2" value={stock}
+        onChange={e => setStock(e.target.value)}/>
       </div>
       <div>
       <label htmlFor='Price'>Price:</label>
