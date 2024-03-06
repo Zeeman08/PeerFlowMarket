@@ -75,13 +75,14 @@ CREATE OR REPLACE PROCEDURE delete_storefront_procedure(IN pid INT, IN strid INT
 LANGUAGE plpgsql
 AS $$
 DECLARE
+	i PRODUCT%ROWTYPE;
 BEGIN
 	INSERT INTO DELETED_STOREFRONT (STOREFRONT_ID, STOREFRONT_NAME, STOREFRONT_DESCRIPTION)
 		SELECT STOREFRONT_ID, STOREFRONT_NAME, STOREFRONT_DESCRIPTION FROM STOREFRONT WHERE STOREFRONT_ID = strid;
 
 	INSERT INTO ACTION_LOG (person_id, storefront_id, action_type) VALUES(pid, strid, 'DELETE');
 
-	FOR i IN (SELECT PRODUCT_ID FROM PRODUCT WHERE STOREFRONT_ID = strid)
+	FOR i IN (SELECT * FROM PRODUCT WHERE STOREFRONT_ID = strid)
 	LOOP
 		PERFORM delete_product_procedure(pid, i.product_id);
 	END LOOP;
@@ -222,44 +223,3 @@ CREATE OR REPLACE TRIGGER product_purchase_trigger
 AFTER INSERT ON ORDERS
 FOR EACH ROW
 EXECUTE FUNCTION product_purchase_trigger_function();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
---person delete trigger
-CREATE OR REPLACE FUNCTION person_delete_trigger_function()
-RETURNS TRIGGER AS $$
-BEGIN
-    -- Inserting data into ACTION_LOG table
-    INSERT INTO ACTION_LOG (person_id, action_type)
-    VALUES (OLD.person_id, 'DELETE');
-    
-    -- Returning the OLD row, as this is a DELETE trigger
-    RETURN OLD;
-END;
-$$ LANGUAGE plpgsql;
-
--- Creating the trigger
-CREATE OR REPLACE TRIGGER person_delete_trigger
-BEFORE DELETE ON PERSON
-FOR EACH ROW
-EXECUTE FUNCTION person_delete_trigger_function();
