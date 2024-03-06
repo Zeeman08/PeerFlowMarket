@@ -187,10 +187,9 @@ app.put("/updateStore/:id", async (req, res) => {
 app.delete("/deleteStore/:id", async (req, res) => {
   try{
     console.log("Got a delete store request");
-    
     const results = await db.query(
-      'CALL delete_storefront_procedure($1, $2)',
-      [req.body.person_id, req.params.id]
+      "DELETE FROM storefront where storefront_id = $1",
+      [req.params.id]
     );
     res.status(204).json({
       status: "success"
@@ -340,12 +339,12 @@ app.post("/createProduct/:id", async (req, res) => {
   }
 });
 //delete a product
-app.delete("/deleteProduct/:id", async (req, res) => {
+app.delete("/deleteProduct/:productId", async (req, res) => {
   try{
     console.log("Got a delete product request");
     const results = await db.query(
-      'CALL delete_product_procedure($1, $2)',
-      [req.body.person_id, req.params.id]
+      "DELETE FROM product where product_id = $1",
+      [req.params.productId]
     );
     res.status(204).json({
       status: "success"

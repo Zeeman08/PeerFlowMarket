@@ -108,7 +108,7 @@ DECLARE
 	phonecount INT;
 	phonelen INT;
 BEGIN
-    phonelen := LENGTH(phone);
+    phonelen := LENGTH(phone_in);
 	SELECT COUNT(*) INTO phonecount FROM PERSON WHERE PHONE = phone_in;
 	SELECT COUNT(*) INTO emailcount FROM PERSON WHERE EMAIL = email_in;
 	IF phonecount > 0 OR emailcount > 0 OR phonelen != 11 THEN
