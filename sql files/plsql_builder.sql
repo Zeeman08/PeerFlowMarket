@@ -121,6 +121,34 @@ END;
 $$
 LANGUAGE plpgsql;
 
+
+
+--check add to cart
+CREATE OR REPLACE FUNCTION add_to_cart_function(
+	IN pid INTEGER,
+	IN prdid INTEGER,
+	IN qty INTEGER
+)
+RETURNS BOOLEAN AS
+$$
+DECLARE
+	currstock INTEGER;
+BEGIN
+	SELECT STOCK_COUNT INTO currstock FROM PRODUCT WHERE PRODUCT_ID = prdid;
+	IF qty > currstock THEN
+		RETURN FALSE;
+	ELSE
+		INSERT INTO CART (PERSON_ID, PRODUCT_ID, QUANTITY) VALUES (pid, prdid, qty) ON CONFLICT (PERSON_ID, PRODUCT_ID) DO UPDATE SET QUANTITY = CART.QUANTITY + EXCLUDED.QUANTITY;
+		RETURN TRUE;
+	END IF;
+END;
+$$
+LANGUAGE plpgsql;
+
+
+
+
+--find manager function
 CREATE OR REPLACE FUNCTION is_manager_of_product(per_id INT, prod_id INT)
 RETURNS INT AS $$
 DECLARE

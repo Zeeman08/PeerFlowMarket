@@ -56,6 +56,10 @@ const Product = () => {
         })
       });
       const jsonData = await response.json();
+      if (!jsonData.data.stat){
+        alert("Failed to add to cart, stock sold out!");
+        return;
+      }
       navigate(`/store/${product.storefront_id}`);
     }
     catch (err) {
@@ -84,6 +88,9 @@ const Product = () => {
         </div>
         <p className="fs-4 mt-3">
           {product.product_description}
+        </p>
+        <p className="fs-4 mt-3">
+          In stock: {product.stock_count}
         </p>
         <div>
           <h6 className="customtxt mt-5">${product.price}</h6>
