@@ -128,11 +128,6 @@ const NewProduct = () => {
         onChange={e => setStock(e.target.value)}/>
       </div>
       <div>
-      <label htmlFor='stock'>Starting Stock:</label>
-        <input type="number" className="form-control mt-2 mb-2" value={stock}
-        onChange={e => setStock(e.target.value)}/>
-      </div>
-      <div>
         <label htmlFor="Price">Price:</label>
         <input
           type="number"

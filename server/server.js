@@ -324,7 +324,7 @@ app.post("/createProduct/:id", async (req, res) => {
       [req.body.name, req.body.description, req.body.stock, req.body.price, req.body.image, req.params.id]
     );
 
-    const productId = productResults.rows[0].product_id;
+    const productId = results.rows[0].product_id;
 
     // Inserting into tags table, not allowing duplicates
     const tagResults = await Promise.all(
