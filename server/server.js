@@ -664,7 +664,7 @@ app.listen(port, () => {
 app.get("/getGroupOrder/:id", async (req, res) => {
   try{
     console.log("Got get a order request");
-    const results = await db.query(`SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_DATE, DELIVERY_STATUS FROM ORDERS JOIN PRODUCT USING(PRODUCT_ID) WHERE GROUP_ID = ${req.params.id}`);
+    const results = await db.query(`SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_TIME, DELIVERY_STATUS, P.PRICE FROM ORDERS O JOIN PRODUCT P USING(PRODUCT_ID) WHERE GROUP_ID = ${req.params.id}`);
     res.status(200).json({
       status: "success",
       results: results.rows.length,
@@ -680,7 +680,7 @@ app.get("/getGroupOrder/:id", async (req, res) => {
 app.get("/getGroupOrder/:id/:shopkeeperId", async (req, res) => {
   try{
     console.log("Got get a order request");
-    const results = await db.query(`SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_DATE, DELIVERY_STATUS FROM ORDERS JOIN PRODUCT USING(PRODUCT_ID) WHERE GROUP_ID = ${req.params.id} AND STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM MANAGES WHERE PERSON_ID = ${req.params.shopkeeperId})`);
+    const results = await db.query(`SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_TIME, DELIVERY_STATUS, P.PRICE FROM ORDERS O JOIN PRODUCT P USING(PRODUCT_ID) WHERE GROUP_ID = ${req.params.id} AND STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM MANAGES WHERE PERSON_ID = ${req.params.shopkeeperId})`);
     res.status(200).json({
       status: "success",
       results: results.rows.length,
@@ -696,7 +696,7 @@ app.get("/getGroupOrder/:id/:shopkeeperId", async (req, res) => {
 app.put("/changeDeliveryStatus/:id/:shopkeeperId", async (req, res) => {
   try{
     console.log("Got a change delivery status request");
-    const results = await db.query(`UPDATE ORDERS SET DELIVERY_STATUS = $1 WHERE GROUP_ID = $2 AND STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM MANAGES WHERE PERSON_ID = $3)`, [req.body.delivery_status, req.params.id, req.params.shopkeeperId]);
+    const results = await db.query(`UPDATE ORDERS SET DELIVERY_STATUS = $1 WHERE GROUP_ID = $2 AND IS_MANAGER_OF_PRODUCT($3, PRODUCT_ID) = 1;`, [req.body.delivery_status, req.params.id, req.params.shopkeeperId]);
     res.status(200).json({
       status: "success",
       results: results.rows.length,
@@ -710,44 +710,32 @@ app.put("/changeDeliveryStatus/:id/:shopkeeperId", async (req, res) => {
 });
 
 //get all the order groups of a person
-app.get("/getGroupOrders/:id", async (req, res) => {
+app.post("/getGroupOrders/:id", async (req, res) => {
   try{
     console.log("Got get all orders request");
     console.log(req.body);
     let results = "";
+
     if(req.body.order_type == "incoming"){
-      if(req.body.delivery_status == "not delivered") {
+      if(req.body.delivery_status != 3) {
         results = await db.query(`
-        SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS ORDER_DATE FROM ORDERS WHERE PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = 0 GROUP BY GROUP_ID;`);
-      }
-      else if(req.body.delivery_status == "delivered not paid") {
-        results = await db.query(`
-        SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS ORDER_DATE FROM ORDERS WHERE PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = 1 GROUP BY GROUP_ID;`);
-      }
-      else if(req.body.delivery_status == "paid"){
-        results = await db.query(`
-        SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS ORDER_DATE FROM ORDERS WHERE PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = 2 GROUP BY GROUP_ID;`);
+        SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_TIME) AS ORDER_TIME FROM ORDERS WHERE PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = ${req.body.delivery_status} GROUP BY GROUP_ID;`);
       }
       else {
         results = await db.query(`
-        SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS ORDER_DATE FROM ORDERS WHERE PERSON_ID = ${req.params.id} GROUP BY GROUP_ID;`);
+        SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_TIME) AS ORDER_TIME FROM ORDERS WHERE PERSON_ID = ${req.params.id} GROUP BY GROUP_ID;`);
       }
     }
     else {
-      if(req.body.delivery_status == "not delivered") {
-        results = await db.query(`SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS DELIVERY_DATE FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) WHERE MANAGES.PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = 0 GROUP BY GROUP_ID;`);
-      }
-      else if(req.body.delivery_status == "delivered not paid") {
-        results = await db.query(`SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS DELIVERY_DATE FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) WHERE MANAGES.PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = 1 GROUP BY GROUP_ID;`);
-      }
-      else if(req.body.delivery_status == "paid"){
-        results = await db.query(`SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS DELIVERY_DATE FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) WHERE MANAGES.PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = 2 GROUP BY GROUP_ID;`);
+      if(req.body.delivery_status != 3) {
+        results = await db.query(`SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_TIME) AS order_time FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) WHERE MANAGES.PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = ${req.body.delivery_status} GROUP BY GROUP_ID;`);
       }
       else {
-        results = await db.query(`SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_DATE) AS DELIVERY_DATE FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) WHERE MANAGES.PERSON_ID = ${req.params.id} GROUP BY GROUP_ID;`);
+        results = await db.query(`SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_TIME) AS order_time FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) WHERE MANAGES.PERSON_ID = ${req.params.id} GROUP BY GROUP_ID;`);
       }
     }
     //const results = await db.query("SELECT * FROM ORDERS WHERE PERSON_ID = $1", [req.params.id]);
+    console.log("success");
     res.status(200).json({
       status: "success",
       results: results.rows.length,

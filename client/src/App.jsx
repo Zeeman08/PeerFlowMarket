@@ -74,6 +74,8 @@ const App = () => {
               <a className="HyperLink" href="/stores">Stores</a>
               <a className="HyperLink" href={`/yourstores`}>Your Stores</a>
               <a className="HyperLink" href={`/viewCart`}>Cart</a>
+              <a className="HyperLink" href={`/transactions`}>Transactions</a>
+              <a className="HyperLink" href={`/orders`}>Orders</a>
             </div>
         </div>
       </nav>
