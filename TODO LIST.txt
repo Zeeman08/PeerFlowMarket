@@ -57,9 +57,10 @@ At least 2 queries should join 3 or more tables
 -delete store
 -delete product
 
-2/2 functions
+3/2 functions
 -check_credentials_function
 -is_manager_of_product
+-addtocart
 
 
 --implement log for procedures and functions for tracking

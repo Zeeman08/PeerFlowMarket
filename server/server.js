@@ -359,7 +359,7 @@ app.get("/getStoreProducts/:id", async (req, res) => {
     console.log("Got get a store products request");
     const query = `${GET_PRODUCT1} WHERE P.STOREFRONT_ID= ${req.params.id} ${GET_PRODUCT2}`;
     const results = await db.query(
-      "SELECT P.*, COALESCE(ROUND(AVG(R.RATING)), 0) AS PRODUCT_RATING, (SELECT tag_name FROM tag_assignment T WHERE T.product_id = P.product_id) AS tags FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) WHERE P.STOREFRONT_ID = $1 GROUP BY P.PRODUCT_ID",
+      "SELECT P.*, COALESCE(ROUND(AVG(R.RATING)), 0) AS PRODUCT_RATING, (SELECT tag_name FROM tag_assignment T WHERE T.product_id = P.product_id) AS tags FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) WHERE P.STOREFRONT_ID = $1 AND P.STOCK_COUNT > 0 GROUP BY P.PRODUCT_ID",
       [req.params.id]
     );
     res.status(200).json({
@@ -558,18 +558,33 @@ app.get("/getCart/:id/:productId", async (req, res) => {
 app.post("/addToCart/:personId/:productId/:quantity", async (req, res) => {
   try{
     console.log("Got a add to cart request");
-    console.log(req.params.personId, req.params.productId, req.params.quantity);
-    const results = await db.query(
-      "INSERT INTO CART (PERSON_ID, PRODUCT_ID, QUANTITY) VALUES ($1, $2, $3) ON CONFLICT (PERSON_ID, PRODUCT_ID) DO UPDATE SET QUANTITY = CART.QUANTITY + EXCLUDED.QUANTITY RETURNING *",
-      [req.params.personId, req.params.productId, req.params.quantity]
-    );
-    res.status(201).json({
-      status: "success",
-      results: results.rows.length,
-      data: {
-        cart: results.rows[0]
-      }
-    });
+
+    const results = await db.query("SELECT add_to_cart_function($1, $2, $3)",
+    [req.params.personId, req.params.productId, req.params.quantity]);
+
+    // const results = await db.query(
+    //   "INSERT INTO CART (PERSON_ID, PRODUCT_ID, QUANTITY) VALUES ($1, $2, $3) ON CONFLICT (PERSON_ID, PRODUCT_ID) DO UPDATE SET QUANTITY = CART.QUANTITY + EXCLUDED.QUANTITY RETURNING *",
+    //   [req.params.personId, req.params.productId, req.params.quantity]
+    // );
+
+    if (results){
+      res.status(201).json({
+        status: "success",
+        results: results.rows.length,
+        data: {
+          stat : true
+        }
+      });
+    }
+    else{
+      res.status(500).json({
+        status: "fail",
+        message: "Failed to insert",
+        data: {
+          stat : false
+        }
+      });
+    }
   }catch(err){
     console.log(err);
   }
