@@ -317,25 +317,59 @@ app.put("/updateProduct/:productId", async (req, res) => {
 });
 //create a product
 app.post("/createProduct/:id", async (req, res) => {
-  try{
+  try {
     console.log("Got a create product request");
-    const results = await db.query(
+    console.log(req.body);
+
+    // Insert into product table
+    const productResults = await db.query(
       "INSERT INTO product (product_name, product_description, price, image, storefront_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
       [req.body.name, req.body.description, req.body.price, req.body.image, req.params.id]
     );
-    const results2 = await db.query(
-      "INSERT INTO tag_assignment (product_id, tag_name) VALUES ($1, $2) RETURNING *",
-      [results.rows[0].product_id, req.body.tags]
+
+    const productId = productResults.rows[0].product_id;
+
+    // Inserting into tags table, not allowing duplicates
+    const tagResults = await Promise.all(
+      req.body.tags.map(async (tag) => {
+        try {
+          return await db.query(
+            "INSERT INTO tags (tag_name) VALUES ($1) ON CONFLICT (tag_name) DO NOTHING RETURNING *",
+            [tag]
+          );
+        } catch (error) {
+          console.error('Error inserting tag into tags table:', error);
+        }
+      })
     );
+
+    // Insert into tag_assignment table
+    const tagAssignmentResults = await Promise.all(
+      req.body.tags.map(async (tag) => {
+        try {
+          return await db.query(
+            "INSERT INTO TAG_ASSIGNMENT (PRODUCT_ID, TAG_NAME) VALUES($1, $2) RETURNING *",
+            [ productId, tag]
+          );
+        } catch (error) {
+          console.error('Error inserting tag assignments table:', error);
+        }
+      })
+    );
+
     res.status(201).json({
       status: "success",
-      results: results.rows.length,
+      results: productResults.rows.length,
       data: {
-        products: results.rows[0]
+        products: productResults.rows[0]
       }
     });
-  }catch(err){
+  } catch (err) {
     console.log(err);
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error"
+    });
   }
 });
 //delete a product
@@ -357,11 +391,13 @@ app.delete("/deleteProduct/:productId", async (req, res) => {
 app.get("/getStoreProducts/:id", async (req, res) => {
   try{
     console.log("Got get a store products request");
-    const query = `${GET_PRODUCT1} WHERE P.STOREFRONT_ID= ${req.params.id} ${GET_PRODUCT2}`;
-    const results = await db.query(
-      "SELECT P.*, COALESCE(ROUND(AVG(R.RATING)), 0) AS PRODUCT_RATING, (SELECT tag_name FROM tag_assignment T WHERE T.product_id = P.product_id) AS tags FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) WHERE P.STOREFRONT_ID = $1 AND P.STOCK_COUNT > 0 GROUP BY P.PRODUCT_ID",
-      [req.params.id]
-    );
+    // const query = `${GET_PRODUCT1} WHERE P.STOREFRONT_ID= ${req.params.id} ${GET_PRODUCT2}`;
+    // const results = await db.query(
+    //   "SELECT P.*, COALESCE(ROUND(AVG(R.RATING)), 0) AS PRODUCT_RATING FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) WHERE P.STOREFRONT_ID = $1 GROUP BY P.PRODUCT_ID",
+    //   [req.params.id]
+    // );
+    const query = `SELECT P.*, COALESCE(ROUND(AVG(R.RATING)), 0) AS PRODUCT_RATING, ARRAY_AGG(TA.TAG_NAME) AS TAGS FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON (P.PRODUCT_ID = R.PRODUCT_ID) LEFT OUTER JOIN TAG_ASSIGNMENT TA ON (P.PRODUCT_ID = TA.PRODUCT_ID) WHERE P.STOREFRONT_ID = $1 GROUP BY P.PRODUCT_ID`;
+      const results = await db.query(query, [req.params.id]);
     res.status(200).json({
       status: "success",
       results: results.rows.length,
@@ -369,6 +405,7 @@ app.get("/getStoreProducts/:id", async (req, res) => {
         products: results.rows
       }
     });
+    console.log(results.rows);
   }catch(err){
     console.log(err);
   }
@@ -808,7 +845,24 @@ app.get("/getReviews/:productId", async (req, res) => {
 });
 
 
-
+//getting all existing tags which has a similar prefix
+app.get("/getTags/:prefix", async (req, res) => {
+  try {
+    console.log("Got get all tags request");
+    const results = await db.query(
+      `SELECT * FROM TAGS WHERE TAG_NAME LIKE '${req.params.prefix}%'`
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        tags: results.rows
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 // //Create a person
 // app.post("/createPeople", async (req, res) => {

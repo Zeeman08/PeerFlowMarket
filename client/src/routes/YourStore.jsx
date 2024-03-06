@@ -162,7 +162,13 @@ const YourStore = () => {
             {displayProducts.map (product => (
               <tr key={product.product_id} onClick={(e) => console.log("Nothin happens :p")}>
                 <td>{product.product_name}</td>
-                <td>{product.tags}</td>
+                <td>
+                  <ul>
+                    {product.tags.map((tag, index) => (
+                      <li key={index}>{tag}</li>
+                    ))}
+                  </ul>
+                </td>
                 <td>{product.product_description}</td>
                 <td>${product.price}</td>
                 <td>{product.product_rating}</td>

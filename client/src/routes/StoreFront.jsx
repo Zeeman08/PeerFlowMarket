@@ -114,6 +114,7 @@ const StoreFront = () => {
           <thead className="table-dark">
             <tr className="bg-primary">
               <th scope="col">Name</th>
+              <th scope="col"> Tags</th>
               <th scope="col">Description</th>
               <th scope="col">Price</th>
               <th scope="col">Rating</th>
@@ -128,6 +129,15 @@ const StoreFront = () => {
             {displayProducts.map (product => (
               <tr key={product.product_id} onClick={(e) => viewProduct(e, product.product_id)}>
                 <td>{product.product_name}</td>
+                <td>
+                  {
+                    <ul>
+                      {product.tags.map((tag, index) => (
+                        <li key={index}>{tag}</li>
+                      ))}
+                    </ul>
+                  }
+                </td>
                 <td>{product.product_description}</td>
                 <td>${product.price}</td>
                 <td>{product.product_rating}</td>

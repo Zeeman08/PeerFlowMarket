@@ -28,3 +28,31 @@
     font-style: italic;
     font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif
 }
+
+.tag-container {
+    display: inline-block;
+    margin-right: 5px;
+    margin-bottom: 5px;
+  }
+  
+  .tag {
+    background-color: #ddd;
+    border-radius: 5px;
+    padding: 5px 8px; /* Adjusted padding */
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .tag button {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 18px; /* Adjusted width */
+    height: 18px; /* Adjusted height */
+    margin-left: 3px;
+    cursor: pointer;
+    padding: 0; /* Removed padding */
+  }
+  
