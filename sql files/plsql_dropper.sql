@@ -28,7 +28,7 @@ DROP FUNCTION IF EXISTS product_insert_trigger_function();
 
 
 DROP TRIGGER IF EXISTS product_purchase_trigger ON ORDERS;
-DROP FUNCTION IF EXISTS product_purchase_trigger_function()
+DROP FUNCTION IF EXISTS product_purchase_trigger_function();
 
 
 
