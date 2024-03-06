@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import {useData} from '../context/PersonContext';
+import './home.css';
 
 const Home = ({setAuth}) => {
-  
-  const [name, setName] = useState("");
 
   const {person, setPerson} = useData();
 
@@ -23,20 +22,50 @@ const Home = ({setAuth}) => {
   
           const parseRes = await response.json();
           setPerson(parseRes);
-
-          setName(person.person_name);
       } catch (error) {
           console.log(error);
       }
     };
 
     getDetails();
-  }, [setPerson, person.person_name]);
+  }, [setPerson]);
 
   return (
-    <div>
-      <h1 className="text-center my-5">Welcome {name}</h1>
-      <button className="btn btn-primary" onClick={e => logout(e)}>Logout</button>
+    <div className="mt-5 profile-card">
+      <div className="profile-header">
+        <h1 className="profile-title">Personal Information</h1>
+      </div>
+      <div className="profile-body">
+        <div className="profile-item">
+          <label htmlFor="name" className="profile-label">Name:</label>
+          <div className="profile-value">{person.person_name}</div>
+        </div>
+        <div className="profile-item">
+          <label htmlFor="id" className="profile-label">ID:</label>
+          <div className="profile-value">{person.person_id}</div>
+        </div>
+        <div className="profile-item">
+          <label htmlFor="dateOfBirth" className="profile-label">Date of Birth:</label>
+          <div className="profile-value">{person.date_of_birth}</div>
+        </div>
+        <div className="profile-item">
+          <label htmlFor="phone" className="profile-label">Phone:</label>
+          <div className="profile-value">{person.phone}</div>
+        </div>
+        <div className="profile-item">
+          <label htmlFor="email" className="profile-label">Email:</label>
+          <div className="profile-value">{person.email}</div>
+        </div>
+      </div>
+      <div className="d-flex profile-footer justify-content-between">
+        <div>
+          <button className="btn btn-primary profile-button" onClick={e => logout(e)}>Logout</button>
+        </div>
+        <div>
+          <button className="btn btn-warning profile-button">Update</button>
+          <button className="btn btn-danger profile-button">Delete</button>
+        </div>
+      </div>
     </div>
   )
 }

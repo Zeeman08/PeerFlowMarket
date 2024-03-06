@@ -1,0 +1,51 @@
+.profile-card {
+    width: 80%;
+    margin: 20px auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-header {
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .profile-body {
+    padding: 20px;
+  }
+  
+  .profile-title {
+    margin: 0;
+  }
+  
+  .profile-item {
+    margin-bottom: 10px;
+    display: flex;
+  }
+  
+  .profile-label {
+    flex: 1;
+    font-weight: bold;
+  }
+  
+  .profile-value {
+    flex: 3;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+  .profile-footer {
+    padding: 20px;
+    text-align: right;
+  }
+  
+  .profile-button {
+    padding: 10px 20px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 5px;
+  }

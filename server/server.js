@@ -184,12 +184,12 @@ app.put("/updateStore/:id", async (req, res) => {
   }
 });
 //delete a storefront
-app.delete("/deleteStore/:id", async (req, res) => {
+app.delete("/deleteStore/:id/:personid", async (req, res) => {
   try{
     console.log("Got a delete store request");
     const results = await db.query(
-      "DELETE FROM storefront where storefront_id = $1",
-      [req.params.id]
+      'CALL delete_storefront_procedure($1, $2)',
+      [req.params.personid, req.params.id]
     );
     res.status(204).json({
       status: "success"
@@ -319,12 +319,9 @@ app.put("/updateProduct/:productId", async (req, res) => {
 app.post("/createProduct/:id", async (req, res) => {
   try {
     console.log("Got a create product request");
-    console.log(req.body);
-
-    // Insert into product table
-    const productResults = await db.query(
-      "INSERT INTO product (product_name, product_description, price, image, storefront_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-      [req.body.name, req.body.description, req.body.price, req.body.image, req.params.id]
+    const results = await db.query(
+      "INSERT INTO product (product_name, product_description, stock_count, price, image, storefront_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+      [req.body.name, req.body.description, req.body.stock, req.body.price, req.body.image, req.params.id]
     );
 
     const productId = productResults.rows[0].product_id;
@@ -377,7 +374,7 @@ app.delete("/deleteProduct/:productId", async (req, res) => {
   try{
     console.log("Got a delete product request");
     const results = await db.query(
-      "DELETE FROM product where product_id = $1",
+      'CALL delete_product_procedure($1)',
       [req.params.productId]
     );
     res.status(204).json({
@@ -634,7 +631,7 @@ app.delete("/clearCart/:id", async (req, res) => {
   try{
     console.log("Got a clear cart request");
     const results = await db.query(
-      "DELETE FROM CART WHERE PERSON_ID = $1",
+      "CALL clear_cart_procedure($1)",
       [req.params.id]
     );
     res.status(204).json({
@@ -654,6 +651,10 @@ app.delete("/removeFromCart/:personId/:productId", async (req, res) => {
       [req.params.personId, req.params.productId]
     );
     const res2 = await db.query(
+      "UPDATE PRODUCT SET STOCK_COUNT = STOCK_COUNT + 1 WHERE PRODUCT_ID = $1",
+      [req.params.productId]
+    );
+    const res3 = await db.query(
       "DELETE FROM CART WHERE QUANTITY = 0"
     );
     res.status(204).json({

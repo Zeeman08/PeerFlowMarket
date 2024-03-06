@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import {useNavigate} from 'react-router-dom';
 import {useData} from '../context/PersonContext';
 import '../stylesheet.css';
 import './dropdown.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faMoneyCheckAlt, faCheck, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 
 const Transactions = () => {
   //Storing data for search bars
@@ -17,7 +16,6 @@ const Transactions = () => {
   const[displayTransactions, setDisplay] = useState([]);
 
   //For going to other pages
-  let navigate = useNavigate();
   const {person} = useData();
   //The useEffect hook that calls the getStores() function
   useEffect(() => {

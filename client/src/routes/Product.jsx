@@ -57,7 +57,8 @@ const Product = () => {
       });
       const jsonData = await response.json();
       if (!jsonData.data.stat){
-        alert("Failed to add to cart, stock sold out!");
+        alert("Failed to add to cart, not enough in stock!");
+        navigate(`/product/${product.product_id}`);
         return;
       }
       navigate(`/store/${product.storefront_id}`);
