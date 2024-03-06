@@ -642,7 +642,9 @@ app.get("/getTransactions/:id", async (req, res) => {
   try{
     console.log("Got get all transactions request");
     console.log(req.params.id);
-    const results = await db.query(`SELECT * FROM TRANSACTIONS JOIN storefront USING(STOREFRONT_ID) WHERE PERSON_ID = ${req.params.id}`);
+    //const results = await db.query(`SELECT * FROM TRANSACTIONS JOIN storefront USING(STOREFRONT_ID) WHERE PERSON_ID = ${req.params.id}`);
+    const results = await db.query(`SELECT *, IS_MANAGER_OF_STOREFRONT(${req.params.id}, STOREFRONT_ID) AS STATUS FROM TRANSACTIONS JOIN storefront USING(STOREFRONT_ID) WHERE PERSON_ID = ${req.params.id} OR IS_MANAGER_OF_STOREFRONT(${req.params.id}, STOREFRONT_ID) = 1`);
+    
     res.status(200).json({
       status: "success",
       results: results.rows.length,
@@ -743,6 +745,49 @@ app.post("/getGroupOrders/:id", async (req, res) => {
       }
     });
   }catch(err){
+    console.log(err);
+  }
+});
+
+//leaving a review of a product by a person
+app.post("/postReview/:productId/:personId", async (req, res) => {
+  try {
+    console.log("Got a post review request");
+    // const results = await db.query(
+    //   "INSERT INTO review (product_id, person_id, rating, comment) VALUES ($1, $2, $3, $4) RETURNING *",
+    //   [req.params.productId, req.params.personId, req.body.rating, req.body.comment]
+    // );
+    const results = await db.query(
+      "INSERT INTO REVIEW (PRODUCT_ID, PERSON_ID, COMMENTS, RATING) VALUES ($1, $2, $3, $4)",
+      [req.params.productId, req.params.personId, req.body.comment, req.body.rating]
+    );
+    res.status(201).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        review: results.rows[0]
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+//getting all the reviews of a product
+app.get("/getReviews/:productId", async (req, res) => {
+  try {
+    console.log("Got get all reviews request");
+    const results = await db.query(
+      `SELECT * FROM REVIEW WHERE PRODUCT_ID = ${req.params.productId}`
+    );
+    console.log(results.rows);
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        reviews: results.rows
+      }
+    });
+  } catch (err) {
     console.log(err);
   }
 });

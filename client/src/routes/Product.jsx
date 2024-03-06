@@ -37,7 +37,7 @@ const Product = () => {
 
   //On pressing + button
   const addQuantity = async (e) => {
-    if (product.stock_count < quantity)
+    if (product.stock_count > quantity)
       setQuantity(quantity + 1);
   };
 
@@ -63,6 +63,12 @@ const Product = () => {
     }
   }
 
+  const leaveReview = async (ic) => {
+    navigate(`/leaveReview/${id}`);
+  }
+  const seeReviews = async () => {
+    navigate(`/seeReview/${id}`);
+  }
   return (
     <div>
       {/* Image */}
@@ -88,7 +94,10 @@ const Product = () => {
             <span className="input-group-text">{quantity}</span>
             <button className="btn btn-primary" type="button" onClick={addQuantity}>+</button>
           </div>
-          <button className="btn btn-success mt-4" onClick={() => addToCart(id)}>Add to Cart</button>
+          <div><button className="btn btn-success mt-4" onClick={() => addToCart(id)}>Add to Cart</button></div>
+          <div><button className="btn btn-success mt-4" onClick={() => leaveReview(id)}>Leave a review!</button></div>
+          <div><button className="btn btn-success mt-4" onClick={() => seeReviews()}>Reviews for this product</button></div>
+          
         </div>
       </div>
     </div>
