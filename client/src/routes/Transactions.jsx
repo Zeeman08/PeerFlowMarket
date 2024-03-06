@@ -3,6 +3,8 @@ import {useNavigate} from 'react-router-dom';
 import {useData} from '../context/PersonContext';
 import '../stylesheet.css';
 import './dropdown.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes, faMoneyCheckAlt, faCheck, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 
 const Transactions = () => {
   //Storing data for search bars
@@ -28,7 +30,7 @@ const Transactions = () => {
         setTransactions(jsonData.data.transactions);
         setDisplay(jsonData.data.transactions);
         console.log("before");
-        console.log(transactions);
+        console.log(jsonData.data.transactions);
         console.log("after");
       }
       catch (err) {
@@ -40,6 +42,16 @@ const Transactions = () => {
     getTransactions();
   }, [person]);
 
+
+  const renderIncoming = (status) => {
+    if (status === 0) return null;
+    return <FontAwesomeIcon icon={faArrowDown} color="green" title="Paid" />;
+  };
+  const renderOutgoing = (status) => {
+    if (status === false) return null;
+    return <FontAwesomeIcon icon={faArrowUp} color="red" title="Paid" />;
+  };
+  
   /*******************/
   /****TABLE STUFF****/
   /*******************/
@@ -72,9 +84,9 @@ const Transactions = () => {
                 <tr key={transaction.transaction_id}>
                     <td>{transaction.transaction_id}</td>
                   <td>{transaction.storefront_name}</td>
-                  <td>{transaction.amount}</td>
+                  <td>{transaction.amount} {renderIncoming(transaction.status)} {renderOutgoing(transaction.person_id === person.person_id)}</td>
                   <td>{transaction.transaction_time}</td>
-                  <td>{transaction.transaction_type}</td>
+                  <td>{transaction.transaction_type} </td>
                   
                 </tr>
               ))}

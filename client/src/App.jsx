@@ -22,6 +22,8 @@ import NewStore from './routes/NewStore';
 import ViewCart from './routes/ViewCart';
 import Transactions from './routes/Transactions';
 import Orders from './routes/Orders';
+import LeaveReview from './routes/LeaveReview'
+import SeeReview from './routes/SeeReview'
 // import styles
 
 import './stylesheet.css';
@@ -100,6 +102,9 @@ const App = () => {
                     <Route exact path="/viewCart" element={isAuthenticated ? <ViewCart/> : <Navigate to="/login"/>} />
                     <Route exact path="/transactions" element={isAuthenticated ? <Transactions/> : <Navigate to="/login"/>} />
                     <Route exact path="/orders" element={isAuthenticated ? <Orders/> : <Navigate to="/login"/>} />
+                    <Route exact path="/leaveReview/:id" element={isAuthenticated ? <LeaveReview /> : <Navigate to="/login"/>} />
+                    <Route exact path="/seeReview/:id" element={isAuthenticated ? <SeeReview /> : <Navigate to="/login"/>} />
+                    
                 </Routes>
             </Router>
           </PersonContextProvider>
