@@ -14,7 +14,7 @@ const Orders = () => {
   const [filterOption, setFilterOption] = useState(3); // Default: Show all groups
   const [buttonPressed, setButtonPressed] = useState('Buyer'); // Newly added state for tracking button press
   const [selectedDeliveryStatus, setSelectedDeliveryStatus] = useState('0'); // Selected delivery status for buyer
-
+  const [deliveryStatuses, setDeliveryStatuses] = useState({});
   let navigate = useNavigate();
   const { person } = useData();
 
@@ -47,7 +47,7 @@ const Orders = () => {
     getOrders();
     //setDisplay(groups);
 
-  }, [person, filterOption, buttonPressed, selectedDeliveryStatus]); // Add filterOption to dependency array
+  }, [person, filterOption, buttonPressed, deliveryStatuses]); // Add filterOption to dependency array
 
   const toggleGroupDetails = async (groupId) => {
     if (expandedGroups.includes(groupId)) {
@@ -78,18 +78,47 @@ const Orders = () => {
     return orders.reduce((total, order) => total + order.price * order.quantity, 0);
   };
 
-  const renderDeliveryStatusIcon = (status) => {
-    switch (status) {
+  // const renderDeliveryStatusIcon = (status) => {
+  //   switch (status) {
+  //     case 0:
+  //       return <FontAwesomeIcon icon={faTimes} color="red" title="Not Delivered" />;
+  //     case 1:
+  //       return <FontAwesomeIcon icon={faMoneyCheckAlt} color="orange" title="Delivered but not paid" />;
+  //     case 2:
+  //       return <FontAwesomeIcon icon={faCheck} color="green" title="Paid" />;
+  //     default:
+  //       return null;
+  //   }
+  // };
+
+  const renderDeliveryStatusIcon = (groupId) => {
+    console.log("renderDeliveryStatusIcon");
+    // Use the updated delivery status from the deliveryStatuses state
+    if (deliveryStatuses[groupId] === undefined) {
+      deliveryStatuses[groupId] = groups.find((group) => group.group_id === groupId)?.delivery_status;
+    }
+    const updatedStatus = deliveryStatuses[groupId];
+    if(updatedStatus === undefined) {
+      console.log("undefined status");
+    }
+    console.log("status: ");
+    console.log(updatedStatus);
+    switch (updatedStatus) {
       case 0:
         return <FontAwesomeIcon icon={faTimes} color="red" title="Not Delivered" />;
       case 1:
         return <FontAwesomeIcon icon={faMoneyCheckAlt} color="orange" title="Delivered but not paid" />;
       case 2:
+        console.log("now in case 2 ");
+        
         return <FontAwesomeIcon icon={faCheck} color="green" title="Paid" />;
       default:
+        console.log("now in default");
+        console.log(updatedStatus);
         return null;
     }
   };
+
 
   const handleFilterChange = (event) => {
     setFilterOption(event.currentTarget.value);
@@ -101,7 +130,11 @@ const Orders = () => {
     setButtonPressed(button);
   };
 
-  const handleDropdownSelect = async (groupId, selectedOption) => {
+  const handleDropdownSelect = async(groupId, selectedOption) => {
+    setDeliveryStatuses((prevStatuses) => ({
+      ...prevStatuses,
+      [groupId]: selectedOption,
+    }));
     try {
       console.log(`GroupID: ${groupId}, Selected Option: ${selectedOption}`);
       if(selectedOption === '3') return; // If the default option is selected, do nothing
@@ -125,6 +158,32 @@ const Orders = () => {
       console.error(err);
     }
   };
+
+
+  // const handleDropdownSelect = async (groupId, selectedOption) => {
+  //   try {
+  //     console.log(`GroupID: ${groupId}, Selected Option: ${selectedOption}`);
+  //     if(selectedOption === '3') return; // If the default option is selected, do nothing
+  //     const shopkeeperId = person.person_id; // Replace with the actual shopkeeper ID
+  
+  //     const response = await fetch(`http://localhost:3005/changeDeliveryStatus/${groupId}/${shopkeeperId}`, {
+  //       method: 'PUT',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         delivery_status: selectedOption, // Assuming selectedOption is the new delivery status
+  //       }),
+  //     });
+      
+  //     const jsonData = await response.json();
+  //     console.log(jsonData);
+  
+  //     // You can handle the response accordingly, update state, or perform any additional actions.
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
   
 
   return (
@@ -159,18 +218,17 @@ const Orders = () => {
                   <tr onDoubleClick={() => toggleGroupDetails(group.group_id)}>
                     <td>{group.group_id}</td>
                     <td>{group.order_time}</td>
-                    <td>{renderDeliveryStatusIcon(group.delivery_status)}  {buttonPressed === 'Seller' && (
+                    <td>{renderDeliveryStatusIcon(group.group_id)}  {buttonPressed === 'Seller' && (
                       //make a drop down menu here with different options a method to handle the option change 
                       <select
-                          value={selectedDeliveryStatus}
-                          onChange={(e) => setSelectedDeliveryStatus(e.target.value)}
-                          onClick={() => handleDropdownSelect(group.group_id, selectedDeliveryStatus)}
-                        >
-                          <option value="3">Change Delivery Status</option>
-                          <option value="0">Not Delivered</option>
-                          <option value="1">Delivered but not paid</option>
-                          <option value="2">Paid</option>
-                        </select>
+                        value={deliveryStatuses[group.group_id] || '3'}
+                        onChange={(e) => handleDropdownSelect(group.group_id, e.target.value)}
+                      >
+                        <option value="3">Change Delivery Status</option>
+                        <option value="0">Not Delivered</option>
+                        <option value="1">Delivered but not paid</option>
+                        <option value="2">Paid</option>
+                      </select>
 
 
                       
