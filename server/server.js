@@ -304,6 +304,10 @@ app.put("/updateProduct/:productId", async (req, res) => {
       "UPDATE product SET product_name = $2, product_description = $3, price = $4, image = $5, last_updated_on = CURRENT_TIMESTAMP WHERE product_id = $1 RETURNING *",
       [req.params.productId, req.body.name, req.body.description, req.body.price, req.body.image]
     );
+    const res2 = await db.query(
+      "UPDATE storefront SET last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = (SELECT storefront_id FROM product WHERE product_id = $1)",
+      [req.params.productId]
+    );
     res.status(200).json({
       status: "success",
       results: results.rows.length,

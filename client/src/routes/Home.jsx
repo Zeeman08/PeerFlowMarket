@@ -64,7 +64,7 @@ const Home = ({setAuth}) => {
       </div>
       <div className="d-flex justify-content-between profile-footer">
         <div>
-          <button className="btn btn-primary profile-button">Logout</button>
+          <button className="btn btn-primary profile-button" onClick={e => logout(e)}>Logout</button>
         </div>
         <div>
           <button className="btn btn-warning profile-button">Update</button>
