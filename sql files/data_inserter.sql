@@ -53,10 +53,10 @@ INSERT INTO ORDERS (PRODUCT_ID, QUANTITY, PERSON_ID, TRANSACTION_ID, GROUP_ID) V
 (2, 1, 2, 2, 2),
 (3, 1, 3, 3, 3);
 
-INSERT INTO ANNOUNCEMENTS (STOREFRONT_ID, ANNOUNCEMENT_DESCRIPTION, IMAGE) VALUES
-(1, 'New arrivals in smartphones!', 'new_arrivals.jpg'),
-(2, 'Summer collection now available!', 'summer_collection.jpg'),
-(3, 'Special discount on bestsellers!', 'discount.jpg');
+INSERT INTO ANNOUNCEMENTS (STOREFRONT_ID, ANNOUNCEMENT_DESCRIPTION, IMAGE, PERSON_ID) VALUES
+(1, 'New arrivals in smartphones!', 'new_arrivals.jpg', 1),
+(2, 'Summer collection now available!', 'summer_collection.jpg', 2),
+(3, 'Special discount on bestsellers!', 'discount.jpg', 3);
 
 INSERT INTO REVIEW (PRODUCT_ID, PERSON_ID, COMMENTS, RATING) VALUES
 (1, 1, 'Great phone!', 4.5),

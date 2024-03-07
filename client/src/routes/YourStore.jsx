@@ -1,57 +1,42 @@
-import React, { useState, useEffect} from 'react';
-import {useParams, useNavigate} from 'react-router-dom';
-import {useData} from '../context/PersonContext';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useData } from '../context/PersonContext';
 
 const YourStore = () => {
-  //Getting id from link
-  const {id} = useParams();
+  const { person } = useData();
+  const { id } = useParams();
+  const [store, setStore] = useState({});
+  const [searchText, setSearchText] = useState('');
+  const [products, setProducts] = useState([]);
+  const [displayProducts, setDisplay] = useState([]);
+  const [showAnnouncementForm, setShowAnnouncementForm] = useState(false);
+  const [announcementText, setAnnouncementText] = useState('');
+  const [announcementPosted, setAnnouncementPosted] = useState(false);
+  const [showNewAnnouncementButton, setShowNewAnnouncementButton] = useState(true);
+  const navigate = useNavigate();
 
-  //Storing the data from database into store using setStore function
-  const[store, setStore] = useState({});
-
-  //Storing data for search bar
-  const [searchText, setSearchText] = useState("");
-
-  //Getting data from context
-  const {person} = useData();
-
-  //Storing data for products for the table
-  //Original data
-  const[products, setProducts] = useState([]);
-  //Buffer data used on table
-  const[displayProducts, setDisplay] = useState([]);
-
-  //For going to other pages
-  let navigate = useNavigate();
-
-  //The useEffect hook that calls the getStore() function
   useEffect(() => {
-
-    //The async function that fetches the data from the database
     const getStore = async () => {
       try {
         const response = await fetch(`http://localhost:3005/getStore/${id}`);
         const jsonData = await response.json();
         setStore(jsonData.data.stores);
-      }
-      catch (err) {
+      } catch (err) {
         console.log(err);
       }
     };
 
     const getProducts = async () => {
-      try{
+      try {
         const response = await fetch(`http://localhost:3005/getStoreProducts/${id}`);
         const jsonData = await response.json();
         setProducts(jsonData.data.products);
         setDisplay(jsonData.data.products);
-      }
-      catch (err) {
+      } catch (err) {
         console.log(err);
       }
-    }
+    };
 
-    //Being called
     getStore();
     getProducts();
   }, [id]);
@@ -59,108 +44,146 @@ const YourStore = () => {
   products.forEach(product => {
     if (product.rating_count === 0) product.rating_count = 1;
   });
-  displayProducts.forEach(product => {
-    if (product.rating_count === 0) product.rating_count = 1;
-  });
 
-
-
-  /********************/
-  /* SEARCH BAR STUFF */
-  /********************/
-
-
-  //On pressing search bar, it will search for the description
-  const onSearch = async (e) => {
+  const onSearch = async e => {
     e.preventDefault();
     setDisplay(products.filter(product => product.product_name.includes(searchText)));
   };
 
-
-
-  /********************/
-  /**** TABLE STUFF ***/
-  /********************/
-
-  //The async function that deletes the data from the database
-
-  const deleteProduct = async (id) => {
+  const deleteProduct = async id => {
     try {
-      const body = {person_id: person.person_id};
+      const body = { person_id: person.person_id };
       const response = await fetch(`http://localhost:3005/deleteProduct/${id}`, {
-        method: "DELETE",
-        body: JSON.stringify(body)
+        method: 'DELETE',
+        body: JSON.stringify(body),
       });
 
-      //Resetting data in stores by removing or not keep any stores that have the same id as the one deleted
-      //!= means value not equal, !== means value and type not equal
-      //JS just prefers !== over !=
       setProducts(products.filter(product => product.product_id !== id));
       setDisplay(displayProducts.filter(product => product.product_id !== id));
       console.log(response);
-    }
-    catch (err) {
+    } catch (err) {
       console.log(err);
     }
   };
 
-  //The function that takes you to the update page
-  const updateProduct = (id) => {
-    try{
-      //Go to
+  const updateProduct = id => {
+    try {
       navigate(`/product/${id}/update`);
-    }
-    catch (err) {
+    } catch (err) {
       console.log(err);
     }
   };
 
   const goBack = () => {
-    navigate("/yourstores");
-  }
+    navigate('/yourstores');
+  };
+
+  const postAnnouncement = async () => {
+    try {
+      const response = await fetch('http://localhost:3005/createAnnouncement', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          person_id: person.person_id,
+          storefront_id: id,
+          description: announcementText,
+        }),
+      });
+
+      if (response.ok) {
+        setAnnouncementPosted(true);
+        setShowAnnouncementForm(false);
+        setAnnouncementText('');
+        setShowNewAnnouncementButton(false); // Hide the "New Announcement" button
+      }
+    } catch (err) {
+      console.error('Error posting announcement:', err);
+    }
+  };
 
   return (
     <div>
-      {/* header */}
       <div>
         <h1 className='text-center mt-5'>{store.storefront_name}</h1>
       </div>
 
-
-    {/* search bar */}
       <div>
-        <form className="d-flex mt-4 mb-4" onSubmit={onSearch}>
-            <input type="text" className="form-control" value={searchText} 
-            onChange={e => setSearchText(e.target.value)}/>
-            <button className="btn btn-outline-secondary">Search</button>
+        <form className='d-flex mt-4 mb-4' onSubmit={onSearch}>
+          <input
+            type='text'
+            className='form-control'
+            value={searchText}
+            onChange={e => setSearchText(e.target.value)}
+          />
+          <button className='btn btn-outline-secondary'>Search</button>
         </form>
       </div>
 
-
-      {/* new product button */}
       <div>
-        <button className="btn btn-success mb-4" onClick={() => navigate(`/store/${id}/newProduct`)}>New Product</button>
+        <button className='btn btn-success mb-4' onClick={() => navigate(`/store/${id}/newProduct`)}>
+          New Product
+        </button>
       </div>
 
+      {showNewAnnouncementButton && (
+        <div>
+          <button className='btn btn-success mb-4' onClick={() => setShowAnnouncementForm(true)}>
+            New Announcement
+          </button>
+        </div>
+      )}
 
-      {/* table */}
+      {showAnnouncementForm && (
+        <div>
+          <form className='mb-4'>
+            <div className='mb-3'>
+              <label htmlFor='announcementTextarea' className='form-label'>
+                Type your announcement:
+              </label>
+              <textarea
+                className='form-control'
+                id='announcementTextarea'
+                rows='3'
+                value={announcementText}
+                onChange={e => setAnnouncementText(e.target.value)}
+              ></textarea>
+            </div>
+            <button
+              type='button'
+              className='btn btn-primary'
+              onClick={postAnnouncement}
+            >
+              Post
+            </button>
+          </form>
+        </div>
+      )}
+
+      {announcementPosted && (
+        <p className='text-success text-center'>
+          Announcement posted successfully!
+        </p>
+      )}
+
       <div>
-        <table className="table table-hover table-secondary table-striped table-bordered text-center">
-          <thead className="table-dark">
-            <tr className="bg-primary">
-              <th scope="col">Name</th>
-              <th scope="col">Tags</th>
-              <th scope="col">Description</th>
-              <th scope="col">Price</th>
-              <th scope="col">Rating</th>
-              <th scope="col">Image</th>
-              <th scope="col">Update</th>
-              <th scope="col">Delete</th>
+        <table className='table table-hover table-secondary table-striped table-bordered text-center'>
+          <thead className='table-dark'>
+            <tr className='bg-primary'>
+              <th scope='col'>Name</th>
+              <th scope='col'>Tags</th>
+              <th scope='col'>Description</th>
+              <th scope='col'>Price</th>
+              <th scope='col'>Rating</th>
+              <th scope='col'>Image</th>
+              <th scope='col'>Update</th>
+              <th scope='col'>Delete</th>
             </tr>
           </thead>
           <tbody>
-            {displayProducts.map (product => (
-              <tr key={product.product_id} onClick={(e) => console.log("Nothin happens :p")}>
+            {displayProducts.map(product => (
+              <tr key={product.product_id} onClick={e => console.log('Nothin happens :p')}>
                 <td>{product.product_name}</td>
                 <td>
                   <ul>
@@ -173,16 +196,26 @@ const YourStore = () => {
                 <td>${product.price}</td>
                 <td>{product.product_rating}</td>
                 <td>{product.image}</td>
-                <td><button className="btn btn-warning" onClick={() => updateProduct(product.product_id)}>Update</button></td>
-                <td><button className="btn btn-danger" onClick={() => deleteProduct(product.product_id)}>Delete</button></td>
+                <td>
+                  <button className='btn btn-warning' onClick={() => updateProduct(product.product_id)}>
+                    Update
+                  </button>
+                </td>
+                <td>
+                  <button className='btn btn-danger' onClick={() => deleteProduct(product.product_id)}>
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
-        <button className="btn btn-danger" onClick={goBack}>Go Back</button>
+        <button className='btn btn-danger' onClick={goBack}>
+          Go Back
+        </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default YourStore;

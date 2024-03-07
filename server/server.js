@@ -430,12 +430,12 @@ app.get("/getStoreProducts/:id", async (req, res) => {
 
 
 //create an announcement 
-app.post("/createAnnouncement/:id", async (req, res) => {
+app.post("/createAnnouncement", async (req, res) => {
   try{
     console.log("Got a create announcement request");
     const results = await db.query(
-      "INSERT INTO announcements (STOREFRONT_ID, ANNOUNCEMENT_DESCRIPTION, IMAGE) VALUES ($1, $2, $3) RETURNING *",
-      [req.params.id, req.body.description, req.body.image]
+      "INSERT INTO announcements (PERSON_ID, STOREFRONT_ID, ANNOUNCEMENT_DESCRIPTION) VALUES ($1, $2, $3) RETURNING *",
+      [req.body.person_id, req.body.storefront_id, req.body.description]
     );
     res.status(201).json({
       status: "success",
