@@ -36,30 +36,35 @@ const Home = ({setAuth}) => {
         <h1 className="profile-title">Personal Information</h1>
       </div>
       <div className="profile-body">
-        <div className="profile-item">
-          <label htmlFor="name" className="profile-label">Name:</label>
-          <div className="profile-value">{person.person_name}</div>
+        <div className="profile-picture">
+          <img src="profile.jpg" alt="Profile" className="profile-image" />
         </div>
-        <div className="profile-item">
-          <label htmlFor="id" className="profile-label">ID:</label>
-          <div className="profile-value">{person.person_id}</div>
-        </div>
-        <div className="profile-item">
-          <label htmlFor="dateOfBirth" className="profile-label">Date of Birth:</label>
-          <div className="profile-value">{person.date_of_birth}</div>
-        </div>
-        <div className="profile-item">
-          <label htmlFor="phone" className="profile-label">Phone:</label>
-          <div className="profile-value">{person.phone}</div>
-        </div>
-        <div className="profile-item">
-          <label htmlFor="email" className="profile-label">Email:</label>
-          <div className="profile-value">{person.email}</div>
+        <div className="profile-details">
+          <div className="profile-item">
+            <label htmlFor="name" className="profile-label">Name:</label>
+            <div className="profile-value">{person.person_name}</div>
+          </div>
+          <div className="profile-item">
+            <label htmlFor="id" className="profile-label">ID:</label>
+            <div className="profile-value">{person.person_id}</div>
+          </div>
+          <div className="profile-item">
+            <label htmlFor="dateOfBirth" className="profile-label">Date of Birth:</label>
+            <div className="profile-value">{person.date_of_birth}</div>
+          </div>
+          <div className="profile-item">
+            <label htmlFor="phone" className="profile-label">Phone:</label>
+            <div className="profile-value">{person.phone}</div>
+          </div>
+          <div className="profile-item">
+            <label htmlFor="email" className="profile-label">Email:</label>
+            <div className="profile-value">{person.email}</div>
+          </div>
         </div>
       </div>
-      <div className="d-flex profile-footer justify-content-between">
+      <div className="d-flex justify-content-between profile-footer">
         <div>
-          <button className="btn btn-primary profile-button" onClick={e => logout(e)}>Logout</button>
+          <button className="btn btn-primary profile-button">Logout</button>
         </div>
         <div>
           <button className="btn btn-warning profile-button">Update</button>
