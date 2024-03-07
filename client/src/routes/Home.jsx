@@ -30,7 +30,7 @@ const Home = ({setAuth}) => {
     getDetails();
   }, [setPerson]);
 
-  if (!person){
+  if (!person.image){
     return <div><h1>Loading...</h1></div>
   }
 
@@ -41,7 +41,7 @@ const Home = ({setAuth}) => {
       </div>
       <div className="profile-body">
         <div className="profile-picture">
-          <img src={person.image ? require('../images/' + person.image) : require('../images/avatar.png')} alt="Profile" className="profile-image" />
+          <img src={require('../images/' + person.image)} alt="../images/avatar.png" className="profile-image" />
         </div>
         <div className="profile-details">
           <div className="profile-item">
