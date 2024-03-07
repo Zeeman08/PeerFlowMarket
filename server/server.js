@@ -323,8 +323,9 @@ app.post("/createProduct/:id", async (req, res) => {
       "INSERT INTO product (product_name, product_description, stock_count, price, image, storefront_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
       [req.body.name, req.body.description, req.body.stock, req.body.price, req.body.image, req.params.id]
     );
-
-    const productId = productResults.rows[0].product_id;
+    console.log("found one");
+    console.log(req.body);
+    const productId = results.rows[0].product_id;
 
     // Inserting into tags table, not allowing duplicates
     const tagResults = await Promise.all(
