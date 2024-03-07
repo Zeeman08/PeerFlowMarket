@@ -102,38 +102,42 @@ const StoreFront = () => {
       </div>
 
       <div>
-        <table className="table table-hover table-secondary table-striped table-bordered text-center">
-          <thead className="table-dark">
-            <tr className="bg-primary">
-              <th scope="col">Image</th>
-              <th scope="col">Name</th>
-              <th scope="col">Tags</th>
-              <th scope="col">Description</th>
-              <th scope="col">Price</th>
-              <th scope="col">Rating</th>
-            </tr>
-          </thead>
-          <tbody>
-            {displayProducts.map(product => (
-              <tr key={product.product_id} onClick={e => viewProduct(e, product.product_id)}>
-                <td><img src={require('../images/' + product.image)} alt='../images/avatar.png'></img></td>
-                <td>{product.product_name}</td>
-                <td>
-                  {
-                    <ul>
-                      {product.tags.map((tag, index) => (
-                        <li key={index}>{tag}</li>
-                      ))}
-                    </ul>
-                  }
-                </td>
-                <td>{product.product_description}</td>
-                <td>${product.price}</td>
-                <td>{product.product_rating}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+          {displayProducts.map((product, index) => (
+            <div
+              key={product.product_id}
+              style={{
+                width: '400px',
+                margin: '1rem',
+                padding: '1rem',
+                borderRadius: '8px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease-in-out',
+                backgroundColor: '#fff',
+                display: 'flex',
+                flexDirection: 'column', // Align the button vertically
+              }}
+              onClick={e => viewProduct(e, product.product_id)}
+            >
+              <div style={{ flexGrow: 1 }}>
+                <h3 style={{ marginBottom: '0.5rem' }}>{product.product_name}</h3>
+                <p style={{ marginBottom: '0.5rem' }}>
+                  {product.product_description}
+                </p>
+                {product.image && (
+                  <img
+                    src={require(`../images/${product.image}`)}
+                    alt="Product Image"
+                    style={{ width: '30%', height: 'auto' }}
+                  />
+                )}
+              </div>
+              
+              <hr style={{ backgroundColor: 'gray', height: '1px', border: 'none', margin: '0.5rem 0' }} />
+            </div>
+          ))}
+        </div>
         <button className="btn btn-danger" onClick={goBack}>
           Go Back
         </button>

@@ -24,6 +24,7 @@ import Transactions from './routes/Transactions';
 import Orders from './routes/Orders';
 import LeaveReview from './routes/LeaveReview'
 import SeeReview from './routes/SeeReview'
+import Dashboard from './routes/Dashboard';
 // import styles
 
 import './stylesheet.css';
@@ -104,7 +105,7 @@ const App = () => {
                     <Route exact path="/orders" element={isAuthenticated ? <Orders/> : <Navigate to="/login"/>} />
                     <Route exact path="/leaveReview/:id" element={isAuthenticated ? <LeaveReview /> : <Navigate to="/login"/>} />
                     <Route exact path="/seeReview/:id" element={isAuthenticated ? <SeeReview /> : <Navigate to="/login"/>} />
-                    
+                    <Route exact path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login"/>} />
                 </Routes>
             </Router>
           </PersonContextProvider>

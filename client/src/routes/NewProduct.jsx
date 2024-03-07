@@ -64,7 +64,7 @@ const NewProduct = () => {
     reader.onload = (event) => {
       const img = new Image();
       img.onload = () => {
-        const maxSize = 120; // Maximum size for profile picture
+        const maxSize = 600; // Maximum size for product photo
 
         let width = img.width;
         let height = img.height;

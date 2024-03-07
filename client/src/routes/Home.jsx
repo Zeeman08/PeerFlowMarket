@@ -1,82 +1,149 @@
-import React, { useEffect } from 'react'
-import {useData} from '../context/PersonContext';
-import './home.css';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Home = ({setAuth}) => {
+const AnnouncementsPage = () => {
+  const [announcements, setAnnouncements] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [announcementsPerPage, setAnnouncementsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const {person, setPerson} = useData();
+  // Example API endpoint for all announcements
+  const apiEndpoint = 'http://localhost:3005/getAnnouncements';
 
-  const logout = (e) => {
-    e.preventDefault();
-    localStorage.removeItem("token");
-    setAuth(false);
-  };
+  // For navigation
+  const navigate = useNavigate();
 
+  // Fetch announcements from API
   useEffect(() => {
-    const getDetails = async () => {
+    const fetchAnnouncements = async () => {
       try {
-          const response = await fetch("http://localhost:3005/dashboard/", {
-              method: "GET",
-              headers: {token: localStorage.token}
-          });
-  
-          const parseRes = await response.json();
-          setPerson(parseRes);
+        const response = await fetch(`${apiEndpoint}?rows_per_page=${announcementsPerPage}&page_number=${currentPage}`);
+        const jsonData = await response.json();
+        const response1 = await fetch(`http://localhost:3005/getTotalAnnouncements`);
+        const jsonData1 = await response1.json();
+        console.log(jsonData1.data);
+        const totalAnnouncementsCount = Number(jsonData1.data.cnt.count); // Convert count to a number
+        console.log('Total Announcements Count:', totalAnnouncementsCount);
+
+        setAnnouncements(jsonData.data.announcements.map(announcement => ({ ...announcement, expanded: false })));
+        setTotalPages(Math.ceil(totalAnnouncementsCount / announcementsPerPage));
+
+        // Log the values after state updates
+        console.log('Announcements:', totalAnnouncementsCount, announcementsPerPage, totalPages);
       } catch (error) {
-          console.log(error);
+        console.error('Error fetching announcements:', error);
       }
     };
+    fetchAnnouncements();
+  }, [currentPage, announcementsPerPage]);
 
-    getDetails();
-  }, [setPerson]);
+  // Handle pagination button click
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
-  if (!person.image){
-    return <div><h1>Loading...</h1></div>
-  }
+  // Handle rows per page change
+  const handleRowsPerPageChange = (e) => {
+    setAnnouncementsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to the first page when changing rows per page
+  };
+
+  // For viewing announcement details
+  const viewAnnouncement = (id) => {
+    navigate(`/announcement/${id}`);
+  };
+
+  // Function to toggle the description display state
+  const toggleDescription = (index) => {
+    const updatedAnnouncements = [...announcements];
+    updatedAnnouncements[index].expanded = !updatedAnnouncements[index].expanded;
+    setAnnouncements(updatedAnnouncements);
+  };
 
   return (
-    <div className="mt-5 profile-card">
-      <div className="profile-header">
-        <h1 className="profile-title">Personal Information</h1>
-      </div>
-      <div className="profile-body">
-        <div className="profile-picture">
-          <img src={require('../images/' + person.image)} alt="../images/avatar.png" className="profile-image" />
-        </div>
-        <div className="profile-details">
-          <div className="profile-item">
-            <label htmlFor="name" className="profile-label">Name:</label>
-            <div className="profile-value">{person.person_name}</div>
-          </div>
-          <div className="profile-item">
-            <label htmlFor="id" className="profile-label">ID:</label>
-            <div className="profile-value">{person.person_id}</div>
-          </div>
-          <div className="profile-item">
-            <label htmlFor="dateOfBirth" className="profile-label">Date of Birth:</label>
-            <div className="profile-value">{person.date_of_birth}</div>
-          </div>
-          <div className="profile-item">
-            <label htmlFor="phone" className="profile-label">Phone:</label>
-            <div className="profile-value">{person.phone}</div>
-          </div>
-          <div className="profile-item">
-            <label htmlFor="email" className="profile-label">Email:</label>
-            <div className="profile-value">{person.email}</div>
-          </div>
-        </div>
-      </div>
-      <div className="d-flex justify-content-between profile-footer">
+    <div style={{ fontFamily: 'Arial, sans-serif' }}>
+      <div>
+        {/* Header */}
         <div>
-          <button className="btn btn-primary profile-button" onClick = {e => logout(e)}>Logout</button>
+          <h1 style={{ fontWeight: 'light', fontSize: '2.5rem', textAlign: 'center', marginTop: '1.5rem' }}>Announcements</h1>
         </div>
-        <div>
-          <button className="btn btn-warning profile-button">Update</button>
-          <button className="btn btn-danger profile-button">Delete</button>
+
+        {/* Rows per page dropdown */}
+        <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+          <label htmlFor="rowsPerPage" style={{ marginRight: '0.5rem' }}>Rows per page:</label>
+          <select id="rowsPerPage" value={announcementsPerPage} onChange={handleRowsPerPageChange}>
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+          </select>
+        </div>
+
+        {/* Announcements */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+          {announcements.map((announcement, index) => (
+            <div
+              key={announcement.announcement_id}
+              style={{
+                width: '1000px',
+                margin: '1rem',
+                padding: '1rem',
+                borderRadius: '8px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease-in-out',
+                backgroundColor: '#fff',
+                display: 'flex',
+                flexDirection: 'column', // Align the button vertically
+              }}
+            >
+              <div style={{ flexGrow: 1 }}> {/* Added to allow the title to grow and push the buttons to the bottom */}
+                <h3 style={{ marginBottom: '0.5rem' }}>{announcement.storefront_name}</h3>
+                <p style={{ marginBottom: '0.5rem' }}>
+                  {announcement.expanded ? announcement.announcement_description : announcement.announcement_description.substring(0, 10)}
+                </p>
+                {announcement.expanded && announcement.image && (
+                  <img
+                    src={require(`../images/${announcement.image}`)}
+                    alt="Announcement Image"
+                    style={{ width: '30%', height: 'auto' }}
+                  />
+                )}
+              </div>
+              {(announcement.announcement_description.length > 10 || announcement.image) && (
+                <div style={{ alignSelf: 'flex-end' }}>
+                  <button onClick={() => toggleDescription(index)}>
+                    {announcement.expanded ? 'Show less' : 'Show more'}
+                  </button>
+                </div>
+              )}
+              <hr style={{ backgroundColor: 'gray', height: '1px', border: 'none', margin: '0.5rem 0' }} />
+            </div>
+          ))}
+        </div>
+
+        {/* Pagination */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+          <button
+            style={{ padding: '0.5rem', marginRight: '1rem', cursor: 'pointer', backgroundColor: '#007BFF', color: 'white' }}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <span style={{ fontSize: '1rem', marginRight: '1rem' }}>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            style={{ padding: '0.5rem', cursor: 'pointer', backgroundColor: '#007BFF', color: 'white' }}
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Home;
+export default AnnouncementsPage;

@@ -13,6 +13,7 @@ const YourStore = () => {
   const [announcementText, setAnnouncementText] = useState('');
   const [announcementPosted, setAnnouncementPosted] = useState(false);
   const [showNewAnnouncementButton, setShowNewAnnouncementButton] = useState(true);
+  const [image, setImage] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,8 +79,67 @@ const YourStore = () => {
     navigate('/yourstores');
   };
 
-  const postAnnouncement = async () => {
+  const onFileChange = e => {
+
+    // Set the selected file
+    const file = e.target.files[0];
+    setImage(file);
+
+    // Resize image
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxSize = 223; // Maximum size for profile picture
+
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate aspect ratio
+        const aspectRatio = width / height;
+
+        // Determine new dimensions while maintaining aspect ratio
+        if (width > height) {
+          width = maxSize;
+          height = maxSize / aspectRatio;
+        } else {
+          height = maxSize;
+          width = maxSize * aspectRatio;
+        }
+
+        // Create canvas and resize image
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert canvas to blob
+        canvas.toBlob((blob) => {
+          const resizedFile = new File([blob], file.name, { type: 'image/jpeg' });
+          setImage(resizedFile);
+        }, 'image/jpeg', 0.8); // Quality set to 80%
+      };
+
+      img.src = event.target.result;
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+
+  const postAnnouncement = async (e) => {
+    e.preventDefault();
+  
+    const formData = new FormData();
+    formData.append("image", image);
     try {
+      const imgres = await fetch("http://localhost:3005/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      const parseImg = await imgres.json();
       const response = await fetch('http://localhost:3005/createAnnouncement', {
         method: 'POST',
         headers: {
@@ -89,6 +149,7 @@ const YourStore = () => {
           person_id: person.person_id,
           storefront_id: id,
           description: announcementText,
+          image: parseImg.filename,
         }),
       });
 
@@ -142,6 +203,7 @@ const YourStore = () => {
               <label htmlFor='announcementTextarea' className='form-label'>
                 Type your announcement:
               </label>
+              <input type="file" name="image" className="form-control my-3" onChange={e => onFileChange(e)} />
               <textarea
                 className='form-control'
                 id='announcementTextarea'

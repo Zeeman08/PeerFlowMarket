@@ -465,8 +465,8 @@ app.post("/createAnnouncement", async (req, res) => {
   try{
     console.log("Got a create announcement request");
     const results = await db.query(
-      "INSERT INTO announcements (PERSON_ID, STOREFRONT_ID, ANNOUNCEMENT_DESCRIPTION) VALUES ($1, $2, $3) RETURNING *",
-      [req.body.person_id, req.body.storefront_id, req.body.description]
+      "INSERT INTO announcements (PERSON_ID, STOREFRONT_ID, ANNOUNCEMENT_DESCRIPTION, image) VALUES ($1, $2, $3, $4) RETURNING *",
+      [req.body.person_id, req.body.storefront_id, req.body.description, req.body.image]
     );
     res.status(201).json({
       status: "success",
@@ -554,6 +554,54 @@ app.get("/getStoreAnnouncements/:id", async (req, res) => {
     console.log(err);
   }
 });
+//get total number of announcements
+app.get("/getTotalAnnouncements", async (req, res) => {
+  try{
+    console.log("Got get total announcements request");
+    const results = await db.query(
+      "SELECT COUNT(*) FROM announcements"
+    );
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        cnt: results.rows[0]
+      }
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+
+//get all the announcements, 
+app.get("/getAnnouncements", async (req, res) => {
+  try {
+    const rowsPerPage = req.query.rows_per_page || 10; // Default to 10 rows per page if not provided
+    const pageNumber = req.query.page_number || 1; // Default to the first page if not provided
+    console.log("request is", req.query);
+    const offset = (pageNumber - 1) * rowsPerPage;
+
+    const results = await db.query(
+      "SELECT a.*, s.storefront_name FROM announcements a join storefront s using(storefront_id) ORDER BY POSTED_ON DESC OFFSET $1 LIMIT $2",
+      [offset, rowsPerPage]
+    );
+
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        announcements: results.rows,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+});
+
 
 
 
