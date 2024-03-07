@@ -8,7 +8,6 @@ const NewStore = () => {
 
   //Handling form stuff
   const[name, setName] = useState("new store");
-  const[category, setCat] = useState("Hardware");
   const[desc, setDesc] = useState("new description");
   const[image, setImage] = useState("image.jpg");
 
@@ -116,7 +115,7 @@ const NewStore = () => {
         onChange={e => setImage(e.target.value)}/>
       </div>
       <div className="d-flex justify-content-between">
-        <button className="btn btn-success mt-2" onClick={saveChanges}>Save Changes</button>
+        <button className="btn btn-success mt-2" onClick={saveChanges}>Create</button>
         <button className="btn btn-danger mt-2" onClick={goBack}>Go Back</button>
       </div>
     </div>

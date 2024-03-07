@@ -8,7 +8,7 @@ const NewProduct = () => {
   // Handling form stuff
   const [name, setName] = useState("new product");
   const [desc, setDesc] = useState("new description");
-  const [image, setImage] = useState("image.jpg");
+  const [image, setImage] = useState(null);
   const[stock, setStock] = useState(0);
   const [price, setPrice] = useState(0);
   const [tags, setTags] = useState([]);
@@ -53,6 +53,54 @@ const NewProduct = () => {
     setTags((prevTags) => prevTags.filter((tag) => tag !== removedTag));
   };
 
+  const onFileChange = e => {
+
+    // Set the selected file
+    const file = e.target.files[0];
+    setImage(file);
+
+    // Resize image
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxSize = 120; // Maximum size for profile picture
+
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate aspect ratio
+        const aspectRatio = width / height;
+
+        // Determine new dimensions while maintaining aspect ratio
+        if (width > height) {
+          width = maxSize;
+          height = maxSize / aspectRatio;
+        } else {
+          height = maxSize;
+          width = maxSize * aspectRatio;
+        }
+
+        // Create canvas and resize image
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert canvas to blob
+        canvas.toBlob((blob) => {
+          const resizedFile = new File([blob], file.name, { type: 'image/jpeg' });
+          setImage(resizedFile);
+        }, 'image/jpeg', 0.8); // Quality set to 80%
+      };
+
+      img.src = event.target.result;
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   const saveChanges = async () => {
     try {
       if (tags.length < 1 || tags.length > 6) {
@@ -60,20 +108,29 @@ const NewProduct = () => {
         return;
       }
 
+      if (stock <= 0 || price <= 0){
+        alert("Stock and price must be greater than 0.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("image", image);
+
+      const imgres = await fetch("http://localhost:3005/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      const parseImg = await imgres.json();
+
       const body = {
         name: name,
         description: desc,
         price: price,
-        image: image,
-            stock: stock,
+        image: parseImg.filename,
+        stock: stock,
         tags: tags
       };
-
-
-        if (stock <= 0 || price <= 0){
-          alert("Stock and price must be greater than 0.");
-          return;
-        }
 
       const response = await fetch(`http://localhost:3005/createProduct/${id}`, {
         method: "POST",
@@ -115,12 +172,7 @@ const NewProduct = () => {
       </div>
       <div>
         <label htmlFor="image">Image:</label>
-        <input
-          type="text"
-          className="form-control mt-2 mb-2"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
-        />
+        <input type="file" name="image" className="form-control mt-2 mb-2" onChange={e => onFileChange(e)} />
       </div>
       <div>
       <label htmlFor='stock'>Starting Stock:</label>
@@ -166,7 +218,7 @@ const NewProduct = () => {
       </div>
       <div className="d-flex justify-content-between">
         <button className="btn btn-success mt-2" onClick={saveChanges}>
-          Save Changes
+          Create
         </button>
         <button className="btn btn-danger mt-2" onClick={goBack}>
           Go Back

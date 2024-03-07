@@ -142,7 +142,6 @@ app.get("/getStoresManagedByPerson/:id", async (req, res) => {
     });
   }catch(err){
     console.log(err);
-    console.log("here");
   }
 });
 
@@ -155,8 +154,6 @@ app.post("/createStore", async (req, res) => {
       "INSERT INTO storefront (STOREFRONT_NAME, STOREFRONT_DESCRIPTION, IMAGE) VALUES ($1, $2, $3) RETURNING *",
       [req.body.name, req.body.description, req.body.image]
     );
-
-    console.log(results.rows[0].storefront_id);
 
     const resultsb = await db.query("INSERT INTO manages (PERSON_ID, STOREFRONT_ID) VALUES ($1, $2) RETURNING *", [req.body.owner, results.rows[0].storefront_id]);
 
@@ -360,7 +357,6 @@ app.post("/createProduct/:id", async (req, res) => {
       [req.body.name, req.body.description, req.body.stock, req.body.price, req.body.image, req.params.id]
     );
     console.log("found one");
-    console.log(req.body);
     const productId = results.rows[0].product_id;
 
     // Inserting into tags table, not allowing duplicates
@@ -439,7 +435,6 @@ app.get("/getStoreProducts/:id", async (req, res) => {
         products: results.rows
       }
     });
-    console.log(results.rows);
   }catch(err){
     console.log(err);
   }
@@ -526,7 +521,6 @@ app.get("/getAnnouncement/:announcementID", async (req, res) => {
      const results = await db.query(
       "SELECT * FROM announcements WHERE announcement_id=$1", [req.params.announcementID]
     );
-    console.log(results.rows[0]);
     res.status(200).json({
       status: "success",
       results: results.rows.length,
@@ -707,7 +701,6 @@ app.delete("/removeFromCart/:personId/:productId", async (req, res) => {
 app.post("/checkout/:id", async (req, res) => {
   try{
     console.log("Got a checkout request");
-    console.log(req.body);
     //const results = await db.query (
     //  `CALL process_cart_and_transactions(${req.params.id}, ${req.body.payment_method});`
     //)
@@ -731,7 +724,6 @@ app.post("/checkout/:id", async (req, res) => {
 app.get("/getTransactions/:id", async (req, res) => {
   try{
     console.log("Got get all transactions request");
-    console.log(req.params.id);
     //const results = await db.query(`SELECT * FROM TRANSACTIONS JOIN storefront USING(STOREFRONT_ID) WHERE PERSON_ID = ${req.params.id}`);
     const results = await db.query(`SELECT *, IS_MANAGER_OF_STOREFRONT(${req.params.id}, STOREFRONT_ID) AS STATUS FROM TRANSACTIONS JOIN storefront USING(STOREFRONT_ID) WHERE PERSON_ID = ${req.params.id} OR IS_MANAGER_OF_STOREFRONT(${req.params.id}, STOREFRONT_ID) = 1`);
     
@@ -742,7 +734,6 @@ app.get("/getTransactions/:id", async (req, res) => {
         transactions: results.rows
       }
     });
-    console.log(results.rows);
   }catch(err){
     console.log(err);
   }
@@ -804,7 +795,6 @@ app.put("/changeDeliveryStatus/:id/:shopkeeperId", async (req, res) => {
 app.post("/getGroupOrders/:id", async (req, res) => {
   try{
     console.log("Got get all orders request");
-    console.log(req.body);
     let results = "";
 
     if(req.body.order_type == "incoming"){
@@ -869,7 +859,6 @@ app.get("/getReviews/:productId", async (req, res) => {
     const results = await db.query(
       `SELECT * FROM REVIEW WHERE PRODUCT_ID = ${req.params.productId}`
     );
-    console.log(results.rows);
     res.status(200).json({
       status: "success",
       results: results.rows.length,

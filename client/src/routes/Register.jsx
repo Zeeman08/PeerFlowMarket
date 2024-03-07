@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import {Link} from 'react-router-dom';
+import {Link, useNavigate } from 'react-router-dom';
 
-const Register = ({setAuth}) => {
+const Register = () => {
 
   const [inputs, setInputs] = useState({
     email: "rubai@gmail.com",
@@ -10,6 +10,8 @@ const Register = ({setAuth}) => {
     dob: "2001-05-01",
     phone: "12345"
   });
+
+  let navigate = useNavigate();
 
   const { email, password, name, dob, phone } = inputs;
 
@@ -91,12 +93,12 @@ const Register = ({setAuth}) => {
   
       const parseRes = await response.json();
   
-      if (parseRes.token) {
-        localStorage.setItem("token", parseRes.token);
-        setAuth(true);
-      } else {
+      if (!parseRes.token) {
         alert("Registration Failed");
+        return;
       }
+
+      navigate("/login");
     } catch (error) {
       console.log(error);
     }
@@ -111,7 +113,7 @@ const Register = ({setAuth}) => {
         <input type="text" name="name" placeholder="Name" className="form-control my-3" value={name} onChange={e => onChange(e)}/>
         <input type="dob" name="dob" placeholder="YYYY-MM-DD" className="form-control my-3" value={dob} onChange={e => onChange(e)}/>
         <input type="phone" name="phone" placeholder="Password" className="form-control my-3" value={phone} onChange={e => onChange(e)}/>
-        <input type="file" name="image" className="form-control my-3" onChange={onFileChange} />
+        <input type="file" name="image" className="form-control my-3" onChange={e => onFileChange(e)} />
         <button className="btn btn-success">Submit</button>
       </form>
       <Link to="/">Login</Link>

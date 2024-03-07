@@ -105,17 +105,18 @@ const StoreFront = () => {
         <table className="table table-hover table-secondary table-striped table-bordered text-center">
           <thead className="table-dark">
             <tr className="bg-primary">
+              <th scope="col">Image</th>
               <th scope="col">Name</th>
               <th scope="col">Tags</th>
               <th scope="col">Description</th>
               <th scope="col">Price</th>
               <th scope="col">Rating</th>
-              <th scope="col">Image</th>
             </tr>
           </thead>
           <tbody>
             {displayProducts.map(product => (
               <tr key={product.product_id} onClick={e => viewProduct(e, product.product_id)}>
+                <td><img src={require('../images/' + product.image)} alt='../images/avatar.png'></img></td>
                 <td>{product.product_name}</td>
                 <td>
                   {
@@ -129,7 +130,6 @@ const StoreFront = () => {
                 <td>{product.product_description}</td>
                 <td>${product.price}</td>
                 <td>{product.product_rating}</td>
-                <td>{product.image}</td>
               </tr>
             ))}
           </tbody>
