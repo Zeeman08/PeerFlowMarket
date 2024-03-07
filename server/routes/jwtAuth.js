@@ -11,7 +11,7 @@ router.post("/register", validInfo, async (req, res) => {
     try {
         //1. destructure the req.body (name, password, dob, phone, email)
 
-        const { name, password, dob, phone, email } = req.body;
+        const { name, password, dob, phone, email, image } = req.body;
 
         //2. check credentials for duplicacy or invalid phone number length
 
@@ -29,8 +29,8 @@ router.post("/register", validInfo, async (req, res) => {
         const bcryptPassword = await bcrypt.hash(password, salt);
 
         //4. enter the new user inside our database
-        const newUser = await db.query("INSERT INTO person (person_name, password, date_of_birth, phone, email) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-        [name, bcryptPassword, dob, phone, email]);
+        const newUser = await db.query("INSERT INTO person (person_name, password, date_of_birth, phone, email, image) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+        [name, bcryptPassword, dob, phone, email, image]);
 
         //5. generating jwt token
         const token = jwtGenerator(newUser.rows[0].person_id);
