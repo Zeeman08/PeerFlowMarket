@@ -117,21 +117,24 @@ const StoreFront = () => {
                 backgroundColor: '#fff',
                 display: 'flex',
                 flexDirection: 'column', // Align the button vertically
+                alignItems: 'center',
               }}
               onClick={e => viewProduct(e, product.product_id)}
             >
-              <div style={{ flexGrow: 1 }}>
-                <h3 style={{ marginBottom: '0.5rem' }}>{product.product_name}</h3>
-                <p style={{ marginBottom: '0.5rem' }}>
-                  {product.product_description}
-                </p>
+              <div style={{ flexGrow: 1 , alignContent: 'center'}}>
                 {product.image && (
-                  <img
+                    <img
                     src={require(`../images/${product.image}`)}
                     alt="Product Image"
-                    style={{ width: '30%', height: 'auto' }}
+                    style={{ width: '60%', height: 'auto', alignSelf: 'center'}}
                   />
-                )}
+                  )
+                }
+                <h3 style={{ marginBottom: '0.5rem' }}>{product.product_name}</h3>
+                <p style={{ marginBottom: '0.5rem' }}>
+                  Price: ${product.price}
+                </p>
+                
               </div>
               
               <hr style={{ backgroundColor: 'gray', height: '1px', border: 'none', margin: '0.5rem 0' }} />
