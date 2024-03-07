@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '../context/PersonContext';
+
 const StoreFront = () => {
-  const {person} = useData();
+  const { person } = useData();
   const { id } = useParams();
   const [store, setStore] = useState({});
   const [searchText, setSearchText] = useState('');
   const [products, setProducts] = useState([]);
-  const [displayProducts, setDisplay] = useState([]);
+  const [displayProducts, setDisplayProducts] = useState([]);
   const navigate = useNavigate();
   const [showComplaintForm, setShowComplaintForm] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
+  const [submittedFeedback, setSubmittedFeedback] = useState(false);
 
   useEffect(() => {
     const getStore = async () => {
@@ -28,7 +30,7 @@ const StoreFront = () => {
         const response = await fetch(`http://localhost:3005/getStoreProducts/${id}`);
         const jsonData = await response.json();
         setProducts(jsonData.data.products);
-        setDisplay(jsonData.data.products);
+        setDisplayProducts(jsonData.data.products);
       } catch (err) {
         console.log(err);
       }
@@ -41,13 +43,10 @@ const StoreFront = () => {
   products.forEach(product => {
     if (product.rating_count === 0) product.rating_count = 1;
   });
-  displayProducts.forEach(product => {
-    if (product.rating_count === 0) product.rating_count = 1;
-  });
 
   const onSearch = async e => {
     e.preventDefault();
-    setDisplay(products.filter(product => product.product_name.includes(searchText)));
+    setDisplayProducts(products.filter(product => product.product_name.includes(searchText)));
   };
 
   const viewProduct = (e, id) => {
@@ -77,6 +76,7 @@ const StoreFront = () => {
       if (response.ok) {
         setShowComplaintForm(false);
         setFeedbackText('');
+        setSubmittedFeedback(true);
       }
     } catch (err) {
       console.error('Error submitting feedback:', err);
@@ -140,7 +140,7 @@ const StoreFront = () => {
       </div>
 
       <div className="text-center mb-4">
-        {!showComplaintForm && (
+        {!showComplaintForm && !submittedFeedback && (
           <button
             className="btn btn-danger"
             onClick={() => setShowComplaintForm(true)}
@@ -175,9 +175,11 @@ const StoreFront = () => {
           </form>
         </div>
       ) : (
-        <p className="text-success text-center">
-          Thanks for your feedback! We are looking into it.
-        </p>
+        submittedFeedback && (
+          <p className="text-success text-center">
+            Thanks for your feedback! We are looking into it.
+          </p>
+        )
       )}
     </div>
   );
