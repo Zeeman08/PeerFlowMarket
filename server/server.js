@@ -870,6 +870,26 @@ app.get("/getTags/:prefix", async (req, res) => {
   }
 });
 
+//posting complaint
+app.post("/submitComplaint/", async (req, res) => {
+  try {
+    console.log("Got a post complaint request");
+    const results = await db.query(
+      "INSERT INTO COMPLAINTS (PERSON_ID, STOREFRONT_ID, COMPLAINT_DETAILS) VALUES ($1, $2, $3) RETURNING *",
+      [req.body.personId, req.body.storeId, req.body.complaintDetails]
+    );
+    res.status(201).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        complaint: results.rows[0]
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // //Create a person
 // app.post("/createPeople", async (req, res) => {
 //   try{

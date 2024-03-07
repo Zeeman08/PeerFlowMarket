@@ -70,8 +70,8 @@ const NewProduct = () => {
       };
 
 
-        if (stock < 0 || price < 0){
-          alert("Stock and price cannot be negative!");
+        if (stock <= 0 || price <= 0){
+          alert("Stock and price must be greater than 0.");
           return;
         }
 
