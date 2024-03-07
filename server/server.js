@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const db = require("./db");
 const cors = require("cors");
+const multer = require("multer");
+const path = require("path");
 
 //Insert middleware here omar
 
@@ -9,7 +11,37 @@ app.use(cors());
 app.use(express.json());
 
 
+
 // ROUTES //
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../client/src/images')); // Use absolute path
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// uploading images route
+app.post("/upload", upload.single('image'), async (req, res) => {
+  try {
+    console.log("Got an image upload request");
+
+    // Send the filename in the response
+    res.status(201).json({
+      status: "success",
+      filename: req.file.filename,
+      data: {}
+    });
+  } catch(err) {
+    console.log(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 
 //register and login
@@ -303,6 +335,10 @@ app.put("/updateProduct/:productId", async (req, res) => {
     const results = await db.query(
       "UPDATE product SET product_name = $2, product_description = $3, price = $4, image = $5, last_updated_on = CURRENT_TIMESTAMP WHERE product_id = $1 RETURNING *",
       [req.params.productId, req.body.name, req.body.description, req.body.price, req.body.image]
+    );
+    const res2 = await db.query(
+      "UPDATE storefront SET last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = (SELECT storefront_id FROM product WHERE product_id = $1)",
+      [req.params.productId]
     );
     res.status(200).json({
       status: "success",

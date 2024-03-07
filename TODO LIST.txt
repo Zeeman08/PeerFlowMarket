@@ -17,6 +17,7 @@ At least 2 user actions that cause insertions spanning 3 or more tables.
 At least 2 user actions that cause updates spanning 2 or more tables.
 -removefromcart
 -updatefromcart
+-update product
 
 At least 3 DELETE queries
 -delete store
@@ -39,7 +40,7 @@ At least 5 such queries
 At least 2 queries should join 3 or more tables
 -getAllStores
 -getStoresManagedByPerson
--?delivery status checking
+-delivery status checking
 
 
 

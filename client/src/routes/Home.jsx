@@ -30,6 +30,10 @@ const Home = ({setAuth}) => {
     getDetails();
   }, [setPerson]);
 
+  if (!person){
+    return <div><h1>Loading...</h1></div>
+  }
+
   return (
     <div className="mt-5 profile-card">
       <div className="profile-header">
@@ -37,7 +41,7 @@ const Home = ({setAuth}) => {
       </div>
       <div className="profile-body">
         <div className="profile-picture">
-          <img src="profile.jpg" alt="Profile" className="profile-image" />
+          <img src={person.image ? require('../images/' + person.image) : require('../images/avatar.png')} alt="Profile" className="profile-image" />
         </div>
         <div className="profile-details">
           <div className="profile-item">
