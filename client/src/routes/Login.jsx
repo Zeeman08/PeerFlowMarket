@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {Link} from 'react-router-dom';
-import {useData} from '../context/PersonContext';
 
 const Login = ({setAuth}) => {
 
@@ -42,12 +41,17 @@ const Login = ({setAuth}) => {
   return (
     <div>
       <h1 className="text-center my-5">Login</h1>
-      <form onSubmit={onSubmitForm}>
+      <form onSubmit={e => onSubmitForm(e)}>
         <input type="email" name="email" placeholder="email" className="form-control my-3" value={email} onChange={e => onChange(e)}/>
         <input type="password" name="password" placeholder="password" className="form-control my-3" value={password} onChange={e => onChange(e)}/>
         <button className="btn btn-success">Submit</button>
       </form>
-      <Link to="/register">Register</Link>
+      <div className="mt-1">
+        <Link to="/register">Register</Link>
+      </div>
+      <div className="mt-1">
+        <Link to="/adminLogin">Admin</Link>
+      </div>
     </div>
   )
 }

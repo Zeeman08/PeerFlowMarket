@@ -116,7 +116,12 @@ const Register = () => {
         <input type="file" name="image" className="form-control my-3" onChange={e => onFileChange(e)} />
         <button className="btn btn-success">Submit</button>
       </form>
-      <Link to="/">Login</Link>
+      <div className="mt-1">
+        <Link to="/">Login</Link>
+      </div>
+      <div className="mt-1">
+        <Link to="/adminLogin">Admin</Link>
+      </div>
     </div>
   )
 }

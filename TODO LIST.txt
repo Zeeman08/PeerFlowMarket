@@ -70,9 +70,6 @@ At least 2 queries should join 3 or more tables
 
 --implement address
 
---implement complaints(done)
---implement announcements
-
 --implement create categories
 (suggestion by rubai: we will have only these hard coded categories: 
 1. Electronics
@@ -87,6 +84,11 @@ At least 2 queries should join 3 or more tables
 --implement admin side
 --implement log for procedures and functions for tracking
 
+--profile update
+--profile delete
+--admin side purata (complaint processing, banning, transaction tracking)
+--functions and procedures re track korar jonno additional ekta table lagbe
+--GUI updates
 
 --
 pagination: check corner case logics (example: when the page is empty, it shows page i of 0, should we keep it or it?)
