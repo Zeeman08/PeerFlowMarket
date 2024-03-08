@@ -533,6 +533,14 @@ app.get("/getStoreProducts/:id", async (req, res) => {
       query += ` ${x>0?'AND':'WHERE'} LOWER(P.PRODUCT_NAME) LIKE LOWER('%${req.query.search}%')`;
       x=1;
     }
+    if(req.query.tags !== undefined){
+      //tags are separated by |
+      const tags = req.query.tags.split("|");
+      for(let i = 0; i < tags.length; i++){
+        query += ` ${x>0?'AND':'WHERE'} P.PRODUCT_ID IN (SELECT PRODUCT_ID FROM TAG_ASSIGNMENT WHERE LOWER(TAG_NAME) = LOWER('${tags[i]}'))`;
+        x=1;
+      }
+    }
     query += ` GROUP BY P.PRODUCT_ID HAVING P.STOREFRONT_ID = ${req.params.id} ORDER BY P.PRODUCT_ID`;
     query1 = query;
     query += ` OFFSET ${offset} LIMIT ${rowsPerPage}`;

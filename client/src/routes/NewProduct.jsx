@@ -13,6 +13,7 @@ const NewProduct = () => {
   
   const[stock, setStock] = useState(0);
   const [price, setPrice] = useState(0);
+  // for tags
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [tagSuggestions, setTagSuggestions] = useState([]);
@@ -55,8 +56,23 @@ const NewProduct = () => {
   }, [tagInput]);
 
   const handleTagSelection = (selectedTag) => {
+    // if the selected tag is already in the tags array, don't add it again
+    if (tags.includes(selectedTag)) {
+      alert('Tag already added!');
+      return;
+    }
+    // if selected tag contains | we dont allow it
+    if (selectedTag.includes("|")){
+      alert('Tag cannot contain |');
+      return;
+    }
+    if(selectedTag.length > 20){
+      alert('Tag cannot be longer than 20 characters');
+      return;
+    }
     setTags((prevTags) => [...prevTags, selectedTag]);
     setTagInput(''); // Clear the tag input field after selection
+    console.log('we are here');
   };
 
   const handleTagInputChange = (e) => {
@@ -65,6 +81,19 @@ const NewProduct = () => {
 
   const handleTagInputKeyDown = (e) => {
     if (e.key === 'Enter' && tagInput.trim() !== '') {
+      if (tags.includes(tagInput)) {
+        alert('Tag already added!');
+        return;
+      }
+      // if selected tag contains | we dont allow it
+      if (tagInput.includes("|")){
+        alert('Tag cannot contain |');
+        return;
+      }
+      if(tagInput.length > 20){
+        alert('Tag cannot be longer than 20 characters');
+        return;
+      }
       setTags((prevTags) => [...prevTags, tagInput.trim()]);
       setTagInput(''); // Clear the tag input field after pressing Enter
     }
@@ -212,6 +241,7 @@ const NewProduct = () => {
           onChange={(e) => setPrice(e.target.value)}
         />
       </div>
+      {/* Tags */}
       <div>
         <label htmlFor="tags">Tags:</label>
         <div>
@@ -234,9 +264,9 @@ const NewProduct = () => {
           onChange={handleTagInputChange}
           onKeyDown={handleTagInputKeyDown}
         />
-        <datalist id="tagSuggestions">
+        <datalist id="tagSuggestions">   {/*For autocompletion */}
           {tagSuggestions.map((tag) => (
-            <option key={tag.tag_id} value={tag.tag_name} onClick={() => handleTagSelection(tag.tag_name)} />
+            <option key={tag.tag_id} value={tag.tag_name} onMouseDown={() => handleTagSelection(tag.tag_name)} />
           ))}
         </datalist>
       </div>

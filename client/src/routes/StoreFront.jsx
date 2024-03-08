@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '../context/PersonContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const StoreFront = () => {
   const { person } = useData();
@@ -20,6 +22,95 @@ const StoreFront = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage, setProductsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  /*********************/
+  /* ADVANCED SEARCHING*/
+  /*********************/
+  const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
+  const [advancedSearchInput, setAdvancedSearchInput] = useState('');
+  // varibles for tags
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState('');
+  const [tagSuggestions, setTagSuggestions] = useState([]);
+  const [allTags, setAllTags] = useState([]);
+  // functions to implement tags
+  useEffect(() => {
+    const fetchAllTags = async () => {
+      try {
+        const response = await fetch("http://localhost:3005/getTags/");
+        const jsonData = await response.json();
+        setAllTags(jsonData.data.tags);
+      } catch (error) {
+        console.error('Error fetching all tags:', error);
+      }
+    };
+
+    // Fetch all tags when the component mounts
+    fetchAllTags();
+  }, []);
+  useEffect(() => {
+    const fetchTagSuggestions = (prefix) => {
+      // Filter tags from allTags that have a similar prefix as tagInput
+      if(prefix === "") {
+        setTagSuggestions([]);
+        return;
+      }
+      const filteredTags = allTags.filter((tag) =>
+        tag.tag_name.toLowerCase().startsWith(prefix.toLowerCase())
+      );
+  
+      setTagSuggestions(filteredTags);
+    };
+
+    // Fetch tag suggestions when tags change
+    fetchTagSuggestions(tagInput);
+  }, [tagInput]);
+  const handleTagSelection = (selectedTag) => {
+    // if the selected tag is already in the tags array, don't add it again
+    if (tags.includes(selectedTag)) {
+      alert('Tag already added!');
+      return;
+    }
+    // if selected tag contains | we dont allow it
+    if (selectedTag.includes("|")){
+      alert('Tag cannot contain |');
+      return;
+    }
+    if(selectedTag.length > 20){
+      alert('Tag cannot be longer than 20 characters');
+      return;
+    }
+    setTags((prevTags) => [...prevTags, selectedTag]);
+    setTagInput(''); // Clear the tag input field after selection
+    console.log('we are here');
+  };
+
+  const handleTagInputChange = (e) => {
+    setTagInput(e.target.value);
+  };
+
+  const handleTagInputKeyDown = (e) => {
+    if (e.key === 'Enter' && tagInput.trim() !== '') {
+      if (tags.includes(tagInput)) {
+        alert('Tag already added!');
+        return;
+      }
+      // if selected tag contains | we dont allow it
+      if (tagInput.includes("|")){
+        alert('Tag cannot contain |');
+        return;
+      }
+      if(tagInput.length > 20){
+        alert('Tag cannot be longer than 20 characters');
+        return;
+      }
+      setTags((prevTags) => [...prevTags, tagInput.trim()]);
+      setTagInput(''); // Clear the tag input field after pressing Enter
+    }
+  };
+
+  const removeTag = (removedTag) => {
+    setTags((prevTags) => prevTags.filter((tag) => tag !== removedTag));
+  };
   useEffect(() => {
     const getStore = async () => {
       try {
@@ -33,7 +124,12 @@ const StoreFront = () => {
 
     const getProducts = async () => {
       try {
-        const response = await fetch(`http://localhost:3005/getStoreProducts/${id}?rows_per_page=${productsPerPage}&page_number=${currentPage}&search=${searchText}`);
+        let url = `http://localhost:3005/getStoreProducts/${id}?rows_per_page=${productsPerPage}&page_number=${currentPage}&search=${searchText}`;
+        if (tags.length > 0) {
+          url += `&tags=${tags.join('|')}`;   // should somehow prevent the user from entering | in the tag
+        }
+        console.log(url);
+        const response = await fetch(url);
         const jsonData = await response.json();
         setProducts(jsonData.data.products);
         setDisplayProducts(jsonData.data.products);
@@ -52,6 +148,17 @@ const StoreFront = () => {
     if (product.rating_count === 0) product.rating_count = 1;
   });
 
+  const toggleAdvancedSearch = () => {
+    setShowAdvancedSearch(!showAdvancedSearch);
+    setAdvancedSearchInput(''); // Clear the input when toggling
+  };
+
+  const onAdvancedSearch = () => {
+    setSearchText(advancedSearchInput);
+    setSearchTrigger(1 - searchTrigger); // Trigger the search with the updated searchText
+  };
+
+
   // Handle pagination button click
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -65,6 +172,10 @@ const StoreFront = () => {
 
   const onSearch = async e => {
     e.preventDefault();
+    if (tags.length < 1 || tags.length > 6) {
+      alert('Number of tags should be between 1 and 6, inclusive.');
+      return;
+    }
     setSearchTrigger(1-searchTrigger);
     //setDisplayProducts(products.filter(product => product.product_name.includes(searchText)));
   };
@@ -118,6 +229,46 @@ const StoreFront = () => {
           <button className="btn btn-outline-secondary">Search</button>
         </form>
       </div>
+
+      {/* Advanced Search */}
+      <div>
+        <button className="btn btn-outline-primary" onClick={toggleAdvancedSearch}>
+          Advanced Searching
+        </button>
+        {showAdvancedSearch && (
+          <div>
+            <label htmlFor="tags">Tags:</label>
+            <div>
+              {tags.map((tag) => (
+                <span key={tag} className="tag-container">
+                  <span className="tag">
+                    {tag}
+                    <button type="button" className="btn btn-sm btn-danger" onClick={() => removeTag(tag)}>
+                    <FontAwesomeIcon icon={faTimes} size="xs" />
+                    </button>
+                  </span>
+                </span>
+              ))}
+            </div>
+            <input
+              list="tagSuggestions"
+              type="text"
+              className="form-control mt-2 mb-2"
+              placeholder="Enter tags for advanced search"
+              value={tagInput}
+              onChange={handleTagInputChange}
+              onKeyDown={handleTagInputKeyDown}
+            />
+            <datalist id="tagSuggestions">{/* for autocompletion */}
+              {tagSuggestions.map((tag) => (
+                <option key={tag.tag_id} value={tag.tag_name} onClick={() => handleTagSelection(tag.tag_name)} />
+              ))}
+            </datalist>
+          </div>
+        )}
+      </div>
+
+
 
       {/* Rows per page dropdown */}
       <div style={{ textAlign: 'center', marginTop: '1rem' }}>
