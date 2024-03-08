@@ -83,6 +83,24 @@ router.post("/login", validInfo, async (req, res) => {
     }
 });
 
+//admin login route
+
+router.post("/adminLogin", async (req, res) => {
+    try {
+        const pwd = 'admin';
+        if (pwd === req.body.password){
+            const token = jwtGenerator(0);
+            res.json({ token });
+        }
+        else{
+            res.status(401).json("Wrong password!");
+        }
+    } catch (error) {
+        console.log(err.message);
+        res.status(500).json("Server Error");
+    }
+});
+
 //verify route
 
 router.get("/is-verify", authorization, async (req, res) => {

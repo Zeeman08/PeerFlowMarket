@@ -600,7 +600,6 @@ app.get("/getAnnouncements", async (req, res) => {
   try {
     const rowsPerPage = req.query.rows_per_page || 10; // Default to 10 rows per page if not provided
     const pageNumber = req.query.page_number || 1; // Default to the first page if not provided
-    console.log("request is", req.query);
     const offset = (pageNumber - 1) * rowsPerPage;
 
     const results = await db.query(

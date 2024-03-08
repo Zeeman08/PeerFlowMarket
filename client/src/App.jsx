@@ -25,6 +25,9 @@ import Orders from './routes/Orders';
 import LeaveReview from './routes/LeaveReview'
 import SeeReview from './routes/SeeReview'
 import Dashboard from './routes/Dashboard';
+import Admin from './routes/Admin';
+import AdminLogin from './routes/AdminLogin';
+
 // import styles
 
 import './stylesheet.css';
@@ -32,9 +35,14 @@ import './stylesheet.css';
 const App = () => {
 
   const [isAuthenticated, setAuthenticated] = useState(true);
+  const [isAdmin, setAdmin] = useState(false);
 
   const setAuth = boolean => {
     setAuthenticated(boolean);
+  }
+
+  const setAuth2 = boolen => {
+    setAdmin(boolen);
   }
 
   useEffect(() => {
@@ -54,43 +62,64 @@ const App = () => {
       }
     };
 
+    const isAuth2 = () => {
+      try {
+        const response = fetch("http://localhost:3005/auth/is-verify", {
+          method: "GET",
+          headers: { token: localStorage.admintoken }
+        });
+  
+        const parseRes = response.json();
+  
+        parseRes === true ? setAuth2(true) : setAuth2(false);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     isAuth();
+    isAuth2();
   }, []);
 
   return (
     <div>
       {/* navbar */}
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div className="container-fluid d-flex justify-content-center">
-            <a className="navbar-brand fs-2 pfmlogo" href="/">Peer Flow Market</a>
-            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-                    aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <span className="navbar-toggler-icon"></span>
-            </button>
-        </div>
-      </nav>
-
-      <nav className="navbar navbar-expand-lg navbar-light Navbar">
-        <div className="container-fluid">
-            <div className="collapse navbar-collapse d-flex justify-content-evenly" id="navbarNavAltMarkup">
-              <a className="HyperLink" href="/">Home</a>
-              <a className="HyperLink" href="/stores">Stores</a>
-              <a className="HyperLink" href={`/yourstores`}>Your Stores</a>
-              <a className="HyperLink" href={`/viewCart`}>Cart</a>
-              <a className="HyperLink" href={`/transactions`}>Transactions</a>
-              <a className="HyperLink" href={`/orders`}>Orders</a>
+      {isAuthenticated && (
+        <div>
+          <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div className="container-fluid d-flex justify-content-center">
+                <a className="navbar-brand fs-2 pfmlogo" href="/">Peer Flow Market</a>
+                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span className="navbar-toggler-icon"></span>
+                </button>
             </div>
+          </nav>
+
+          <nav className="navbar navbar-expand-lg navbar-light Navbar">
+            <div className="container-fluid">
+                <div className="collapse navbar-collapse d-flex justify-content-evenly" id="navbarNavAltMarkup">
+                  <a className="HyperLink" href="/">Home</a>
+                  <a className="HyperLink" href="/stores">Stores</a>
+                  <a className="HyperLink" href={`/yourstores`}>Your Stores</a>
+                  <a className="HyperLink" href={`/viewCart`}>Cart</a>
+                  <a className="HyperLink" href={`/transactions`}>Transactions</a>
+                  <a className="HyperLink" href={`/orders`}>Orders</a>
+                  <a className="HyperLink" href={`/dashboard`}>Dashboard</a>
+                </div>
+            </div>
+          </nav>
         </div>
-      </nav>
+      )}
 
       {/* main content of the page */}
       <div className="container">
           <PersonContextProvider>
             <Router>
                 <Routes>
-                    <Route exact path="/" element={ isAuthenticated ? <Home setAuth={setAuth} /> : <Navigate to="/login"/>}/>
+                    <Route exact path="/" element={ isAuthenticated ? <Home /> : <Navigate to="/login"/>}/>
                     <Route exact path="/login" element={ !isAuthenticated ? <Login setAuth={setAuth} /> : <Navigate to="/"/>}/>
-                    <Route exact path="/register" element={ !isAuthenticated ? <Register setAuth={setAuth}/> : <Navigate to="/"/>}/>
+                    <Route exact path="/register" element={ !isAuthenticated ? <Register /> : <Navigate to="/"/>}/>
                     <Route exact path="/stores" element={ isAuthenticated ? <Stores /> : <Navigate to="/login"/>} />
                     <Route exact path="/yourstores" element={isAuthenticated ? <YourStores /> : <Navigate to="/login"/>} />
                     <Route exact path="/yourstore/:id" element={isAuthenticated ? <YourStore /> : <Navigate to="/login"/>} />
@@ -105,7 +134,9 @@ const App = () => {
                     <Route exact path="/orders" element={isAuthenticated ? <Orders/> : <Navigate to="/login"/>} />
                     <Route exact path="/leaveReview/:id" element={isAuthenticated ? <LeaveReview /> : <Navigate to="/login"/>} />
                     <Route exact path="/seeReview/:id" element={isAuthenticated ? <SeeReview /> : <Navigate to="/login"/>} />
-                    <Route exact path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login"/>} />
+                    <Route exact path="/dashboard" element={isAuthenticated ? <Dashboard setAuth={setAuth} /> : <Navigate to="/login"/>} />
+                    <Route exact path="/admin" element={isAdmin ? <Admin setAuth2={setAuth2} /> : <Navigate to="/adminLogin"/>} />
+                    <Route exact path="/adminLogin" element={!isAuthenticated ? <AdminLogin setAuth2={setAuth2}/> : <Navigate to="/admin"/>} />
                 </Routes>
             </Router>
           </PersonContextProvider>
