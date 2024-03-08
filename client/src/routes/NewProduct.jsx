@@ -8,7 +8,9 @@ const NewProduct = () => {
   // Handling form stuff
   const [name, setName] = useState("new product");
   const [desc, setDesc] = useState("new description");
+
   const [image, setImage] = useState(null);
+  
   const[stock, setStock] = useState(0);
   const [price, setPrice] = useState(0);
   const [tags, setTags] = useState([]);
@@ -37,6 +39,10 @@ const NewProduct = () => {
   useEffect(() => {
     const fetchTagSuggestions = (prefix) => {
       // Filter tags from allTags that have a similar prefix as tagInput
+      if(prefix === "") {
+        setTagSuggestions([]);
+        return;
+      }
       const filteredTags = allTags.filter((tag) =>
         tag.tag_name.toLowerCase().startsWith(prefix.toLowerCase())
       );

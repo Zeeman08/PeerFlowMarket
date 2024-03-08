@@ -191,7 +191,14 @@ const YourStores = () => {
             <tbody>
               {displayStores.map (store => (
                 <tr key={store.storefront_id} onClick={(e) => visitStore(e, store.storefront_id)}>
-                  <td>{store.image}</td>
+                  <td>
+                    <img
+                    src={require(`../images/${store.image?store.image:"avatar.png"}`)}
+                    alt="../images/avatar.png"
+                    style={{ width: '40%', height: 'auto', alignSelf: 'center'}}
+                    />
+                      
+                  </td>
                   <td>{store.storefront_name}</td>
                   <td>{store.category}</td>
                   <td>{store.storefront_description}</td>

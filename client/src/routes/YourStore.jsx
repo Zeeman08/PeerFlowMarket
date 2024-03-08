@@ -238,6 +238,8 @@ const YourStore = () => {
               <th scope='col'>Description</th>
               <th scope='col'>Price</th>
               <th scope='col'>Rating</th>
+              <th scope='col'>Stock</th>
+              <th scope='col'>Sell Count</th>
               <th scope='col'>Image</th>
               <th scope='col'>Update</th>
               <th scope='col'>Delete</th>
@@ -257,7 +259,18 @@ const YourStore = () => {
                 <td>{product.product_description}</td>
                 <td>${product.price}</td>
                 <td>{product.product_rating}</td>
-                <td>{product.image}</td>
+                <td>{product.stock_count}</td>
+                <td>{product.items_sold}</td>
+                <td>
+                  {product.image && (
+                      <img
+                      src={require(`../images/${product.image?product.image:"avatar.png"}`)}
+                      alt="../images/avatar.png"
+                      style={{ width: '40%', height: 'auto', alignSelf: 'center'}}
+                    />
+                    )
+                  }
+                </td>
                 <td>
                   <button className='btn btn-warning' onClick={() => updateProduct(product.product_id)}>
                     Update

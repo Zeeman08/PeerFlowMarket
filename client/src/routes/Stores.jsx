@@ -126,29 +126,38 @@ const Stores = () => {
         </div>
 
         {/* table */}
-        <div>
-          <table className="table table-hover table-secondary table-striped table-bordered text-center">
-            <thead className="table-dark">
-              <tr className="bg-primary">
-                <th scope="col">Image</th>
-                <th scope="col">Name</th>
-                <th scope="col">Category</th>
-                <th scope="col">Description</th>
-                <th scope="col">Rating</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayStores.map (store => (
-                <tr key={store.storefront_id} onClick={(e) => visitStore(e, store.storefront_id)}>
-                  <td>{store.image}</td>
-                  <td>{store.storefront_name}</td>
-                  <td>{store.category}</td>
-                  <td>{store.storefront_description}</td>
-                  <td>{store.rating}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+          {displayStores.map((store) => (
+            <div
+              key={store.storefront_id}
+              style={{
+                display: 'flex',
+                width: '1000px', // Adjust the width as needed
+                margin: '1rem',
+                borderRadius: '8px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease-in-out',
+                backgroundColor: '#fff',
+              }}
+            >
+              <img
+                src={require(`../images/${store.image || 'avatar.png'}`)}
+                alt="Store Image"
+                style={{ width: '30%', height: 'auto', borderTopLeftRadius: '8px', borderBottomLeftRadius: '8px' }}
+              />
+
+              <div style={{ padding: '1rem', width: '70%' }}>
+                <h5 style={{ marginBottom: '0.5rem' }}>{store.storefront_name}</h5>
+                <p style={{ marginBottom: '0.5rem' }}>{store.storefront_description}</p>
+                <p style={{ marginBottom: '0.5rem' }}>Category: {store.category}</p>
+                <p style={{ marginBottom: '0.5rem' }}>Rating: {store.rating}</p>
+                <button onClick={(e) => visitStore(e, store.storefront_id)} className="btn btn-primary">
+                  Visit Store
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
