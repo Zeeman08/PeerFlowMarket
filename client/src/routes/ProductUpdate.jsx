@@ -142,7 +142,6 @@ const ProductUpdate = () => {
         name: name,
         description: desc,
         price: price,
-        image: image,
         tags: tags,
         image: parseImg.filename,
       };
@@ -170,7 +169,7 @@ const ProductUpdate = () => {
         <div className="image-container">
           <img
               src={require(`../images/${product.image?product.image:"avatar.png"}`)}
-              alt="Product Image"
+              alt="../images/avatar.png"
               style={{ width: '100%', height: 'auto' }}
             />
         </div>

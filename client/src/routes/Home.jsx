@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const AnnouncementsPage = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -9,9 +8,6 @@ const AnnouncementsPage = () => {
 
   // Example API endpoint for all announcements
   const apiEndpoint = 'http://localhost:3005/getAnnouncements';
-
-  // For navigation
-  const navigate = useNavigate();
 
   // Fetch announcements from API
   useEffect(() => {
@@ -48,10 +44,6 @@ const AnnouncementsPage = () => {
     setCurrentPage(1); // Reset to the first page when changing rows per page
   };
 
-  // For viewing announcement details
-  const viewAnnouncement = (id) => {
-    navigate(`/announcement/${id}`);
-  };
 
   // Function to toggle the description display state
   const toggleDescription = (index) => {
@@ -104,7 +96,7 @@ const AnnouncementsPage = () => {
                 {announcement.expanded && announcement.image && (
                   <img
                     src={require(`../images/${announcement.image}`)}
-                    alt="Announcement Image"
+                    alt="../images/avatar.png"
                     style={{ width: '30%', height: 'auto' }}
                   />
                 )}
