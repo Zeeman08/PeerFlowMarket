@@ -94,7 +94,9 @@ app.get("/getStores", async (req, res) => {
     console.log(req.query);
     // Execute the query
     let x = 0;
-    let query = `${GET_STORE1}`;
+    //let query = `${GET_STORE1}`;
+    let query = `SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORY_ASSIGNMENT C WHERE S.storefront_id = C.storefront_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)`;
+    
     if (req.query.search !== undefined && req.query.search !== "") {
       query += ` ${x>0?'AND':'WHERE'} LOWER(S.STOREFRONT_NAME) LIKE LOWER('%${req.query.search}%')`;
       x=1;
@@ -162,13 +164,33 @@ app.get("/getStore/:id", async (req, res) => {
 app.get("/getStoresManagedByPerson/:id", async (req, res) => {
   try{
     console.log("Got get a store request by person");
-    
-    const results = await db.query(`SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORY_ASSIGNMENT C WHERE S.storefront_id = C.storefront_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID) WHERE S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM MANAGES WHERE PERSON_ID = ${req.params.id}) GROUP BY S.STOREFRONT_ID`);
+    const rowsPerPage = req.query.rows_per_page || 10; // Default to 10 rows per page if not provided
+    const pageNumber = req.query.page_number || 1; // Default to the first page if not provided
+    const offset = (pageNumber - 1) * rowsPerPage;
+    let x = 0;
+    let query = `SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORY_ASSIGNMENT C WHERE S.storefront_id = C.storefront_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)`;
+    x = 1;
+    query += ` WHERE is_manager_of_storefront(${req.params.id}, S.STOREFRONT_ID) > 0`
+    if (req.query.search !== undefined && req.query.search !== "") {
+      query += ` ${x>0?'AND':'WHERE'} LOWER(S.STOREFRONT_NAME) LIKE LOWER('%${req.query.search}%')`;
+      x=1;
+    }
+    if (req.query.category !== undefined && req.query.category !== "All") {
+      query += ` ${x>0?'AND':'WHERE'} S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM CATEGORY_ASSIGNMENT WHERE CATEGORY_NAME = '${req.query.category}')`;
+      x=1;
+    }
+    query += ` GROUP BY S.STOREFRONT_ID ORDER BY S.STOREFRONT_ID OFFSET ${offset} LIMIT ${rowsPerPage}`;
+    console.log('query', query);
+    const results = await db.query(query);
+
+    let query1 = `SELECT COUNT(*) FROM STOREFRONT S WHERE is_manager_of_storefront(${req.params.id}, S.STOREFRONT_ID) > 0`;
+    const result1 = await db.query(query1);
     res.status(200).json({
       status: "success",
       results: results.rows.length,
       data: {
-        stores: results.rows
+        stores: results.rows,
+        totalPages: Math.ceil(result1.rows[0].count / rowsPerPage)
       }
     });
   }catch(err){
