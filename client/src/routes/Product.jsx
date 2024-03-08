@@ -67,7 +67,7 @@ const Product = () => {
         {product.image && (
           <img
             src={require(`../images/${product.image}`)}
-            alt="Product Image"
+            alt="../images/avatar.png"
             style={{ width: '100%', height: 'auto' }}
           />
         )}

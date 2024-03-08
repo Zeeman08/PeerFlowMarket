@@ -169,7 +169,7 @@ const ProductUpdate = () => {
         <div className="image-container">
           <img
               src={require(`../images/${product.image?product.image:"avatar.png"}`)}
-              alt="Product Image"
+              alt="../images/avatar.png"
               style={{ width: '100%', height: 'auto' }}
             />
         </div>

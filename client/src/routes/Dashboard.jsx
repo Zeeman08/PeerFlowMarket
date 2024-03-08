@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import {useData} from '../context/PersonContext';
-import './home.css';
+import './dashboard.css';
 
 const Dashboard = ({setAuth}) => {
 

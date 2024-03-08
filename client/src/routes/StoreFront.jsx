@@ -125,7 +125,7 @@ const StoreFront = () => {
                 {product.image && (
                     <img
                     src={require(`../images/${product.image}`)}
-                    alt="Product Image"
+                    alt="../images/avatar.png"
                     style={{ width: '60%', height: 'auto', alignSelf: 'center'}}
                   />
                   )
