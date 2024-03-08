@@ -69,6 +69,8 @@ BEGIN
 	INSERT INTO ACTION_LOG (storefront_id, product_id, action_type) VALUES(storeid, prdid, 'DELETE');
 
 	DELETE FROM PRODUCT WHERE PRODUCT_ID = prdid;
+	
+	DELETE FROM tag_assignment WHERE PRODUCT_ID = prdid;
 END $$;
 
 

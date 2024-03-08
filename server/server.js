@@ -303,18 +303,24 @@ app.get("/getCategories", async (req, res) => {
 //get a product
 app.get("/getProduct/:productId", async (req, res) => {
   try {
-    console.log("Got get a store products request");
+    console.log("Got get a product request");
     const query = `${GET_PRODUCT1} WHERE P.PRODUCT_ID = ${req.params.productId} ${GET_PRODUCT2}`;
     // Use storeId and productId in your query
     const results = await db.query(
       query
     );
-
+    const results1 = await db.query(
+      "SELECT TAG_NAME FROM TAG_ASSIGNMENT WHERE PRODUCT_ID = $1",
+      [req.params.productId]
+    )
     res.status(200).json({
       status: "success",
       results: results.rows.length,
       data: {
-        product: results.rows[0],
+        product: {
+          ...results.rows[0],
+          tags: results1.rows.map((row) => row.tag_name),
+        }
       },
     });
   } catch (err) {
@@ -336,6 +342,22 @@ app.put("/updateProduct/:productId", async (req, res) => {
     const res2 = await db.query(
       "UPDATE storefront SET last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = (SELECT storefront_id FROM product WHERE product_id = $1)",
       [req.params.productId]
+    );
+    const res3 = await db.query(
+      "DELETE FROM TAG_ASSIGNMENT WHERE PRODUCT_ID = $1",
+      [req.params.productId]
+    );
+    const tagResults = await Promise.all(
+      req.body.tags.map(async (tag) => {
+        try {
+          return await db.query(
+            "INSERT INTO TAG_ASSIGNMENT (PRODUCT_ID, TAG_NAME) VALUES($1, $2) RETURNING *",
+            [req.params.productId, tag]
+          );
+        } catch (error) {
+          console.error('Error inserting tag assignments table:', error);
+        }
+      })
     );
     res.status(200).json({
       status: "success",
@@ -921,11 +943,11 @@ app.get("/getReviews/:productId", async (req, res) => {
 
 
 //getting all existing tags which has a similar prefix
-app.get("/getTags/:prefix", async (req, res) => {
+app.get("/getTags/", async (req, res) => {
   try {
     console.log("Got get all tags request");
     const results = await db.query(
-      `SELECT * FROM TAGS WHERE TAG_NAME LIKE '${req.params.prefix}%'`
+      `SELECT * FROM TAGS`
     );
     res.status(200).json({
       status: "success",

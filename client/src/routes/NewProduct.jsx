@@ -14,19 +14,34 @@ const NewProduct = () => {
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [tagSuggestions, setTagSuggestions] = useState([]);
-
+  const [allTags, setAllTags] = useState([]);
   // For navigation
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchTagSuggestions = async (prefix) => {
+    const fetchAllTags = async () => {
       try {
-        const response = await fetch(`http://localhost:3005/getTags/${prefix}`);
+        const response = await fetch("http://localhost:3005/getTags/");
         const jsonData = await response.json();
-        setTagSuggestions(jsonData.data.tags);
+        setAllTags(jsonData.data.tags);
       } catch (error) {
-        console.error('Error fetching tag suggestions:', error);
+        console.error('Error fetching all tags:', error);
       }
+    };
+
+    // Fetch all tags when the component mounts
+    fetchAllTags();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchTagSuggestions = (prefix) => {
+      // Filter tags from allTags that have a similar prefix as tagInput
+      const filteredTags = allTags.filter((tag) =>
+        tag.tag_name.toLowerCase().startsWith(prefix.toLowerCase())
+      );
+  
+      setTagSuggestions(filteredTags);
     };
 
     // Fetch tag suggestions when tags change

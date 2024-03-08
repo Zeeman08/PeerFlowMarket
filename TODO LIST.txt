@@ -92,6 +92,3 @@ At least 2 queries should join 3 or more tables
 suppose we did not have tags, but we had attributes for each product. 
 so, replace each use case of tags in our project, but replace it with "attribute" and a corresponding "value" with it. 
 
-
--- to be corrected
-every time a new prefix is entered in new product tags selection, it sends an api call to the backend. We have to first bring all the tags, then suggest it locally. Making it faster. 
