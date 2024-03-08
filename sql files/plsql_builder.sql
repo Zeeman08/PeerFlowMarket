@@ -188,7 +188,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
+CREATE OR REPLACE FUNCTION is_manager_of_storefront(per_id int, s_id int)
+  RETURNS int
+AS $$
+DECLARE
+    RES INT;
+BEGIN
+    SELECT COUNT(*) INTO RES 
+    FROM MANAGES 
+    WHERE PERSON_ID = per_id AND STOREFRONT_ID = s_id;
+    RETURN RES;
+END;
+$$ LANGUAGE plpgsql;
 
 
 --TRIGGERS

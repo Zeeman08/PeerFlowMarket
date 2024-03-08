@@ -48,11 +48,6 @@ const AnnouncementsPage = () => {
     setCurrentPage(1); // Reset to the first page when changing rows per page
   };
 
-  // For viewing announcement details
-  const viewAnnouncement = (id) => {
-    navigate(`/announcement/${id}`);
-  };
-
   // Function to toggle the description display state
   const toggleDescription = (index) => {
     const updatedAnnouncements = [...announcements];

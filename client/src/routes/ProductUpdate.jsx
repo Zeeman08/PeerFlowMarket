@@ -142,7 +142,6 @@ const ProductUpdate = () => {
         name: name,
         description: desc,
         price: price,
-        image: image,
         tags: tags,
         image: parseImg.filename,
       };
