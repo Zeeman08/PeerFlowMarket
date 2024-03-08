@@ -160,8 +160,11 @@ const NewProduct = () => {
       });
 
       console.log(response);
-      navigate(`/yourstore/${id}`);
-    } catch (err) {
+      //delayed navigation
+      setTimeout(() => {
+        navigate(`/yourstore/${id}`);
+      }, 1000);
+      } catch (err) {
       console.error(err);
     }
   };

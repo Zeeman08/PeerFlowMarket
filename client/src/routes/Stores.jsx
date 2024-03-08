@@ -179,7 +179,6 @@ const Stores = () => {
               <div style={{ padding: '1rem', width: '70%' }}>
                 <h5 style={{ marginBottom: '0.5rem' }}>{store.storefront_name}</h5>
                 <p style={{ marginBottom: '0.5rem' }}>{store.storefront_description}</p>
-                <p style={{ marginBottom: '0.5rem' }}>Category: {store.category}</p>
                 <p style={{ marginBottom: '0.5rem' }}>Rating: {store.rating}</p>
                 <button onClick={(e) => visitStore(e, store.storefront_id)} className="btn btn-primary">
                   Visit Store

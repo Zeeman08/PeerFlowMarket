@@ -15,7 +15,14 @@ const YourStore = () => {
   const [showNewAnnouncementButton, setShowNewAnnouncementButton] = useState(true);
   const [image, setImage] = useState(null);
   const navigate = useNavigate();
+  /*******************/
+  /* FOR PAGINATION  */
+  /*******************/
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage, setProductsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
+  const[searchTrigger, setSearchTrigger] = useState(0);
   useEffect(() => {
     const getStore = async () => {
       try {
@@ -29,10 +36,11 @@ const YourStore = () => {
 
     const getProducts = async () => {
       try {
-        const response = await fetch(`http://localhost:3005/getStoreProducts/${id}`);
+        const response = await fetch(`http://localhost:3005/getStoreProducts/${id}?rows_per_page=${productsPerPage}&page_number=${currentPage}&search=${searchText}`);
         const jsonData = await response.json();
         setProducts(jsonData.data.products);
         setDisplay(jsonData.data.products);
+        setTotalPages(jsonData.data.totalPages);
       } catch (err) {
         console.log(err);
       }
@@ -40,15 +48,27 @@ const YourStore = () => {
 
     getStore();
     getProducts();
-  }, [id]);
+  }, [id, currentPage, productsPerPage, searchTrigger]);
 
   products.forEach(product => {
     if (product.rating_count === 0) product.rating_count = 1;
   });
 
+  // Handle pagination button click
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+  // Handle rows per page change
+  const handleRowsPerPageChange = (e) => {
+    setProductsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to the first page when changing rows per page
+  };
+
   const onSearch = async e => {
     e.preventDefault();
-    setDisplay(products.filter(product => product.product_name.includes(searchText)));
+    setSearchTrigger(1-searchTrigger);
+    e.preventDefault();
+    //setDisplay(products.filter(product => product.product_name.includes(searchText)));
   };
 
   const deleteProduct = async id => {
@@ -229,6 +249,17 @@ const YourStore = () => {
         </p>
       )}
 
+      {/* Rows per page dropdown */}
+      <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+          <label htmlFor="rowsPerPage" style={{ marginRight: '0.5rem' }}>Rows per page:</label>
+          <select id="rowsPerPage" value={productsPerPage} onChange={handleRowsPerPageChange}>
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+          </select>
+        </div>  
+
+
       <div>
         <table className='table table-hover table-secondary table-striped table-bordered text-center'>
           <thead className='table-dark'>
@@ -289,6 +320,28 @@ const YourStore = () => {
           Go Back
         </button>
       </div>
+
+      {/* Pagination */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+          <button
+            style={{ padding: '0.5rem', marginRight: '1rem', cursor: 'pointer', backgroundColor: '#007BFF', color: 'white' }}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <span style={{ fontSize: '1rem', marginRight: '1rem' }}>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            style={{ padding: '0.5rem', cursor: 'pointer', backgroundColor: '#007BFF', color: 'white' }}
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+
     </div>
   );
 };
