@@ -50,9 +50,7 @@ const StoreFront = () => {
   };
 
   const viewProduct = (e, id) => {
-    if (e.detail > 1) {
-      navigate(`/product/${id}`);
-    }
+    navigate(`/product/${id}`);
   };
 
   const goBack = () => {
