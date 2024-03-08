@@ -83,21 +83,54 @@ const GET_STORE1 = "SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATIN
 const GET_STORE2 = "GROUP BY S.STOREFRONT_ID";
 const GET_PRODUCT1 = "SELECT P.*, COALESCE(AVG(R.RATING), 0) AS PRODUCT_RATING FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID)";
 const GET_PRODUCT2 = "GROUP BY P.PRODUCT_ID";
+
 // get all the stores
 app.get("/getStores", async (req, res) => {
   try {
     console.log("Got get all stores request");
-
+    const rowsPerPage = req.query.rows_per_page || 10; // Default to 10 rows per page if not provided
+    const pageNumber = req.query.page_number || 1; // Default to the first page if not provided
+    const offset = (pageNumber - 1) * rowsPerPage;
+    console.log(req.query);
     // Execute the query
-    const results = await db.query("SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORY_ASSIGNMENT C WHERE S.storefront_id = C.storefront_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID) GROUP BY S.STOREFRONT_ID");
+    let x = 0;
+    //let query = `${GET_STORE1}`;
+    let query = `SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORY_ASSIGNMENT C WHERE S.storefront_id = C.storefront_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)`;
+    
+    if (req.query.search !== undefined && req.query.search !== "") {
+      query += ` ${x>0?'AND':'WHERE'} LOWER(S.STOREFRONT_NAME) LIKE LOWER('%${req.query.search}%')`;
+      x=1;
+    }
+    if (req.query.category !== undefined && req.query.category !== "All") {
+      query += ` ${x>0?'AND':'WHERE'} S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM CATEGORY_ASSIGNMENT WHERE CATEGORY_NAME = '${req.query.category}')`;
+      x=1;
+    }
+    query += ` ${GET_STORE2} ORDER BY S.STOREFRONT_ID OFFSET ${offset} LIMIT ${rowsPerPage}`;
+    console.log('query', query);
+    const results = await db.query(query);
 
+    let query1 = 'SELECT COUNT(*) FROM STOREFRONT';
+    x = 0;
+    console.log(x);
+    if (req.query.search !== undefined && req.query.search !== "") {
+      query1 += ` ${x>0?'AND':'WHERE'} LOWER(STOREFRONT_NAME) LIKE LOWER('%${req.query.search}%')`;
+      x=1;
+    }
+    if (req.query.category !== undefined && req.query.category !== "All") {
+      query1 += ` ${x>0?'AND':'WHERE'} STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM CATEGORY_ASSIGNMENT WHERE CATEGORY_NAME = '${req.query.category}')`;
+      x=1;
+    }
+    console.log('query1', query1);
+    const result1 = await db.query(query1);
     res.status(200).json({
       status: "success",
       results: results.rows.length,
       data: {
-        stores: results.rows
+        stores: results.rows,
+        totalPages: Math.ceil(result1.rows[0].count / rowsPerPage)
       }
     });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({
@@ -131,13 +164,33 @@ app.get("/getStore/:id", async (req, res) => {
 app.get("/getStoresManagedByPerson/:id", async (req, res) => {
   try{
     console.log("Got get a store request by person");
+    const rowsPerPage = req.query.rows_per_page || 10; // Default to 10 rows per page if not provided
+    const pageNumber = req.query.page_number || 1; // Default to the first page if not provided
+    const offset = (pageNumber - 1) * rowsPerPage;
+    let x = 0;
+    let query = `SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORY_ASSIGNMENT C WHERE S.storefront_id = C.storefront_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)`;
+    x = 1;
+    query += ` WHERE is_manager_of_storefront(${req.params.id}, S.STOREFRONT_ID) > 0`
+    if (req.query.search !== undefined && req.query.search !== "") {
+      query += ` ${x>0?'AND':'WHERE'} LOWER(S.STOREFRONT_NAME) LIKE LOWER('%${req.query.search}%')`;
+      x=1;
+    }
+    if (req.query.category !== undefined && req.query.category !== "All") {
+      query += ` ${x>0?'AND':'WHERE'} S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM CATEGORY_ASSIGNMENT WHERE CATEGORY_NAME = '${req.query.category}')`;
+      x=1;
+    }
+    query += ` GROUP BY S.STOREFRONT_ID ORDER BY S.STOREFRONT_ID OFFSET ${offset} LIMIT ${rowsPerPage}`;
+    console.log('query', query);
+    const results = await db.query(query);
 
-    const results = await db.query(`SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORY_ASSIGNMENT C WHERE S.storefront_id = C.storefront_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID) WHERE S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM MANAGES WHERE PERSON_ID = ${req.params.id}) GROUP BY S.STOREFRONT_ID`);
+    let query1 = `SELECT COUNT(*) FROM STOREFRONT S WHERE is_manager_of_storefront(${req.params.id}, S.STOREFRONT_ID) > 0`;
+    const result1 = await db.query(query1);
     res.status(200).json({
       status: "success",
       results: results.rows.length,
       data: {
-        stores: results.rows
+        stores: results.rows,
+        totalPages: Math.ceil(result1.rows[0].count / rowsPerPage)
       }
     });
   }catch(err){
@@ -197,9 +250,22 @@ app.post("/createStore", async (req, res) => {
 app.put("/updateStore/:id", async (req, res) => {
   try{
     console.log("Got an update store request");
+    let query = "";
+    let params = [
+      req.params.id,
+      req.body.name,
+      req.body.description
+    ];
+    if(req.body.image === undefined){
+      query = "UPDATE storefront SET STOREFRONT_NAME = $2, STOREFRONT_DESCRIPTION = $3, last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = $1 RETURNING *";
+    }
+    else {
+      query = "UPDATE storefront SET STOREFRONT_NAME = $2, STOREFRONT_DESCRIPTION = $3, IMAGE = $4, last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = $1 RETURNING *";
+      params.push(req.body.image);
+    }
+
     const results = await db.query(
-      "UPDATE storefront SET STOREFRONT_NAME = $2, STOREFRONT_DESCRIPTION = $3, IMAGE = $4, last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = $1 RETURNING *",
-      [req.params.id, req.body.name, req.body.description, req.body.image]
+      query, params
     );
     res.status(200).json({
       status: "success",
@@ -335,10 +401,25 @@ app.get("/getProduct/:productId", async (req, res) => {
 app.put("/updateProduct/:productId", async (req, res) => {
   try{
     console.log("Got an update product request");
-    const results = await db.query(
-      "UPDATE product SET product_name = $2, product_description = $3, price = $4, image = $5, last_updated_on = CURRENT_TIMESTAMP WHERE product_id = $1 RETURNING *",
-      [req.params.productId, req.body.name, req.body.description, req.body.price, req.body.image]
-    );
+    console.log(req.body);
+    //check if req.body has image
+    let query = "";
+    let params = [
+      req.params.productId,
+      req.body.name,
+      req.body.description,
+      req.body.price,
+      req.body.stock
+    ];
+    if(req.body.image === undefined){
+      query = "UPDATE product SET product_name = $2, product_description = $3, price = $4, stock_count = $5, last_updated_on = CURRENT_TIMESTAMP WHERE product_id = $1 RETURNING *";
+    }
+    else {
+      query = "UPDATE product SET product_name = $2, product_description = $3, price = $4, stock_count = $5, image = $6, last_updated_on = CURRENT_TIMESTAMP WHERE product_id = $1 RETURNING *";
+      params.push(req.body.image);
+    }
+    console.log(query);
+    const results = await db.query(query, params);
     const res2 = await db.query(
       "UPDATE storefront SET last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = (SELECT storefront_id FROM product WHERE product_id = $1)",
       [req.params.productId]
@@ -443,18 +524,31 @@ app.delete("/deleteProduct/:productId", async (req, res) => {
 app.get("/getStoreProducts/:id", async (req, res) => {
   try{
     console.log("Got get a store products request");
-    // const query = `${GET_PRODUCT1} WHERE P.STOREFRONT_ID= ${req.params.id} ${GET_PRODUCT2}`;
-    // const results = await db.query(
-    //   "SELECT P.*, COALESCE(ROUND(AVG(R.RATING)), 0) AS PRODUCT_RATING FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) WHERE P.STOREFRONT_ID = $1 GROUP BY P.PRODUCT_ID",
-    //   [req.params.id]
-    // );
-    const query = `SELECT P.*, COALESCE(ROUND(AVG(R.RATING)), 0) AS PRODUCT_RATING, ARRAY_AGG(TA.TAG_NAME) AS TAGS FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON (P.PRODUCT_ID = R.PRODUCT_ID) LEFT OUTER JOIN TAG_ASSIGNMENT TA ON (P.PRODUCT_ID = TA.PRODUCT_ID) WHERE P.STOREFRONT_ID = $1 GROUP BY P.PRODUCT_ID`;
-      const results = await db.query(query, [req.params.id]);
+    const rowsPerPage = req.query.rows_per_page || 10; // Default to 10 rows per page if not provided
+    const pageNumber = req.query.page_number || 1; // Default to the first page if not provided
+    const offset = (pageNumber - 1) * rowsPerPage;
+    let x = 0;
+    let query = `SELECT P.*, COALESCE(AVG(R.RATING), 0) AS PRODUCT_RATING, ARRAY_AGG(TA.TAG_NAME) AS TAGS FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) LEFT OUTER JOIN TAG_ASSIGNMENT TA ON (P.PRODUCT_ID = TA.PRODUCT_ID)`;
+    if (req.query.search !== undefined && req.query.search !== "") {
+      query += ` ${x>0?'AND':'WHERE'} LOWER(P.PRODUCT_NAME) LIKE LOWER('%${req.query.search}%')`;
+      x=1;
+    }
+    query += ` GROUP BY P.PRODUCT_ID HAVING P.STOREFRONT_ID = ${req.params.id} ORDER BY P.PRODUCT_ID`;
+    query1 = query;
+    query += ` OFFSET ${offset} LIMIT ${rowsPerPage}`;
+
+    //const query = `SELECT P.*, COALESCE(ROUND(AVG(R.RATING)), 0) AS PRODUCT_RATING, ARRAY_AGG(TA.TAG_NAME) AS TAGS FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON (P.PRODUCT_ID = R.PRODUCT_ID) LEFT OUTER JOIN TAG_ASSIGNMENT TA ON (P.PRODUCT_ID = TA.PRODUCT_ID) WHERE P.STOREFRONT_ID = $1 GROUP BY P.PRODUCT_ID`;
+    console.log('query: ', query);  
+    const results = await db.query(query);
+
+    const result1 = await db.query(query1);
+    console.log(result1.rows.length);
     res.status(200).json({
       status: "success",
       results: results.rows.length,
       data: {
-        products: results.rows
+        products: results.rows,
+        totalPages: Math.ceil(result1.rows.length / rowsPerPage)
       }
     });
   }catch(err){

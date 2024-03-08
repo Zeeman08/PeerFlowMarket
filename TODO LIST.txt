@@ -90,7 +90,6 @@ At least 2 queries should join 3 or more tables
 --functions and procedures re track korar jonno additional ekta table lagbe
 --GUI updates
 
---???
-suppose we did not have tags, but we had attributes for each product. 
-so, replace each use case of tags in our project, but replace it with "attribute" and a corresponding "value" with it. 
+--
+pagination: check corner case logics (example: when the page is empty, it shows page i of 0, should we keep it or it?)
 

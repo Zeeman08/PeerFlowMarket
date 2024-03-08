@@ -19,6 +19,9 @@ const YourStores = () => {
   //Buffer data used on table
   const[displayStores, setDisplay] = useState([]);
 
+
+  
+
   /*******************/
   /* DROP DOWN STUFF */
   /*******************/
@@ -26,6 +29,14 @@ const YourStores = () => {
   const [isActive, setIsActive] = useState(false);
   const [selected, setSelected] = useState({category_name: "All"});
   const [options, setOptions] = useState([]);
+
+  /*******************/
+  /* FOR PAGINATION  */
+  /*******************/
+  const [currentPage, setCurrentPage] = useState(1);
+  const [storesPerPage, setStoresPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const[searchTrigger, setSearchTrigger] = useState(0);
 
   //For going to other pages
   let navigate = useNavigate();
@@ -39,10 +50,11 @@ const YourStores = () => {
         if (person === undefined){
           console.log("person is undefined");
         }
-        const response = await fetch(`http://localhost:3005/getStoresManagedByPerson/${person.person_id}`);
+        const response = await fetch(`http://localhost:3005/getStoresManagedByPerson/${person.person_id}?rows_per_page=${storesPerPage}&page_number=${currentPage}&search=${searchText}&category=${selected.category_name}`);
         const jsonData = await response.json();
         setStores(jsonData.data.stores);
         setDisplay(jsonData.data.stores);
+        setTotalPages(jsonData.data.totalPages);
       }
       catch (err) {
         console.log(err);
@@ -63,8 +75,18 @@ const YourStores = () => {
     
     getStores();
     getCat();
-  }, [person]);
+  }, [person, currentPage, storesPerPage, searchTrigger]);
 
+
+  // Handle pagination button click
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+  // Handle rows per page change
+  const handleRowsPerPageChange = (e) => {
+    setStoresPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to the first page when changing rows per page
+  };
 
   /********************/
   /* SEARCH BAR STUFF */
@@ -74,12 +96,15 @@ const YourStores = () => {
   //On pressing search bar, it will search for the description
   const onSearchName = async (e) => {
     e.preventDefault();
-    if (selected.category_name !== "All"){
-      setDisplay(stores.filter(store => store.storefront_name.toLowerCase().includes(searchText.toLowerCase()) && store.category === selected.category_name));
-    }
-    else{
-      setDisplay(stores.filter(store => store.storefront_name.toLowerCase().includes(searchText.toLowerCase())));
-    }
+    console.log("searching");
+    setSearchTrigger(1-searchTrigger);
+    // e.preventDefault();
+    // if (selected.category_name !== "All"){
+    //   setDisplay(stores.filter(store => store.storefront_name.toLowerCase().includes(searchText.toLowerCase()) && store.category === selected.category_name));
+    // }
+    // else{
+    //   setDisplay(stores.filter(store => store.storefront_name.toLowerCase().includes(searchText.toLowerCase())));
+    // }
   };
 
 
@@ -172,6 +197,16 @@ const YourStores = () => {
             )}
           </div>
         </div>
+
+        {/* Rows per page dropdown */}
+        <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+          <label htmlFor="rowsPerPage" style={{ marginRight: '0.5rem' }}>Rows per page:</label>
+          <select id="rowsPerPage" value={storesPerPage} onChange={handleRowsPerPageChange}>
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+          </select>
+        </div>  
         
 
         {/* table */}
@@ -191,7 +226,14 @@ const YourStores = () => {
             <tbody>
               {displayStores.map (store => (
                 <tr key={store.storefront_id} onClick={(e) => visitStore(e, store.storefront_id)}>
-                  <td>{store.image}</td>
+                  <td>
+                    <img
+                    src={require(`../images/${store.image?store.image:"avatar.png"}`)}
+                    alt="../images/avatar.png"
+                    style={{ width: '40%', height: 'auto', alignSelf: 'center'}}
+                    />
+                      
+                  </td>
                   <td>{store.storefront_name}</td>
                   <td>{store.category}</td>
                   <td>{store.storefront_description}</td>
@@ -203,6 +245,28 @@ const YourStores = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+          <button
+            style={{ padding: '0.5rem', marginRight: '1rem', cursor: 'pointer', backgroundColor: '#007BFF', color: 'white' }}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <span style={{ fontSize: '1rem', marginRight: '1rem' }}>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            style={{ padding: '0.5rem', cursor: 'pointer', backgroundColor: '#007BFF', color: 'white' }}
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+
       </div>
     </div>
   )

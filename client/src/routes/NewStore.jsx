@@ -9,8 +9,7 @@ const NewStore = () => {
   //Handling form stuff
   const[name, setName] = useState("new store");
   const[desc, setDesc] = useState("new description");
-  const[image, setImage] = useState("image.jpg");
-
+  const [image, setImage] = useState(null);
   /*******************/
   /* DROP DOWN STUFF */
   /*******************/
@@ -45,17 +44,71 @@ const NewStore = () => {
   /*************************/
   /**** ADD STORE STUFF ****/
   /*************************/
+  const onFileChange = e => {
 
+    // Set the selected file
+    const file = e.target.files[0];
+    setImage(file);
+
+    // Resize image
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxSize = 600; // Maximum size for product photo
+
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate aspect ratio
+        const aspectRatio = width / height;
+
+        // Determine new dimensions while maintaining aspect ratio
+        if (width > height) {
+          width = maxSize;
+          height = maxSize / aspectRatio;
+        } else {
+          height = maxSize;
+          width = maxSize * aspectRatio;
+        }
+
+        // Create canvas and resize image
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert canvas to blob
+        canvas.toBlob((blob) => {
+          const resizedFile = new File([blob], file.name, { type: 'image/jpeg' });
+          setImage(resizedFile);
+        }, 'image/jpeg', 0.8); // Quality set to 80%
+      };
+
+      img.src = event.target.result;
+    };
+
+    reader.readAsDataURL(file);
+  };
   const saveChanges = async (e) => {
     try {
         if (selected.category_name === "Select a category")
           return;
-
+        const formData = new FormData();
+        formData.append("image", image);
+  
+        const imgres = await fetch("http://localhost:3005/upload", {
+          method: "POST",
+          body: formData
+        });
+  
+        const parseImg = await imgres.json();
         const body = {
             name: name,
             category: selected.category_name,
             description: desc,
-            image: image,
+            image: parseImg.filename,
             owner: person.person_id
         };
         const response = await fetch("http://localhost:3005/createStore", {
@@ -110,9 +163,8 @@ const NewStore = () => {
         onChange={e => setDesc(e.target.value)}/>
       </div>
       <div>
-      <label htmlFor='image'>Image:</label>
-        <input type="text" className="form-control mt-2 mb-2" value={image}
-        onChange={e => setImage(e.target.value)}/>
+        <label htmlFor="image">Image:</label>
+        <input type="file" name="image" className="form-control mt-2 mb-2" onChange={e => onFileChange(e)} />
       </div>
       <div className="d-flex justify-content-between">
         <button className="btn btn-success mt-2" onClick={saveChanges}>Create</button>

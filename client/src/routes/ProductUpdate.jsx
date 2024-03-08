@@ -9,7 +9,9 @@ const ProductUpdate = () => {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [image, setImage] = useState("");
+  const [oldImage, setOldImage] = useState("");
   const [price, setPrice] = useState(0);
+  const [stock, setStock] = useState(0);
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
   const [tagSuggestions, setTagSuggestions] = useState([]);
@@ -30,8 +32,9 @@ const ProductUpdate = () => {
     getProduct();
     setName(product.product_name || "");
     setDesc(product.product_description || "");
-    setImage(product.image || "");
+    setOldImage(product.image || "");
     setPrice(product.price || 0);
+    setStock(product.stock_count || 0);
     setTags(product.tags || []);
   }, [id, product.product_name]);
 
@@ -50,7 +53,12 @@ const ProductUpdate = () => {
   }, []);
 
   useEffect(() => {
+
     const fetchTagSuggestions = (prefix) => {
+      if(prefix === "") {
+        setTagSuggestions([]);
+        return;
+      }
       const filteredTags = allTags.filter((tag) =>
         tag.tag_name.toLowerCase().startsWith(prefix.toLowerCase())
       );
@@ -129,22 +137,33 @@ const ProductUpdate = () => {
     reader.readAsDataURL(file);
   };
 
-  const saveChanges = async (e) => {
+  const saveChanges = async () => {
     try {
-      const formData = new FormData();
-      formData.append("image", image);
-      const imgres = await fetch("http://localhost:3005/upload", {
-        method: "POST",
-        body: formData
-      });
-      const parseImg = await imgres.json();
-      const body = {
+      console.log(image);
+      let body = {
         name: name,
         description: desc,
         price: price,
         tags: tags,
-        image: parseImg.filename,
-      };
+        stock: stock
+      }
+      console.log('image: ', image);
+      console.log('oldImage: ', oldImage);
+      if(image) {
+        console.log('now in if condition');
+        const formData = new FormData();
+        formData.append("image", image);
+        const imgres = await fetch("http://localhost:3005/upload", {
+          method: "POST",
+          body: formData
+        });
+        const parseImg = await imgres.json();
+        body.image = parseImg.filename;
+        console.log('parseImg: ', parseImg.filename);
+      }
+      console.log('body: ', body);
+      
+
       const response = await fetch(`http://localhost:3005/updateProduct/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -152,7 +171,11 @@ const ProductUpdate = () => {
       });
 
       console.log(response);
-      navigate(`/yourstore/${product.storefront_id}`);
+
+          
+      setTimeout(() => {
+        navigate(`/yourstore/${product.storefront_id}`);
+      }, 1000);
     } catch (err) {
       console.log(err)
     }
@@ -186,6 +209,11 @@ const ProductUpdate = () => {
             <label htmlFor='Price'>Price:</label>
             <input type="number" className="form-control mt-2 mb-2" placeholder={price} onChange={e => setPrice(e.target.value)} />
           </div>
+          <div>
+            <label htmlFor='Stock'>Stock:</label>
+            <input type="number" className="form-control mt-2 mb-2" placeholder={stock} onChange={e => setStock(e.target.value)} />
+          </div>
+          
           <div>
             <label htmlFor="image">Image:</label>
             <input type="file" name="image" className="form-control mt-2 mb-2" onChange={e => onFileChange(e)} />
