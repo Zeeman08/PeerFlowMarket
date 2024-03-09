@@ -184,7 +184,7 @@ const Register = ({setAuth}) => {
         <input type="number" name="postCode" placeholder="Post Code" className="form-control my-3" value={postCode} onChange={e => onChange(e)} />
         
         <label htmlFor="phone">Phone:</label>
-        <input type="phone" name="phone" placeholder="Phone" className="form-control my-3" value={phone} onChange={e => onChange(e)}/>
+        <input type="number" name="phone" placeholder="Phone" className="form-control my-3" value={phone} onChange={e => onChange(e)}/>
         <label htmlFor="image">Profile Picture:</label>
         <input type="file" name="image" className="form-control my-3" onChange={e => onFileChange(e)} />
         <button className="btn btn-success">Submit</button>
