@@ -163,9 +163,10 @@ UPDATE PRODUCT SET items_sold = (SELECT items_sold FROM PRODUCT WHERE product_id
 
 DELETE:
 DELETE FROM TAG_ASSIGNMENT WHERE PRODUCT_ID = $1
-==>
+==> when updating a product, we first remove all its current tags, and then insert new ones.
 DELETE FROM announcements where announcement_id = $1
 DELETE FROM CART WHERE QUANTITY = 0
+==> when we decrease the count of a product in cart, if it gets to 0, we simply just remove those products from cart
 
 PLSQL deletions
 --Checkout procedure
