@@ -159,7 +159,7 @@ DECLARE
     v_storefront_id INTEGER;
     v_product_counter INTEGER;
 BEGIN
-    FOR v_storefront_id IN 43..79 LOOP
+    FOR v_storefront_id IN 1..37 LOOP
         FOR v_product_counter IN 1..40 LOOP
             INSERT INTO PRODUCT (STOREFRONT_ID, PRODUCT_NAME, PRODUCT_DESCRIPTION, STOCK_COUNT, PRICE, IMAGE)
             VALUES (

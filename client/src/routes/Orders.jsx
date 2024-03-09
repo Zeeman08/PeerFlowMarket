@@ -189,21 +189,22 @@ const Orders = () => {
   return (
     <div className="container">
       <div>
-        <div>
+        <div className="text-center mb-4">
           {/* Buttons for Left and Right */}
-          <button onClick={() => handleButtonPress('Buyer')}>As a buyer</button>
-          <button onClick={() => handleButtonPress('Seller')}>As a seller</button>
-          
           <h1 className="font-weight-light display-1 text-center mt-4">Orders</h1>
         </div>
         <div>
           {/* Dropdown menu for filtering */}
-          <select value={filterOption} onChange={handleFilterChange} className="form-select mb-3">
+          <select value={filterOption} onChange={handleFilterChange} className="form-select mb-4">
             <option value="3">Show All</option>
             <option value="0">Not Delivered</option>
             <option value="1">Delivered but not Paid</option>
             <option value="2">Paid</option>
           </select>
+          <div className="d-flex justify-content-evenly mt-4 mb-4">
+            <button className="btn btn-success" onClick={() => handleButtonPress('Buyer')}>As a buyer</button>
+            <button className="btn btn-success" onClick={() => handleButtonPress('Seller')}>As a seller</button>
+          </div>
           <table className="table table-hover table-secondary table-striped table-bordered text-center">
             <thead className="table-dark">
               <tr className="bg-primary">
@@ -215,7 +216,7 @@ const Orders = () => {
             <tbody>
               {displayGroups.map((group) => (
                 <React.Fragment key={group.group_id}>
-                  <tr onDoubleClick={() => toggleGroupDetails(group.group_id)}>
+                  <tr onClick={() => toggleGroupDetails(group.group_id)}>
                     <td>{group.group_id}</td>
                     <td>{group.order_time}</td>
                     <td>{renderDeliveryStatusIcon(group.group_id)}  {buttonPressed === 'Seller' && (
@@ -240,7 +241,7 @@ const Orders = () => {
                         {groupDetails[group.group_id] && (
                           <div>
                             {/* Render additional details here */}
-                            <ul>
+                            <ul style={{ listStyle: 'none' }}>
                               {groupDetails[group.group_id].map((order) => (
                                 <li key={order.order_id} style={{ display: 'flex', justifyContent: 'space-between' }}>
                                   <div style={{ textAlign: 'left' }}>{order.product_name}</div>

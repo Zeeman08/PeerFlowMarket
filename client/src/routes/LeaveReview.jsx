@@ -5,6 +5,7 @@ import { useData } from '../context/PersonContext';
 const LeaveReview = () => {
   const {person} = useData();
   const { id } = useParams();
+  const [product, setProduct] = useState({});
   const [rating, setRating] = useState('');
   const [comment, setComment] = useState('');
   const navigate = useNavigate();
@@ -30,14 +31,22 @@ const LeaveReview = () => {
         console.log('Failed to submit review.');
       }
 
-      navigate(`/store/${id}`);
+      const resp = await fetch(`http://localhost:3005/getProduct/${id}`);
+      const jsonData = await resp.json();
+      const product = jsonData.data.product;
+      navigate(`/store/${product.storefront_id}`);
+
+      navigate(`/store/${product.storefront_id}`);
     } catch (error) {
       console.error('Error submitting review:', error);
     }
   };
 
-  const goBack = () => {
-    navigate(`/store/${id}`);
+  const goBack = async () => {
+    const resp = await fetch(`http://localhost:3005/getProduct/${id}`);
+    const jsonData = await resp.json();
+    const product = jsonData.data.product;
+    navigate(`/store/${product.storefront_id}`);
   };
 
   return (

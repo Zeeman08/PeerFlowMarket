@@ -143,7 +143,7 @@ const Stores = () => {
         </div>
 
         {/* Rows per page dropdown */}
-        <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+        <div className="mb-3" style={{ textAlign: 'center', marginTop: '1rem' }}>
           <label htmlFor="rowsPerPage" style={{ marginRight: '0.5rem' }}>Rows per page:</label>
           <select id="rowsPerPage" value={storesPerPage} onChange={handleRowsPerPageChange}>
             <option value={5}>5</option>

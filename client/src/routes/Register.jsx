@@ -1,3 +1,4 @@
+import { parse } from '@fortawesome/fontawesome-svg-core';
 import React, { useState, useEffect } from 'react'
 import {Link, useNavigate } from 'react-router-dom';
 
@@ -103,17 +104,20 @@ const Register = ({setAuth}) => {
       alert("Please fill in all address fields");
       return;
     }
-  
-    const formData = new FormData();
-    formData.append("image", image);
+
+    const parseImg = {filename: "avatar.png"};
 
     try {
-      const imgres = await fetch("http://localhost:3005/upload", {
-        method: "POST",
-        body: formData
-      });
+      if (image){
+        const formData = new FormData();
+        formData.append("image", image);
+        const imgres = await fetch("http://localhost:3005/upload", {
+          method: "POST",
+          body: formData
+        });
 
-      const parseImg = await imgres.json();
+        parseImg = await imgres.json();
+      }
 
       const body = {name, password, email, dob, phone, image: parseImg.filename, location: selected.location_id, street, houseNumber, postCode};
   

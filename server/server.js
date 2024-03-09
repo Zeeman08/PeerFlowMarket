@@ -1045,17 +1045,39 @@ app.post("/postReview/:productId/:personId", async (req, res) => {
     //   "INSERT INTO review (product_id, person_id, rating, comment) VALUES ($1, $2, $3, $4) RETURNING *",
     //   [req.params.productId, req.params.personId, req.body.rating, req.body.comment]
     // );
-    const results = await db.query(
-      "INSERT INTO REVIEW (PRODUCT_ID, PERSON_ID, COMMENTS, RATING) VALUES ($1, $2, $3, $4)",
-      [req.params.productId, req.params.personId, req.body.comment, req.body.rating]
-    );
-    res.status(201).json({
-      status: "success",
-      results: results.rows.length,
-      data: {
-        review: results.rows[0]
-      }
-    });
+
+    const check = await db.query("SELECT * FROM REVIEW WHERE PERSON_ID = $1 AND PRODUCT_ID = $2", [req.params.personId, req.params.productId]);
+
+    console.log(check);
+
+    if (check.rows.length !== 0) {
+      const results = await db.query(
+        "UPDATE REVIEW SET COMMENTS = $1, RATING = $2 WHERE PERSON_ID = $3 AND PRODUCT_ID = $4",
+        [req.body.comment, req.body.rating, req.params.personId, req.params.productId]
+      );
+      
+      res.status(201).json({
+        status: "success",
+        results: results.rows.length,
+        data: {
+          review: results.rows[0]
+        }
+      });
+    }
+    else{
+      const results = await db.query(
+        "INSERT INTO REVIEW (PRODUCT_ID, PERSON_ID, COMMENTS, RATING) VALUES ($1, $2, $3, $4)",
+        [req.params.productId, req.params.personId, req.body.comment, req.body.rating]
+      );
+
+      res.status(201).json({
+        status: "success",
+        results: results.rows.length,
+        data: {
+          review: results.rows[0]
+        }
+      });
+    }
   } catch (err) {
     console.log(err);
   }

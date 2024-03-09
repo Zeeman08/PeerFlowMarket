@@ -17,15 +17,10 @@ const AnnouncementsPage = () => {
         const jsonData = await response.json();
         const response1 = await fetch(`http://localhost:3005/getTotalAnnouncements`);
         const jsonData1 = await response1.json();
-        console.log(jsonData1.data);
         const totalAnnouncementsCount = Number(jsonData1.data.cnt.count); // Convert count to a number
-        console.log('Total Announcements Count:', totalAnnouncementsCount);
 
         setAnnouncements(jsonData.data.announcements.map(announcement => ({ ...announcement, expanded: false })));
         setTotalPages(Math.ceil(totalAnnouncementsCount / announcementsPerPage));
-
-        // Log the values after state updates
-        console.log('Announcements:', totalAnnouncementsCount, announcementsPerPage, totalPages);
       } catch (error) {
         console.error('Error fetching announcements:', error);
       }

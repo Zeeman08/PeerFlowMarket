@@ -95,32 +95,37 @@ const NewStore = () => {
   };
   const saveChanges = async (e) => {
     try {
-        if (selected.category_name === "Select a category")
-          return;
-        const formData = new FormData();
-        formData.append("image", image);
-  
-        const imgres = await fetch("http://localhost:3005/upload", {
-          method: "POST",
-          body: formData
-        });
-  
-        const parseImg = await imgres.json();
-        const body = {
-            name: name,
-            category: selected.category_name,
-            description: desc,
-            image: parseImg.filename,
-            owner: person.person_id
-        };
-        const response = await fetch("http://localhost:3005/createStore", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(body)
-        });
+      if (image === null) {
+        alert('Please select an image.');
+        return;
+      }
 
-        console.log(response);
-        navigate("/yourstores");
+      if (selected.category_name === "Select a category")
+        return;
+      const formData = new FormData();
+      formData.append("image", image);
+
+      const imgres = await fetch("http://localhost:3005/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      const parseImg = await imgres.json();
+      const body = {
+          name: name,
+          category: selected.category_name,
+          description: desc,
+          image: parseImg.filename,
+          owner: person.person_id
+      };
+      const response = await fetch("http://localhost:3005/createStore", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(body)
+      });
+
+      console.log(response);
+      navigate("/yourstores");
     }
     catch (err) {
         console.log(err)

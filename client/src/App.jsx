@@ -26,6 +26,8 @@ import LeaveReview from './routes/LeaveReview'
 import SeeReview from './routes/SeeReview'
 import Profile from './routes/Profile';
 import UpdateProfile from './routes/UpdateProfile';
+import Announcements from './routes/Announcements';
+import UpdateAnnouncement from './routes/UpdateAnnouncement';
 import Admin from './routes/Admin';
 import AdminLogin from './routes/AdminLogin';
 
@@ -36,14 +38,9 @@ import './stylesheet.css';
 const App = () => {
 
   const [isAuthenticated, setAuthenticated] = useState(true);
-  const [isAdmin, setAdmin] = useState(false);
 
   const setAuth = boolean => {
     setAuthenticated(boolean);
-  }
-
-  const setAuth2 = boolen => {
-    setAdmin(boolen);
   }
 
   useEffect(() => {
@@ -63,24 +60,7 @@ const App = () => {
       }
     };
 
-    const isAuth2 = () => {
-      try {
-        const response = fetch("http://localhost:3005/auth/admin-is-verify", {
-          method: "GET",
-          headers: { admintoken: localStorage.admintoken }
-        });
-  
-        const parseRes = response.json();
-        console.log(parseRes);
-  
-        parseRes === true ? setAuth2(true) : setAuth2(false);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
     isAuth();
-    isAuth2();
   }, []);
 
   return (
@@ -138,6 +118,8 @@ const App = () => {
                     <Route exact path="/seeReview/:id" element={isAuthenticated ? <SeeReview /> : <Navigate to="/login"/>} />
                     <Route exact path="/profile" element={isAuthenticated ? <Profile setAuth={setAuth} /> : <Navigate to="/login"/>} />
                     <Route exact path="/updateProfile" element={isAuthenticated ? <UpdateProfile /> : <Navigate to="/login"/>} />
+                    <Route exact path="/announcements/:id" element={isAuthenticated ? <Announcements /> : <Navigate to="/login"/>} />
+                    <Route exact path="/updateAnnouncement/:id" element={isAuthenticated ? <UpdateAnnouncement /> : <Navigate to="/login"/>} />
                 </Routes>
             </Router>
           </PersonContextProvider>

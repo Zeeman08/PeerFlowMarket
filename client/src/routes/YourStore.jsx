@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '../context/PersonContext';
+import { parse } from '@fortawesome/fontawesome-svg-core';
 
 const YourStore = () => {
   const { person } = useData();
@@ -12,7 +13,6 @@ const YourStore = () => {
   const [showAnnouncementForm, setShowAnnouncementForm] = useState(false);
   const [announcementText, setAnnouncementText] = useState('');
   const [announcementPosted, setAnnouncementPosted] = useState(false);
-  const [showNewAnnouncementButton, setShowNewAnnouncementButton] = useState(true);
   const [image, setImage] = useState(null);
   const navigate = useNavigate();
   /*******************/
@@ -160,6 +160,11 @@ const YourStore = () => {
       });
 
       const parseImg = await imgres.json();
+
+      if (parseImg.filename === undefined) {
+        parseImg.filename = "Deal.png";
+      }
+
       const response = await fetch('http://localhost:3005/createAnnouncement', {
         method: 'POST',
         headers: {
@@ -177,7 +182,6 @@ const YourStore = () => {
         setAnnouncementPosted(true);
         setShowAnnouncementForm(false);
         setAnnouncementText('');
-        setShowNewAnnouncementButton(false); // Hide the "New Announcement" button
       }
     } catch (err) {
       console.error('Error posting announcement:', err);
@@ -208,13 +212,15 @@ const YourStore = () => {
         </button>
       </div>
 
-      {showNewAnnouncementButton && (
-        <div>
-          <button className='btn btn-success mb-4' onClick={() => setShowAnnouncementForm(true)}>
-            New Announcement
-          </button>
-        </div>
-      )}
+      <div className="d-flex justify-content-evenly">
+        <button className='btn btn-success mb-4' onClick={() => setShowAnnouncementForm(true)}>
+          New Announcement
+        </button>
+        <button className='btn btn-primary mb-4' onClick={() => navigate(`/announcements/${id}`)}>
+          View Announcements
+        </button>
+      </div>
+
 
       {showAnnouncementForm && (
         <div>
@@ -314,15 +320,15 @@ const YourStore = () => {
       </div>
 
       {/* Pagination */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+      <div style={{ paddingBottom: '60px', display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
           <button
             style={{ padding: '0.5rem', marginRight: '1rem', cursor: 'pointer', backgroundColor: '#007BFF', color: 'white' }}
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            Previous
+            {"<"}
           </button>
-          <span style={{ fontSize: '1rem', marginRight: '1rem' }}>
+          <span className="mt-2" style={{ fontSize: '1rem', marginRight: '1rem' }}>
             Page {currentPage} of {totalPages}
           </span>
           <button
@@ -330,7 +336,7 @@ const YourStore = () => {
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            Next
+            {">"}
           </button>
         </div>
 
