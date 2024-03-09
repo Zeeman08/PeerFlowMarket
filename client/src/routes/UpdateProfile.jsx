@@ -158,7 +158,7 @@ const UpdateProfile = () => {
                 
             setTimeout(() => {
                 navigate(`/profile`);
-            }, 500);
+            }, 1000);
         } catch (err) {
             console.log(err)
             alert("Update Failed");
