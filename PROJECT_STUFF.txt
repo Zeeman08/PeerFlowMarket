@@ -198,19 +198,26 @@ DELETE FROM CART WHERE QUANTITY = 0
 PLSQL deletions
 --Checkout procedure
 DELETE FROM CART WHERE PERSON_ID = INPUT_PERSON_ID;
+==> while checking out, we have to clear the cart of the current user. 
 
 --Delete product procedure
 DELETE FROM PRODUCT WHERE PRODUCT_ID = prdid
+==> simply deleting the product
+
 DELETE FROM tag_assignment WHERE PRODUCT_ID = prdid
+==> to delete the product, we have to delete all the tags related to this too.
 
 --Delete store procedure
 DELETE FROM STOREFRONT WHERE STOREFRONT_ID = strid
+==> deleting the store
 
 --Delete person procedure
 DELETE FROM PERSON WHERE PERSON_ID = pid
+==> deleting the person
 
 --Clear cart procedure
 DELETE FROM CART WHERE PERSON_ID = pid
+==> this clear the cart, if I just want to clear my existing cart and do nothign else. 
 
 
 
@@ -224,44 +231,184 @@ DELETE FROM CART WHERE PERSON_ID = pid
 
 JOIN AND SUBQUERIES MIXED
 
---getAllStores
-SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORIES C WHERE S.category_id = C.category_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID) WHERE S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM STOREFRONT STR AND (SELECT CATEGORY_NAME FROM CATEGORIES WHERE CATEGORY_ID = STR.CATEGORY_ID) = '${req.query.category}')
-SELECT COUNT(*) FROM STOREFRONT WHERE LOWER(STOREFRONT_NAME) LIKE LOWER('%${req.query.search}%') AND STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM STOREFRONT STR WHERE (SELECT CATEGORY_NAME FROM CATEGORIES WHERE CATEGORY_ID = STR.CATEGORY_ID) = '${req.query.category}')
 
---getSpecificStore using id
-SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID) WHERE S.STOREFRONT_ID = ${req.params.id} GROUP BY S.STOREFRONT_ID
+
+
+
+
+--getAllStores which fit the search criteria in the CURRENT_PAGE
+SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (
+    SELECT category_name 
+    FROM CATEGORIES C 
+    WHERE S.category_id = C.category_id) AS CATEGORY 
+FROM STOREFRONT S LEFT OUTER JOIN (
+    SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING 
+    FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) 
+    GROUP BY P.PRODUCT_ID
+) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)
+WHERE LOWER(S.STOREFRONT_NAME) LIKE LOWER('%${req.query.search}%')
+    AND S.STOREFRONT_ID IN (
+        SELECT STOREFRONT_ID 
+        FROM STOREFRONT STR 
+        WHERE (
+            SELECT CATEGORY_NAME 
+            FROM CATEGORIES 
+            WHERE CATEGORY_ID = STR.CATEGORY_ID
+        ) = '${req.query.category}'
+    )
+GROUP BY S.STOREFRONT_ID
+ORDER BY S.STOREFRONT_ID OFFSET ${offset} LIMIT ${rowsPerPage}
+
+==> this is used to get the stores, here we need to join the reviews to products and products to storefronts, because of how reviews are calculated in our site. [avg of reviews is the rating of product, and avg of product is the rating of the storefront]
+==> ps: the actual query changes dynamically, For this reason, please refer to our [server.js line 88]
+
+--get total number of stores which fit the seach criteria
+SELECT COUNT(*) 
+FROM STOREFRONT 
+WHERE LOWER(STOREFRONT_NAME) LIKE LOWER('%${req.query.search}%') 
+    AND STOREFRONT_ID IN (
+        SELECT STOREFRONT_ID 
+        FROM STOREFRONT STR 
+        WHERE (
+            SELECT CATEGORY_NAME 
+            FROM CATEGORIES 
+            WHERE CATEGORY_ID = STR.CATEGORY_ID
+        ) = '${req.query.category}'
+    )
+==> get the total count of stores which meet the search criterea, for the sake of pagination
+
+--getStore using id
+SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING 
+FROM STOREFRONT S LEFT OUTER JOIN (
+    SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING 
+    FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) 
+    GROUP BY P.PRODUCT_ID
+) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID) 
+WHERE S.STOREFRONT_ID = ${req.params.id} 
+GROUP BY S.STOREFRONT_ID
+==> just getting one specific store
+
 
 --getStoresManagedByPerson
-SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORIES C WHERE S.category_id = C.category_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)  WHERE is_manager_of_storefront(${req.params.id}, S.STOREFRONT_ID) > 0 AND LOWER(S.STOREFRONT_NAME) LIKE LOWER('%${req.query.search}%') AND S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM CATEGORY_ASSIGNMENT WHERE CATEGORY_NAME = '${req.query.category}') GROUP BY S.STOREFRONT_ID ORDER BY S.STOREFRONT_ID OFFSET ${offset} LIMIT ${rowsPerPage}
+SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (
+    SELECT category_name 
+    FROM CATEGORIES C 
+    WHERE S.category_id = C.category_id) AS CATEGORY 
+FROM STOREFRONT S LEFT OUTER JOIN (
+    SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING 
+    FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) 
+    GROUP BY P.PRODUCT_ID
+) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)
+WHERE is_manager_of_storefront(${req.params.id}, S.STOREFRONT_ID) > 0 AND LOWER(S.STOREFRONT_NAME) LIKE LOWER('%${req.query.search}%')
+    AND S.STOREFRONT_ID IN (
+        SELECT STOREFRONT_ID 
+        FROM STOREFRONT STR 
+        WHERE (
+            SELECT CATEGORY_NAME 
+            FROM CATEGORIES 
+            WHERE CATEGORY_ID = STR.CATEGORY_ID
+        ) = '${req.query.category}'
+    )
+GROUP BY S.STOREFRONT_ID
+ORDER BY S.STOREFRONT_ID OFFSET ${offset} LIMIT ${rowsPerPage}
+==> get the stores which fit the search criteria, managed by the current person AND is in the CURRENT PAGE
 
 --getSpecificProduct using id
-SELECT P.*, COALESCE(AVG(R.RATING), 0) AS PRODUCT_RATING FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) WHERE P.PRODUCT_ID = ${req.params.productId} GROUP BY P.PRODUCT_ID
+SELECT P.*, COALESCE(AVG(R.RATING), 0) AS PRODUCT_RATING 
+FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) 
+WHERE P.PRODUCT_ID = ${req.params.productId} 
+GROUP BY P.PRODUCT_ID
+==> products are joined to reviews because of how rating are calculated [avg of reviews = rating of product], then we get a specific product
 
 --getProductsFromStore using id
-SELECT P.*, COALESCE(AVG(R.RATING), 0) AS PRODUCT_RATING, ARRAY_AGG(TA.TAG_NAME) AS TAGS FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) LEFT OUTER JOIN TAG_ASSIGNMENT TA ON (P.PRODUCT_ID = TA.PRODUCT_ID) WHERE LOWER(P.PRODUCT_NAME) LIKE LOWER('%${req.query.search}%') AND P.PRODUCT_ID IN (SELECT PRODUCT_ID FROM TAG_ASSIGNMENT WHERE LOWER(TAG_NAME) = LOWER('${tags[i]}')) GROUP BY P.PRODUCT_ID HAVING P.STOREFRONT_ID = ${req.params.id} ORDER BY P.PRODUCT_ID
+SELECT P.*, COALESCE(AVG(R.RATING), 0) AS PRODUCT_RATING, ARRAY_AGG(TA.TAG_NAME) AS TAGS 
+FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) 
+    LEFT OUTER JOIN TAG_ASSIGNMENT TA ON (P.PRODUCT_ID = TA.PRODUCT_ID) 
+WHERE LOWER(P.PRODUCT_NAME) LIKE LOWER('%${req.query.search}%') 
+    AND P.PRODUCT_ID IN (
+        SELECT PRODUCT_ID 
+        FROM TAG_ASSIGNMENT 
+        WHERE LOWER(TAG_NAME) = LOWER('${tags[i]}')
+    ) 
+GROUP BY P.PRODUCT_ID 
+HAVING P.STOREFRONT_ID = ${req.params.id} 
+ORDER BY P.PRODUCT_ID
+OFFSET ${offset} LIMIT ${rowsPerPage}
+==> same as above, just getting the products that are in the store
 
 --getAnnouncements
 SELECT a.*, s.storefront_name FROM announcements a join storefront s using(storefront_id) ORDER BY POSTED_ON DESC OFFSET $1 LIMIT $2
+==> get all the announcements, implementing pagination
 
 --getCartUsing id
-SELECT * FROM PRODUCT P JOIN CART C ON (P.PRODUCT_ID = C.PRODUCT_ID) WHERE C.PERSON_ID = ${req.params.id} ORDER BY C.PRODUCT_ID
+SELECT * 
+FROM PRODUCT P JOIN CART C ON (P.PRODUCT_ID = C.PRODUCT_ID) 
+WHERE C.PERSON_ID = ${req.params.id} 
+ORDER BY C.PRODUCT_ID
+==> getting all the products which are currently in the cart
 
 --getProductsFromCart using id
-SELECT TEMP.*, COALESCE(C.QUANTITY, 0) AS QUANTITY FROM (SELECT * FROM PRODUCT WHERE PRODUCT_ID = ${req.params.productId}) TEMP LEFT OUTER JOIN CART C ON (TEMP.PRODUCT_ID = C.PRODUCT_ID AND C.PERSON_ID = ${req.params.id})
+SELECT TEMP.*, COALESCE(C.QUANTITY, 0) AS QUANTITY 
+FROM (
+    SELECT * 
+    FROM PRODUCT 
+    WHERE PRODUCT_ID = ${req.params.productId}
+) TEMP LEFT OUTER JOIN CART C ON (TEMP.PRODUCT_ID = C.PRODUCT_ID AND C.PERSON_ID = ${req.params.id})
+==> getting a product which is currently in the cart (ps: this verison corresponds to an older code, thus, it is quite inefficient in terms of our current project status)
 
 --getTransactionsForId
-SELECT *, IS_MANAGER_OF_STOREFRONT(${req.params.id}, STOREFRONT_ID) AS STATUS FROM TRANSACTIONS JOIN storefront USING(STOREFRONT_ID) WHERE PERSON_ID = ${req.params.id} OR IS_MANAGER_OF_STOREFRONT(${req.params.id}, STOREFRONT_ID) = 1
+SELECT *, IS_MANAGER_OF_STOREFRONT(${req.params.id}, STOREFRONT_ID) AS STATUS 
+FROM TRANSACTIONS JOIN storefront USING(STOREFRONT_ID) 
+WHERE PERSON_ID = ${req.params.id} OR IS_MANAGER_OF_STOREFRONT(${req.params.id}, STOREFRONT_ID) = 1
+==> get the transactions of the current user
 
 --getGroupOrder with shopkeeper
-SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_TIME, DELIVERY_STATUS, P.PRICE FROM ORDERS O JOIN PRODUCT P USING(PRODUCT_ID) WHERE GROUP_ID = ${req.params.id} AND STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM MANAGES WHERE PERSON_ID = ${req.params.shopkeeperId})
+SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_TIME, DELIVERY_STATUS, P.PRICE 
+FROM ORDERS O JOIN PRODUCT P USING(PRODUCT_ID) 
+WHERE GROUP_ID = ${req.params.id} AND STOREFRONT_ID IN (
+    SELECT STOREFRONT_ID 
+    FROM MANAGES 
+    WHERE PERSON_ID = ${req.params.shopkeeperId}
+)
+//get the details of a specific order group
 
---getGroupOrders with id
-SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_TIME) AS order_time FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) WHERE MANAGES.PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = ${req.body.delivery_status} GROUP BY GROUP_ID
-SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_TIME) AS order_time FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) WHERE MANAGES.PERSON_ID = ${req.params.id} GROUP BY GROUP_ID
+--getGroupOrders with id (incoming)
+SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_TIME) AS order_time 
+FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) 
+WHERE MANAGES.PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = ${req.body.delivery_status} 
+GROUP BY GROUP_ID
+
+SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_TIME) AS order_time 
+FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) 
+WHERE MANAGES.PERSON_ID = ${req.params.id} GROUP BY GROUP_ID
+
+==> these two fetch all the group orders, based on our search criteria, where the group orders must be ordered by me
+
+--getGroupOrders with id (outgoing)
+SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_TIME) AS order_time 
+FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) 
+WHERE MANAGES.PERSON_ID = ${req.params.id} AND DELIVERY_STATUS = ${req.body.delivery_status} 
+GROUP BY GROUP_ID;
+
+SELECT GROUP_ID, MIN(DELIVERY_STATUS) AS DELIVERY_STATUS, MIN(ORDER_TIME) AS order_time 
+FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID) 
+WHERE MANAGES.PERSON_ID = ${req.params.id} 
+GROUP BY GROUP_ID;
+
+==> thse two fetch all the group orders based on our search criteria, where the group orders are placed to me. 
 
 SET OPERATION USED HERE
 --getGroupOrder
-SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_TIME, DELIVERY_STATUS, P.PRICE FROM ORDERS O JOIN PRODUCT P USING(PRODUCT_ID) WHERE GROUP_ID = ${req.params.id} UNION SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_TIME, DELIVERY_STATUS, P.PRICE FROM ORDERS O JOIN DELETED_PRODUCT P USING(PRODUCT_ID) WHERE GROUP_ID = ${req.params.id}
+SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_TIME, DELIVERY_STATUS, P.PRICE 
+FROM ORDERS O JOIN PRODUCT P USING(PRODUCT_ID) 
+WHERE GROUP_ID = ${req.params.id} 
+UNION 
+SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_TIME, DELIVERY_STATUS, P.PRICE 
+FROM ORDERS O JOIN DELETED_PRODUCT P USING(PRODUCT_ID) 
+WHERE GROUP_ID = ${req.params.id}
+
+==> we are getting details of a specific order group, and doing union with the deleted products too, 
+==> so that we can see the deleted product info in our orders page.
 
 
 
@@ -317,7 +464,7 @@ BEGIN
 	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
 	VALUES (input_person_id, 'process_cart_and_transactions', 'PARAMETERS {input_person_id: ' || input_person_id || ' X: ' || X || '}');
 END $$;
-
+==> a user wants to check out, emptying his cart. 
 
 --delete product procedure
 
@@ -342,6 +489,8 @@ BEGIN
 	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
 	VALUES (pid, 'delete_product_procedure', 'PARAMETERS {prdid: ' || prdid || ' pid: ' || pid || '}');
 END $$;
+==> proceudre for deleting a product
+
 
 
 --delete store procedure
@@ -369,7 +518,7 @@ BEGIN
 	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
 	VALUES (pid, 'delete_storefront_procedure', 'PARAMETERS {pid: ' || pid || ' strid: ' || strid || '}');
 END $$;
-
+==>procedure for deleting a store.
 
 --delete person procedure
 
@@ -402,7 +551,7 @@ BEGIN
 	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
 	VALUES (pid, 'delete_person_procedure', 'PARAMETERS {pid: ' || pid || '}');
 END $$;
-
+==> procedure for deleting a person
 
 --clear cart
 CREATE OR REPLACE PROCEDURE clear_cart_procedure(
@@ -423,7 +572,7 @@ BEGIN
 	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
 	VALUES (pid, 'clear_cart_procedure', 'PARAMETERS {pid: ' || pid || '}');
 END $$;
-
+==> Does nothing except emptying the cart.
 
 
 
@@ -459,7 +608,7 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
-
+==> checks if the user registration request is valid. 
 
 
 --check add to cart
@@ -488,7 +637,7 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
-
+==> checks if we can add to cart. 
 
 
 --find manager function
@@ -511,7 +660,7 @@ BEGIN
 	END IF;
 END;
 $$ LANGUAGE plpgsql;
-
+==> finds if the person is the manager of such a storefront which contains the product. 
 
 
 CREATE OR REPLACE FUNCTION is_manager_of_storefront(per_id int, s_id int)
@@ -530,7 +679,7 @@ BEGIN
     RETURN RES;
 END;
 $$ LANGUAGE plpgsql;
-
+==> checks whether the person is a manager of the storefront. 
 
 
 
