@@ -134,8 +134,8 @@ INSERT INTO MANAGES (PERSON_ID, STOREFRONT_ID) VALUES
 (2, 18),
 (3, 19),
 (3, 20),
-(4, 21),
-(4, 22),
+(8, 21),
+(8, 22),
 (5, 23),
 (5, 24),
 (6, 25),
@@ -148,8 +148,8 @@ INSERT INTO MANAGES (PERSON_ID, STOREFRONT_ID) VALUES
 (2, 32),
 (3, 33),
 (3, 34),
-(4, 35),
-(4, 36),
+(8, 35),
+(8, 36),
 (5, 37);
 
 
@@ -201,7 +201,7 @@ BEGIN
     -- Loop through each product
     FOR v_product_id IN (SELECT PRODUCT_ID FROM PRODUCT) LOOP
         -- Generate 3 reviews for each product
-        FOR i IN 1..7 LOOP
+        FOR i IN 5..8 LOOP
             -- Select a random person ID for the review
             SELECT i INTO v_person_id;
             
