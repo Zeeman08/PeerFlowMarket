@@ -61,7 +61,7 @@ const AnnouncementsPage = () => {
         </div>
 
         {/* Rows per page dropdown */}
-        <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+        <div className="mb-2" style={{ textAlign: 'center', marginTop: '1rem' }}>
           <label htmlFor="rowsPerPage" style={{ marginRight: '0.5rem' }}>Rows per page:</label>
           <select id="rowsPerPage" value={announcementsPerPage} onChange={handleRowsPerPageChange}>
             <option value={5}>5</option>
@@ -103,7 +103,7 @@ const AnnouncementsPage = () => {
               </div>
               {(announcement.announcement_description.length > 10 || announcement.image) && (
                 <div style={{ alignSelf: 'flex-end' }}>
-                  <button onClick={() => toggleDescription(index)}>
+                  <button className="btn btn-primary" onClick={() => toggleDescription(index)}>
                     {announcement.expanded ? 'Show less' : 'Show more'}
                   </button>
                 </div>
@@ -114,15 +114,15 @@ const AnnouncementsPage = () => {
         </div>
 
         {/* Pagination */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+        <div className="mt-4" style={{ paddingBottom: '80px', display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
           <button
             style={{ padding: '0.5rem', marginRight: '1rem', cursor: 'pointer', backgroundColor: '#007BFF', color: 'white' }}
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            Previous
+            {"<"}
           </button>
-          <span style={{ fontSize: '1rem', marginRight: '1rem' }}>
+          <span className="mt-2" style={{ fontSize: '1rem', marginRight: '1rem' }}>
             Page {currentPage} of {totalPages}
           </span>
           <button
@@ -130,7 +130,7 @@ const AnnouncementsPage = () => {
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            Next
+            {">"}
           </button>
         </div>
       </div>

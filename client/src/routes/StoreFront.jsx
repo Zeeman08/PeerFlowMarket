@@ -280,7 +280,7 @@ const StoreFront = () => {
           </select>
         </div>  
 
-      <div>
+      <div className="mt-4">
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
           {displayProducts.map((product, index) => (
             <div
@@ -332,9 +332,9 @@ const StoreFront = () => {
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            Previous
+            {"<"}
           </button>
-          <span style={{ fontSize: '1rem', marginRight: '1rem' }}>
+          <span className="mt-2" style={{ fontSize: '1rem', marginRight: '1rem' }}>
             Page {currentPage} of {totalPages}
           </span>
           <button
@@ -342,11 +342,11 @@ const StoreFront = () => {
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            Next
+            {">"}
           </button>
         </div>
 
-      <div className="text-center mb-4">
+      <div className="text-center mb-4 mt-4">
         {!showComplaintForm && !submittedFeedback && (
           <button
             className="btn btn-danger"

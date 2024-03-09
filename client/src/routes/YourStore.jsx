@@ -250,7 +250,7 @@ const YourStore = () => {
       )}
 
       {/* Rows per page dropdown */}
-      <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+      <div  className='mb-5' style={{ textAlign: 'center', marginTop: '1rem' }}>
           <label htmlFor="rowsPerPage" style={{ marginRight: '0.5rem' }}>Rows per page:</label>
           <select id="rowsPerPage" value={productsPerPage} onChange={handleRowsPerPageChange}>
             <option value={5}>5</option>
@@ -265,7 +265,6 @@ const YourStore = () => {
           <thead className='table-dark'>
             <tr className='bg-primary'>
               <th scope='col'>Name</th>
-              <th scope='col'>Tags</th>
               <th scope='col'>Description</th>
               <th scope='col'>Price</th>
               <th scope='col'>Rating</th>
@@ -280,16 +279,9 @@ const YourStore = () => {
             {displayProducts.map(product => (
               <tr key={product.product_id} onClick={e => console.log('Nothin happens :p')}>
                 <td>{product.product_name}</td>
-                <td>
-                  <ul>
-                    {product.tags.map((tag, index) => (
-                      <li key={index}>{tag}</li>
-                    ))}
-                  </ul>
-                </td>
                 <td>{product.product_description}</td>
                 <td>${product.price}</td>
-                <td>{product.product_rating}</td>
+                <td>{product.product_rating.toFixed(1)}</td>
                 <td>{product.stock_count}</td>
                 <td>{product.items_sold}</td>
                 <td>

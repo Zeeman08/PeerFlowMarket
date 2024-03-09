@@ -99,9 +99,7 @@ const Stores = () => {
 
   //This function triggers when you double click a store row
   const visitStore = (e, id) => {
-    if (e.detail > 1){
       navigate(`/store/${id}`);
-    }
   }
 
   return (
@@ -169,6 +167,7 @@ const Stores = () => {
                 transition: 'transform 0.2s ease-in-out',
                 backgroundColor: '#fff',
               }}
+              onClick={e => visitStore(e, store.storefront_id)}
             >
               <img
                 src={require(`../images/${store.image || 'avatar.png'}`)}
@@ -181,24 +180,20 @@ const Stores = () => {
                 <p style={{ marginBottom: '0.5rem' }}>{store.storefront_description}</p>
                 <p style={{ marginBottom: '0.5rem' }}>Rating: {store.rating}</p>
                 <p style={{ marginBottom: '0.5rem' }}>Category: {store.category}</p>
-                
-                <button onClick={(e) => visitStore(e, store.storefront_id)} className="btn btn-primary">
-                  Visit Store
-                </button>
               </div>
             </div>
           ))}
         </div>
         {/* Pagination */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+        <div style={{ paddingBottom: '60px', display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
           <button
             style={{ padding: '0.5rem', marginRight: '1rem', cursor: 'pointer', backgroundColor: '#007BFF', color: 'white' }}
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            Previous
+            {"<"}
           </button>
-          <span style={{ fontSize: '1rem', marginRight: '1rem' }}>
+          <span className="mt-2" style={{ fontSize: '1rem', marginRight: '1rem' }}>
             Page {currentPage} of {totalPages}
           </span>
           <button
@@ -206,7 +201,7 @@ const Stores = () => {
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            Next
+            {">"}
           </button>
         </div>
       </div>

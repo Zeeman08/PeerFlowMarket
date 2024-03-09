@@ -31,6 +31,10 @@ const Product = () => {
     if (quantity > 1) setQuantity(quantity - 1);
   };
 
+  const goBack = () => {
+    navigate(`/store/${product.storefront_id}`);
+  };
+
   const addToCart = async (id) => {
     try {
       const response = await fetch(`http://localhost:3005/addToCart/${person.person_id}/${id}/${quantity}`, {
@@ -61,56 +65,61 @@ const Product = () => {
   };
 
   return (
-    <div className="d-flex mt-4">
-      {/* Product Image */}
-      <div className="me-4">
-        {product.image && (
-          <img
-            src={require(`../images/${product.image}`)}
-            alt="../images/avatar.png"
-            style={{ width: '100%', height: 'auto' }}
-          />
-        )}
-      </div>
+    <div>
+      <div className="d-flex mt-4">
+        {/* Product Image */}
+        <div className="me-4">
+          {product.image && (
+            <img
+              src={require(`../images/${product.image}`)}
+              alt="../images/avatar.png"
+              style={{ width: '100%', height: 'auto' }}
+            />
+          )}
+        </div>
 
-      {/* Product Info */}
-      <div>
-        <div className="mt-3">
-          <span className="fs-3">{product.product_name}</span>
-          <h1 className="mt-4 text-decoration-underline">Details</h1>
-        </div>
-        <p className="fs-4 mt-3">{product.product_description}</p>
-        <p className="fs-4 mt-3">In stock: {product.stock_count}</p>
+        {/* Product Info */}
         <div>
-          <h6 className="customtxt mt-5">${product.price}</h6>
-        </div>
-        <div>
-          <div className="input-group mt-3">
-            <button className="btn btn-primary" type="button" onClick={reduceQuantity}>
-              -
-            </button>
-            <span className="input-group-text">{quantity}</span>
-            <button className="btn btn-primary" type="button" onClick={addQuantity}>
-              +
-            </button>
+          <div className="mt-3">
+            <span className="fs-3">{product.product_name}</span>
+            <h1 className="mt-4 text-decoration-underline">Details</h1>
+          </div>
+          <p className="fs-4 mt-3">{product.product_description}</p>
+          <p className="fs-4 mt-3">In stock: {product.stock_count}</p>
+          <div>
+            <h6 className="customtxt mt-5">${product.price}</h6>
           </div>
           <div>
-            <button className="btn btn-success mt-4" onClick={() => addToCart(id)}>
-              Add to Cart
-            </button>
-          </div>
-          <div>
-            <button className="btn btn-success mt-4" onClick={() => leaveReview(id)}>
-              Leave a review!
-            </button>
-          </div>
-          <div>
-            <button className="btn btn-success mt-4" onClick={() => seeReviews()}>
-              Reviews for this product
-            </button>
+            <div className="input-group mt-3">
+              <button className="btn btn-primary" type="button" onClick={reduceQuantity}>
+                -
+              </button>
+              <span className="input-group-text">{quantity}</span>
+              <button className="btn btn-primary" type="button" onClick={addQuantity}>
+                +
+              </button>
+            </div>
+            <div>
+              <button className="btn btn-success mt-4" onClick={() => addToCart(id)}>
+                Add to Cart
+              </button>
+            </div>
+            <div>
+              <button className="btn btn-success mt-4" onClick={() => leaveReview(id)}>
+                Leave a review!
+              </button>
+            </div>
+            <div>
+              <button className="btn btn-success mt-4" onClick={() => seeReviews()}>
+                Reviews for this product
+              </button>
+            </div>
           </div>
         </div>
       </div>
+      <button className="btn btn-danger mt-8" onClick={goBack}>
+        Go Back
+      </button>
     </div>
   );
 };

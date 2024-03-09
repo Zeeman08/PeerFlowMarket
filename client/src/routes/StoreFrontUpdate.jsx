@@ -15,7 +15,8 @@ const StoreFrontUpdate = () => {
   //Handling form stuff
   const[name, setName] = useState("");
   const[desc, setDesc] = useState("");
-  const [image, setImage] = useState("");
+  const[image, setImage] = useState("");
+  const[manager, setManager] = useState("");
 
   //For going back to home page
   let navigate = useNavigate();
@@ -91,6 +92,27 @@ const StoreFrontUpdate = () => {
     reader.readAsDataURL(file);
   };
 
+  const addManager = async () => {
+    try {
+      if (!manager || manager.split("#").length !== 2) {
+        return;
+      }
+
+      const name = manager.split("#")[0];
+      const manid = manager.split("#")[1];
+
+      setManager("");
+
+      const response = await fetch(`http://localhost:3005/addmanager/${id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({name, manid})
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 
   const saveChanges = async (e) => {
     try {
@@ -151,14 +173,20 @@ const StoreFrontUpdate = () => {
             onChange={e => setDesc(e.target.value)}/>
           </div>
           <div>
-              <label htmlFor="image">Image:</label>
-              <input type="file" name="image" className="form-control mt-2 mb-2" onChange={e => onFileChange(e)} />
+            <label htmlFor="image">Image:</label>
+            <input type="file" name="image" className="form-control mt-2 mb-2" onChange={e => onFileChange(e)} />
           </div>
         </div>
       </div>
 
+      <div className="d-flex justify-content-between mt-5 mb-4">
+        <label htmlFor='addmanager'>Add Manager:</label>
+        <input type="text" className="form-control mt-2 mb-2" value={manager}
+        onChange={e => setManager(e.target.value)} placeholder='name#id'/>
+        <button className="btn btn-success mt-2 mb-2" onClick={addManager}>Add</button>
+      </div>
       
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between mt-3 mb-5">
         <button className="btn btn-success mt-2" onClick={saveChanges}>Save Changes</button>
         <button className="btn btn-danger mt-2" onClick={goBack}>Go Back</button>
       </div>

@@ -101,7 +101,7 @@ app.get("/getStores", async (req, res) => {
       x=1;
     }
     if (req.query.category !== undefined && req.query.category !== "All") {
-      query += ` ${x>0?'AND':'WHERE'} S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM CATEGORY_ASSIGNMENT WHERE CATEGORY_NAME = '${req.query.category}')`;
+      query += ` ${x>0?'AND':'WHERE'} S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM STOREFRONT STR WHERE (SELECT CATEGORY_NAME FROM CATEGORIES WHERE CATEGORY_ID = STR.CATEGORY_ID) = '${req.query.category}')`;
       x=1;
     }
     query += ` ${GET_STORE2} ORDER BY S.STOREFRONT_ID OFFSET ${offset} LIMIT ${rowsPerPage}`;
@@ -114,7 +114,7 @@ app.get("/getStores", async (req, res) => {
       x=1;
     }
     if (req.query.category !== undefined && req.query.category !== "All") {
-      query1 += ` ${x>0?'AND':'WHERE'} STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM CATEGORY_ASSIGNMENT WHERE CATEGORY_NAME = '${req.query.category}')`;
+      query1 += ` ${x>0?'AND':'WHERE'} STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM STOREFRONT STR WHERE (SELECT CATEGORY_NAME FROM CATEGORIES WHERE CATEGORY_ID = STR.CATEGORY_ID) = '${req.query.category}')`;
       x=1;
     }
     const result1 = await db.query(query1);
@@ -289,6 +289,48 @@ app.delete("/deleteStore/:id/:personid", async (req, res) => {
     console.log(err);
   }
 });
+
+app.post("/addmanager/:id", async (req, res) => {
+  try {
+    console.log("Got a add manager request");
+    const res1 = await db.query(
+      "SELECT * FROM person WHERE person_id = $1",
+      [req.body.manid]
+    );
+
+    if (res1.rows.length === 0 || res1.rows[0].person_name !== req.body.name) {
+      res.status(404).json({
+        status: "error",
+        message: "Person not found"
+      });
+      return;
+    }
+
+    const res2 = await db.query(
+      "SELECT * FROM manages WHERE person_id = $1 AND storefront_id = $2",
+      [req.body.manid, req.params.id]
+    );
+
+    if (res2.rows.length > 0) {
+      res.status(409).json({
+        status: "error",
+        message: "Person is already a manager"
+      });
+      return;
+    }
+
+    const res3 = await db.query(
+      "INSERT INTO manages (PERSON_ID, STOREFRONT_ID) VALUES ($1, $2) RETURNING *",
+      [req.body.manid, req.params.id]
+    );
+    res.status(201).json({
+      status: "success",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 //geTINGt all the storefronts which are in a couple of categories, separated by commas, all lowercase
 // app.get("/getStoreCategories/:categories", async (req, res) => {
 //   try{
