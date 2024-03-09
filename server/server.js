@@ -931,13 +931,15 @@ app.post("/checkout/:id", async (req, res) => {
 //get all the transactions
 app.get("/getTransactions", async (req, res) => {
   try {
-    const results = db.query("SELECT * FROM TRANSACTIONS");
+    const results = await db.query("SELECT * FROM TRANSACTIONS");
+    console.log(results);
     res.status(200).json({
       status: "success",
       data: {
         transactions: results.rows
       }
     });
+    console.log("Here");
   } catch (error) {
     console.log(error);
   }
@@ -946,7 +948,7 @@ app.get("/getTransactions", async (req, res) => {
 //get all the actions
 app.get("/getActions", async (req, res) => {
   try {
-    const results = db.query("SELECT * FROM ACTION_LOG");
+    const results = await db.query("SELECT * FROM ACTION_LOG");
     res.status(200).json({
       status: "success",
       data: {
@@ -961,7 +963,7 @@ app.get("/getActions", async (req, res) => {
 //get all the functions
 app.get("/getFunctions", async (req, res) => {
   try {
-    const results = db.query("SELECT * FROM PLSQL_LOG WHERE function_name != 'is_manager_of_product' AND function_name != 'is_manager_of_storefront'");
+    const results = await db.query("SELECT * FROM PLSQL_LOG WHERE function_name != 'is_manager_of_product' AND function_name != 'is_manager_of_storefront'");
     res.status(200).json({
       status: "success",
       data: {
@@ -1069,7 +1071,6 @@ app.post("/getGroupOrders/:id", async (req, res) => {
       }
     }
     //const results = await db.query("SELECT * FROM ORDERS WHERE PERSON_ID = $1", [req.params.id]);
-    console.log("success");
     res.status(200).json({
       status: "success",
       results: results.rows.length,
