@@ -4,6 +4,11 @@
 -insert into manages
 -insert into person
 -insert into orders
+-create announcement
+-create review
+-insertions into action log
+-insertions into transactions
+-insertions into address
 
 At least 2 user actions that cause insertions spanning 3 or more tables.
 -Create store
@@ -13,6 +18,9 @@ At least 2 user actions that cause insertions spanning 3 or more tables.
 -update store
 -update product
 -update user_info
+-update announcement
+-update person
+-update review
 
 At least 2 user actions that cause updates spanning 2 or more tables.
 -removefromcart
@@ -22,10 +30,12 @@ At least 2 user actions that cause updates spanning 2 or more tables.
 At least 3 DELETE queries
 -delete store
 -delete product
+-delete announcement
+-delete person
 
 At least 1 delete query should initiate cascade delete.
 -deleting store deletes all products inside it
-
+-deleting person deletes stores and consequently products, and reviews
 
 
 --ADVANCED SQL
