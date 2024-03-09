@@ -30,17 +30,17 @@ At least 1 delete query should initiate cascade delete.
 
 --ADVANCED SQL
 At least 5 such queries
--getStore with ID subquery
--getStoreProducts
--getCart
--getAllStores
--getStoresManagedByPerson
+-getStore with ID subquery joins 140 -> 82
+-getStoreProducts joins 563
+-getCart joins 786
+-getAllStores subquery and join 97
+-getStoresManagedByPerson subquery and join 167
 
 
 At least 2 queries should join 3 or more tables
 -getAllStores
 -getStoresManagedByPerson
--delivery status checking
+-delivery status checking 1002
 
 
 

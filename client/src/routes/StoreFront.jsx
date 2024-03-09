@@ -313,6 +313,9 @@ const StoreFront = () => {
                 <p style={{ marginBottom: '0.5rem' }}>
                   Price: ${product.price}
                 </p>
+                <p style={{ marginBottom: '0.5rem' }}>
+                  Rating: {product.product_rating}
+                </p>
                 
               </div>
               
