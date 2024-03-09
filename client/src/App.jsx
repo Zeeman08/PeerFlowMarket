@@ -126,8 +126,8 @@ const App = () => {
                     <Route exact path="/updateProfile" element={isAuthenticated ? <UpdateProfile /> : <Navigate to="/login"/>} />
                     <Route exact path="/announcements/:id" element={isAuthenticated ? <Announcements /> : <Navigate to="/login"/>} />
                     <Route exact path="/updateAnnouncement/:id" element={isAuthenticated ? <UpdateAnnouncement /> : <Navigate to="/login"/>} />
-                    <Route exact path="/admin" element={!isAuthenticated && isAdmin ? <Admin /> : <Navigate to="/adminLogin"/>} />
-                    <Route exact path="/adminLogin" element={!isAuthenticated && !isAdmin ? <AdminLogin setAdmin={setAdmin} /> : <Navigate to="/"/>} />
+                    <Route exact path="/admin" element={ isAdmin ? <Admin setAdmin={setAdmin} /> : <Navigate to="/adminLogin"/>} />
+                    <Route exact path="/adminLogin" element={ !isAdmin ? <AdminLogin setAdmin={setAdmin} /> : <Navigate to="/admin"/>} />
                 </Routes>
             </Router>
           </PersonContextProvider>

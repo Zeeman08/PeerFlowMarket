@@ -31,6 +31,7 @@ const Login = ({setAuth}) => {
         }
 
         localStorage.setItem("token", parseRes.token);
+        localStorage.removeItem("adminToken");
         setAuth(true);
         
     } catch (error) {
@@ -48,6 +49,9 @@ const Login = ({setAuth}) => {
       </form>
       <div className="mt-1">
         <Link to="/register">Register</Link>
+      </div>
+      <div>
+        <Link to="/adminLogin">Admin Portal</Link>
       </div>
     </div>
   )

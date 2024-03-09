@@ -11,6 +11,7 @@ const AdminLogin = ({setAdmin}) => {
             e.preventDefault();
             if (password === "admin"){
                 localStorage.setItem("admintoken", true);
+                localStorage.removeItem("token");
                 setAdmin(true);
                 return;
             }

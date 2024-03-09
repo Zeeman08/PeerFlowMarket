@@ -135,6 +135,7 @@ const Register = ({setAuth}) => {
       }
 
       localStorage.setItem("token", parseRes.token);
+      localStorage.removeItem("adminToken");
       setAuth(true);
       setTimeout(() => {
         navigate("/login");
@@ -180,6 +181,9 @@ const Register = ({setAuth}) => {
       </form>
       <div className="mt-1">
         <Link to="/">Login</Link>
+      </div>
+      <div>
+        <Link to="/adminLogin">Admin Portal</Link>
       </div>
     </div>
   )

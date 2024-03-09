@@ -1,12 +1,12 @@
 import React from 'react'
 
-const Admin = (setAuth2) => {
+const Admin = ({setAdmin}) => {
 
   const logout = (e) => {
     e.preventDefault();
     console.log("logout");
     localStorage.removeItem("admintoken");
-    setAuth2(false);
+    setAdmin(false);
   };
 
   return (
