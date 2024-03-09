@@ -216,7 +216,7 @@ const Orders = () => {
             <tbody>
               {displayGroups.map((group) => (
                 <React.Fragment key={group.group_id}>
-                  <tr onClick={() => toggleGroupDetails(group.group_id)}>
+                  <tr onDoubleClick={() => toggleGroupDetails(group.group_id)}>
                     <td>{group.group_id}</td>
                     <td>{group.order_time}</td>
                     <td>{renderDeliveryStatusIcon(group.group_id)}  {buttonPressed === 'Seller' && (

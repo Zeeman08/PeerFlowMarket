@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '../context/PersonContext';
-import { parse } from '@fortawesome/fontawesome-svg-core';
 
 const YourStore = () => {
   const { person } = useData();
@@ -74,7 +73,7 @@ const YourStore = () => {
   const deleteProduct = async id => {
     try {
       const body = { person_id: person.person_id };
-      const response = await fetch(`http://localhost:3005/deleteProduct/${id}`, {
+      const response = await fetch(`http://localhost:3005/deleteProduct/${id}/${person.person_id}`, {
         method: 'DELETE',
         body: JSON.stringify(body),
       });

@@ -545,12 +545,12 @@ app.post("/createProduct/:id", async (req, res) => {
   }
 });
 //delete a product
-app.delete("/deleteProduct/:productId", async (req, res) => {
+app.delete("/deleteProduct/:productId/:pid", async (req, res) => {
   try{
     console.log("Got a delete product request");
     const results = await db.query(
-      'CALL delete_product_procedure($1)',
-      [req.params.productId]
+      'CALL delete_product_procedure($1, $2)',
+      [req.params.productId, req.params.pid]
     );
     res.status(204).json({
       status: "success"

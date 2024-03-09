@@ -38,6 +38,7 @@ import './stylesheet.css';
 const App = () => {
 
   const [isAuthenticated, setAuthenticated] = useState(true);
+  const [isAdmin, setAdmin] = useState(true);
 
   const setAuth = boolean => {
     setAuthenticated(boolean);
@@ -60,7 +61,12 @@ const App = () => {
       }
     };
 
+    const isAuth2 = async () => {
+      setAdmin(localStorage.admintoken !== undefined);
+    }
+
     isAuth();
+    isAuth2();
   }, []);
 
   return (
@@ -120,6 +126,8 @@ const App = () => {
                     <Route exact path="/updateProfile" element={isAuthenticated ? <UpdateProfile /> : <Navigate to="/login"/>} />
                     <Route exact path="/announcements/:id" element={isAuthenticated ? <Announcements /> : <Navigate to="/login"/>} />
                     <Route exact path="/updateAnnouncement/:id" element={isAuthenticated ? <UpdateAnnouncement /> : <Navigate to="/login"/>} />
+                    <Route exact path="/admin" element={!isAuthenticated && isAdmin ? <Admin /> : <Navigate to="/adminLogin"/>} />
+                    <Route exact path="/adminLogin" element={!isAuthenticated && !isAdmin ? <AdminLogin setAdmin={setAdmin} /> : <Navigate to="/"/>} />
                 </Routes>
             </Router>
           </PersonContextProvider>

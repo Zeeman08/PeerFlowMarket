@@ -197,7 +197,7 @@ const NewProduct = () => {
       //delayed navigation
       setTimeout(() => {
         navigate(`/yourstore/${id}`);
-      }, 1000);
+      }, 500);
       } catch (err) {
       console.error(err);
     }
