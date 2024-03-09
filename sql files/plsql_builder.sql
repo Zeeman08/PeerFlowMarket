@@ -223,7 +223,7 @@ DECLARE
 BEGIN
 	--inserting into PLSQ_LOG
 	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
-	VALUES (per_id, 'is_manager_of_product', 'PARAMETERS {per_id: ' || pid || ' prod_id: ' || prod_id || '}');
+	VALUES (per_id, 'is_manager_of_product', 'PARAMETERS {per_id: ' || per_id || ' prod_id: ' || prod_id || '}');
 
 	SELECT M.PERSON_ID INTO RES
 	FROM PRODUCT P JOIN STOREFRONT S ON(S.STOREFRONT_ID = P.STOREFRONT_ID) JOIN MANAGES M ON (S.STOREFRONT_ID = M.STOREFRONT_ID)

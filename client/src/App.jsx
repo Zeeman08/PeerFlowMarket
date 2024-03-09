@@ -106,7 +106,7 @@ const App = () => {
             <Router>
                 <Routes>
                     <Route exact path="/" element={ isAuthenticated ? <Home /> : <Navigate to="/login"/>}/>
-                    <Route exact path="/login" element={ !isAuthenticated ? <Login setAuth={setAuth} /> : <Navigate to="/"/>}/>
+                    <Route exact path="/login" element={ !isAuthenticated ? <Login setAdmin={setAdmin} setAuth={setAuth} /> : <Navigate to="/"/>}/>
                     <Route exact path="/register" element={ !isAuthenticated ? <Register setAuth={setAuth} /> : <Navigate to="/"/>}/>
                     <Route exact path="/stores" element={ isAuthenticated ? <Stores /> : <Navigate to="/login"/>} />
                     <Route exact path="/yourstores" element={isAuthenticated ? <YourStores /> : <Navigate to="/login"/>} />
@@ -127,7 +127,7 @@ const App = () => {
                     <Route exact path="/announcements/:id" element={isAuthenticated ? <Announcements /> : <Navigate to="/login"/>} />
                     <Route exact path="/updateAnnouncement/:id" element={isAuthenticated ? <UpdateAnnouncement /> : <Navigate to="/login"/>} />
                     <Route exact path="/admin" element={ isAdmin ? <Admin setAdmin={setAdmin} /> : <Navigate to="/adminLogin"/>} />
-                    <Route exact path="/adminLogin" element={ !isAdmin ? <AdminLogin setAdmin={setAdmin} /> : <Navigate to="/admin"/>} />
+                    <Route exact path="/adminLogin" element={ !isAdmin ? <AdminLogin setAdmin={setAdmin} setAuth={setAuth} /> : <Navigate to="/admin"/>} />
                 </Routes>
             </Router>
           </PersonContextProvider>

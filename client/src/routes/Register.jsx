@@ -1,4 +1,3 @@
-import { parse } from '@fortawesome/fontawesome-svg-core';
 import React, { useState, useEffect } from 'react'
 import {Link, useNavigate } from 'react-router-dom';
 
@@ -105,7 +104,7 @@ const Register = ({setAuth}) => {
       return;
     }
 
-    const parseImg = {filename: "avatar.png"};
+    var parseImg = {filename: "avatar.png"};
 
     try {
       if (image){

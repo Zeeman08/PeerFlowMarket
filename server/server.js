@@ -929,6 +929,51 @@ app.post("/checkout/:id", async (req, res) => {
 });
 
 //get all the transactions
+app.get("/getTransactions", async (req, res) => {
+  try {
+    const results = db.query("SELECT * FROM TRANSACTIONS");
+    res.status(200).json({
+      status: "success",
+      data: {
+        transactions: results.rows
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//get all the actions
+app.get("/getActions", async (req, res) => {
+  try {
+    const results = db.query("SELECT * FROM ACTION_LOG");
+    res.status(200).json({
+      status: "success",
+      data: {
+        actions: results.rows
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//get all the functions
+app.get("/getFunctions", async (req, res) => {
+  try {
+    const results = db.query("SELECT * FROM PLSQL_LOG WHERE function_name != 'is_manager_of_product' AND function_name != 'is_manager_of_storefront'");
+    res.status(200).json({
+      status: "success",
+      data: {
+        functions: results.rows
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//get all the transactions for id
 app.get("/getTransactions/:id", async (req, res) => {
   try{
     console.log("Got get all transactions request");

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import {Link} from 'react-router-dom';
 
-const AdminLogin = ({setAdmin}) => {
+const AdminLogin = ({setAdmin, setAuth}) => {
 
     
     const [password, setPassword] = useState("");
@@ -13,6 +13,7 @@ const AdminLogin = ({setAdmin}) => {
                 localStorage.setItem("admintoken", true);
                 localStorage.removeItem("token");
                 setAdmin(true);
+                setAuth(false);
                 return;
             }
         } catch (error) {
