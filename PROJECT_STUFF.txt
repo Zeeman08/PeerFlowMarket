@@ -174,13 +174,15 @@ PLSQL updates
 
 --Clear cart procedure
 UPDATE PRODUCT SET STOCK_COUNT = STOCK_COUNT + i.quantity WHERE PRODUCT_ID = i.product_id
+==>
 
 --Add to cart function
 UPDATE PRODUCT SET STOCK_COUNT = STOCK_COUNT - qty WHERE PRODUCT_ID = prdid
+==>
 
 --Product purchase trigger
 UPDATE PRODUCT SET items_sold = (SELECT items_sold FROM PRODUCT WHERE product_id = NEW.product_id) + NEW.quantity WHERE product_id = NEW.product_id
-
+==> just updating the items sold count of a product by the new order.quantity row
 
 
 
@@ -188,6 +190,7 @@ UPDATE PRODUCT SET items_sold = (SELECT items_sold FROM PRODUCT WHERE product_id
 
 DELETE:
 DELETE FROM TAG_ASSIGNMENT WHERE PRODUCT_ID = $1
+==>
 DELETE FROM announcements where announcement_id = $1
 DELETE FROM CART WHERE QUANTITY = 0
 
