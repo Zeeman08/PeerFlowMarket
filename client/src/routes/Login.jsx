@@ -49,9 +49,6 @@ const Login = ({setAuth}) => {
       <div className="mt-1">
         <Link to="/register">Register</Link>
       </div>
-      <div className="mt-1">
-        <Link to="/adminLogin">Admin</Link>
-      </div>
     </div>
   )
 }

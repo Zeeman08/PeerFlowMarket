@@ -20,9 +20,6 @@ const AdminLogin = ({setAuth2}) => {
               alert("Invalid credentials");
               return;
             }
-
-            console.log("Here");
-            console.log(parseRes.token);
     
             localStorage.setItem("admintoken", parseRes.token);
             setAuth2(true);

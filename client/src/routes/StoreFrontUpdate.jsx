@@ -1,9 +1,13 @@
 import React, { useState, useEffect} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 import './StorefrontUpdate.css';
+import {useData} from '../context/PersonContext';
+
 const StoreFrontUpdate = () => {
   //Getting id from link
   const {id} = useParams();
+
+  const {person} = useData();
 
   //Storing the data from database into store using setStore function
   const[store, setStore] = useState({});
@@ -104,7 +108,7 @@ const StoreFrontUpdate = () => {
           const parseImg = await imgres.json();
           body.image = parseImg.filename;
         }
-        const response = await fetch(`http://localhost:3005/updateStore/${id}`, {
+        const response = await fetch(`http://localhost:3005/updateStore/${id}/${person.person_id}`, {
             method: "PUT",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body)

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useData} from '../context/PersonContext';
+import "./dropdown.css";
 
 const NewStore = () => {
   //Getting id from link
@@ -10,6 +11,7 @@ const NewStore = () => {
   const[name, setName] = useState("new store");
   const[desc, setDesc] = useState("new description");
   const [image, setImage] = useState(null);
+  
   /*******************/
   /* DROP DOWN STUFF */
   /*******************/
@@ -126,7 +128,9 @@ const NewStore = () => {
   };
 
   const goBack = () => {
-    navigate(`/yourstores`);
+    setTimeout(() => {
+      navigate(`/yourstores`);
+    }, 1000);
   }
 
   return (
@@ -138,7 +142,7 @@ const NewStore = () => {
         onChange={e => setName(e.target.value)}/>
       </div>
       <div>
-      <label htmlFor='description'>Category:</label>
+        <label htmlFor='description'>Category:</label>
           {/* drop down */}
           <div className="dropdown">
             <div className="dropdown-btn" onClick={e => setIsActive(!isActive)}>

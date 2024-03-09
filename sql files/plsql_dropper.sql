@@ -29,16 +29,3 @@ DROP FUNCTION IF EXISTS product_insert_trigger_function();
 
 DROP TRIGGER IF EXISTS product_purchase_trigger ON ORDERS;
 DROP FUNCTION IF EXISTS product_purchase_trigger_function();
-
-
-
-
-
-
-
-
--- Drop the trigger
-DROP TRIGGER IF EXISTS person_delete_trigger ON PERSON;
-
--- Drop the trigger function
-DROP FUNCTION IF EXISTS person_delete_trigger_function();

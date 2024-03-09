@@ -36,23 +36,6 @@ BEGIN
 END $$;
 
 
---delete person procedure
-
-CREATE OR REPLACE PROCEDURE delete_person_procedure(IN pid INT)
-LANGUAGE plpgsql
-AS $$
-DECLARE
-	act_typ INTEGER;
-BEGIN
-	INSERT INTO DELETED_PERSON (PERSON_ID, PERSON_NAME, DATE_OF_BIRTH, PHONE, EMAIL)
-		SELECT PERSON_ID, PERSON_NAME, DATE_OF_BIRTH, PHONE, EMAIL FROM PERSON WHERE PERSON_ID = pid;
-
-	INSERT INTO ACTION_LOG (person_id, action_type) VALUES(pid, 'DELETE');
-
-	DELETE FROM PERSON WHERE PERSON_ID = pid;
-END $$;
-
-
 --delete product procedure
 
 CREATE OR REPLACE PROCEDURE delete_product_procedure(IN prdid INT)
@@ -93,6 +76,35 @@ BEGIN
 	END LOOP;
 
 	DELETE FROM STOREFRONT WHERE STOREFRONT_ID = pid;
+END $$;
+
+
+--delete person procedure
+
+CREATE OR REPLACE PROCEDURE delete_person_procedure(IN pid INT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+	R MANAGES%ROWTYPE;
+	managercount INT;
+BEGIN
+	INSERT INTO DELETED_PERSON (PERSON_ID, PERSON_NAME, DATE_OF_BIRTH, PHONE, EMAIL)
+		SELECT PERSON_ID, PERSON_NAME, DATE_OF_BIRTH, PHONE, EMAIL FROM PERSON WHERE PERSON_ID = pid;
+
+	INSERT INTO ACTION_LOG (person_id, action_type) VALUES(pid, 'DELETE');
+
+	CALL clear_cart_procedure(pid);
+
+	FOR R in (SELECT * FROM MANAGES WHERE PERSON_ID = pid)
+	LOOP
+		SELECT COUNT(*) INTO managercount FROM MANAGES WHERE STOREFRONT_ID = R.STOREFRONT_ID;
+		IF managercount = 1 THEN
+			CALL delete_storefront_procedure(pid, R.STOREFRONT_ID);
+		END IF;
+	END LOOP;
+
+
+	DELETE FROM PERSON WHERE PERSON_ID = pid;
 END $$;
 
 

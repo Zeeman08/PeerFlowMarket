@@ -1,21 +1,48 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {Link, useNavigate } from 'react-router-dom';
 
-const Register = () => {
+const Register = ({setAuth}) => {
 
   const [inputs, setInputs] = useState({
     email: "rubai@gmail.com",
     password: "123",
     name: "Rubai",
     dob: "2001-05-01",
-    phone: "12345"
+    phone: "12345",
+    street: "New Enfield", // New field for street name
+    houseNumber: "104/B2", // New field for house number
+    postCode: 2400 // New field for post code
   });
 
   let navigate = useNavigate();
 
-  const { email, password, name, dob, phone } = inputs;
+  const { email, password, name, dob, phone, street, houseNumber, postCode } = inputs;
 
   const [image, setImage] = useState(null);
+
+
+  /*******************/
+  /* DROP DOWN STUFF */
+  /*******************/
+
+  const [isActive, setIsActive] = useState(false);
+  const [selected, setSelected] = useState({division: "Division", city: "City"});
+  const [options, setOptions] = useState([]);
+
+  useEffect(() => {
+    // Get locations from the server
+    const getLocations = async () => {
+      try {
+        const response = await fetch("http://localhost:3005/getLocations");
+        const parseRes = await response.json();
+        setOptions(parseRes.data.locations);
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+      }
+    };
+
+    getLocations();
+  }, []);
 
   const onChange = e => {
     setInputs({...inputs, [e.target.name]: e.target.value})
@@ -71,6 +98,11 @@ const Register = () => {
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
+
+    if (!street || !houseNumber || !postCode || selected.division === "Division" || selected.city === "City") {
+      alert("Please fill in all address fields");
+      return;
+    }
   
     const formData = new FormData();
     formData.append("image", image);
@@ -83,7 +115,7 @@ const Register = () => {
 
       const parseImg = await imgres.json();
 
-      const body = { name, password, email, dob, phone, image: parseImg.filename };
+      const body = {name, password, email, dob, phone, image: parseImg.filename, location: selected.location_id, street, houseNumber, postCode};
   
       const response = await fetch("http://localhost:3005/auth/register", {
         method: "POST",
@@ -98,7 +130,11 @@ const Register = () => {
         return;
       }
 
-      navigate("/login");
+      localStorage.setItem("token", parseRes.token);
+      setAuth(true);
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
     } catch (error) {
       console.log(error);
     }
@@ -111,16 +147,35 @@ const Register = () => {
         <input type="email" name="email" placeholder="Email" className="form-control my-3" value={email} onChange={e => onChange(e)}/>
         <input type="password" name="password" placeholder="Password" className="form-control my-3" value={password} onChange={e => onChange(e)}/>
         <input type="text" name="name" placeholder="Name" className="form-control my-3" value={name} onChange={e => onChange(e)}/>
-        <input type="dob" name="dob" placeholder="YYYY-MM-DD" className="form-control my-3" value={dob} onChange={e => onChange(e)}/>
-        <input type="phone" name="phone" placeholder="Password" className="form-control my-3" value={phone} onChange={e => onChange(e)}/>
+        <input type="date" name="dob" className="form-control my-3" value={dob} onChange={e => onChange(e)}/>
+        
+        {/* Dropdown for Division - City */}
+        <div className="dropdown">
+          <div className="dropdown-btn" onClick={e => setIsActive(!isActive)}>
+            {selected.division + " - " + selected.city}
+            <span className="fas fa-caret-down"></span>
+          </div>
+          {isActive && (
+            <div className="dropdown-content">
+              {options.map(option => (
+                <div key={option.category_name} className="dropdown-item" onClick={e => {
+                  setSelected(option);
+                  setIsActive(false);
+                }}>{option.division + " - " + option.city}</div>
+              ))}
+            </div>
+          )}
+        </div>
+        <input type="text" name="street" placeholder="Street Name" className="form-control my-3" value={street} onChange={e => onChange(e)} />
+        <input type="text" name="houseNumber" placeholder="House Number" className="form-control my-3" value={houseNumber} onChange={e => onChange(e)} />
+        <input type="number" name="postCode" placeholder="Post Code" className="form-control my-3" value={postCode} onChange={e => onChange(e)} />
+        
+        <input type="phone" name="phone" placeholder="Phone" className="form-control my-3" value={phone} onChange={e => onChange(e)}/>
         <input type="file" name="image" className="form-control my-3" onChange={e => onFileChange(e)} />
         <button className="btn btn-success">Submit</button>
       </form>
       <div className="mt-1">
         <Link to="/">Login</Link>
-      </div>
-      <div className="mt-1">
-        <Link to="/adminLogin">Admin</Link>
       </div>
     </div>
   )

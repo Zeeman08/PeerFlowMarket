@@ -66,7 +66,7 @@ const Transactions = () => {
         </div>
 
         {/* table */}
-        <div>
+        <div className="mt-5">
           <table className="table table-hover table-secondary table-striped table-bordered text-center">
             <thead className="table-dark">
               <tr className="bg-primary">

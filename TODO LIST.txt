@@ -7,12 +7,12 @@
 
 At least 2 user actions that cause insertions spanning 3 or more tables.
 -Create store
-##################-Create product TO BE DONE
+-Create product
 
 3 UPDATE QUERIES
 -update store
 -update product
-##################-update user_info TO BE DONE
+-update user_info
 
 At least 2 user actions that cause updates spanning 2 or more tables.
 -removefromcart
@@ -60,35 +60,21 @@ At least 2 queries should join 3 or more tables
 -delete product
 -clear cart
 
-3/2 functions
+4/2 functions
 -check_credentials_function
 -is_manager_of_product
 -addtocart
 -clearcart
 
 
-
---implement address
-
---implement create categories
-(suggestion by rubai: we will have only these hard coded categories: 
-1. Electronics
-2. Clothing and Apparel
-3. Books
-4. Home appliances
-5. Groceries
-... and totally up to maybe 10 categories
-)
---implement adding multiple categories
-
 --implement admin side
 --implement log for procedures and functions for tracking
 
---profile update
---profile delete
 --admin side purata (complaint processing, banning, transaction tracking)
 --functions and procedures re track korar jonno additional ekta table lagbe
 --GUI updates
+
+--multiple owner
 
 --
 pagination: check corner case logics (example: when the page is empty, it shows page i of 0, should we keep it or it?)

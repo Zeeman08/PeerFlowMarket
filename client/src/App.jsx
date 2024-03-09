@@ -24,7 +24,8 @@ import Transactions from './routes/Transactions';
 import Orders from './routes/Orders';
 import LeaveReview from './routes/LeaveReview'
 import SeeReview from './routes/SeeReview'
-import Dashboard from './routes/Dashboard';
+import Profile from './routes/Profile';
+import UpdateProfile from './routes/UpdateProfile';
 import Admin from './routes/Admin';
 import AdminLogin from './routes/AdminLogin';
 
@@ -64,12 +65,13 @@ const App = () => {
 
     const isAuth2 = () => {
       try {
-        const response = fetch("http://localhost:3005/auth/is-verify", {
+        const response = fetch("http://localhost:3005/auth/admin-is-verify", {
           method: "GET",
-          headers: { token: localStorage.admintoken }
+          headers: { admintoken: localStorage.admintoken }
         });
   
         const parseRes = response.json();
+        console.log(parseRes);
   
         parseRes === true ? setAuth2(true) : setAuth2(false);
       } catch (error) {
@@ -105,7 +107,7 @@ const App = () => {
                   <a className="HyperLink" href={`/viewCart`}>Cart</a>
                   <a className="HyperLink" href={`/transactions`}>Transactions</a>
                   <a className="HyperLink" href={`/orders`}>Orders</a>
-                  <a className="HyperLink" href={`/dashboard`}>Dashboard</a>
+                  <a className="HyperLink" href={`/profile`}>Profile</a>
                 </div>
             </div>
           </nav>
@@ -119,7 +121,7 @@ const App = () => {
                 <Routes>
                     <Route exact path="/" element={ isAuthenticated ? <Home /> : <Navigate to="/login"/>}/>
                     <Route exact path="/login" element={ !isAuthenticated ? <Login setAuth={setAuth} /> : <Navigate to="/"/>}/>
-                    <Route exact path="/register" element={ !isAuthenticated ? <Register /> : <Navigate to="/"/>}/>
+                    <Route exact path="/register" element={ !isAuthenticated ? <Register setAuth={setAuth} /> : <Navigate to="/"/>}/>
                     <Route exact path="/stores" element={ isAuthenticated ? <Stores /> : <Navigate to="/login"/>} />
                     <Route exact path="/yourstores" element={isAuthenticated ? <YourStores /> : <Navigate to="/login"/>} />
                     <Route exact path="/yourstore/:id" element={isAuthenticated ? <YourStore /> : <Navigate to="/login"/>} />
@@ -134,9 +136,8 @@ const App = () => {
                     <Route exact path="/orders" element={isAuthenticated ? <Orders/> : <Navigate to="/login"/>} />
                     <Route exact path="/leaveReview/:id" element={isAuthenticated ? <LeaveReview /> : <Navigate to="/login"/>} />
                     <Route exact path="/seeReview/:id" element={isAuthenticated ? <SeeReview /> : <Navigate to="/login"/>} />
-                    <Route exact path="/dashboard" element={isAuthenticated ? <Dashboard setAuth={setAuth} /> : <Navigate to="/login"/>} />
-                    <Route exact path="/admin" element={isAdmin ? <Admin setAuth2={setAuth2} /> : <Navigate to="/adminLogin"/>} />
-                    <Route exact path="/adminLogin" element={!isAuthenticated ? <AdminLogin setAuth2={setAuth2}/> : <Navigate to="/admin"/>} />
+                    <Route exact path="/profile" element={isAuthenticated ? <Profile setAuth={setAuth} /> : <Navigate to="/login"/>} />
+                    <Route exact path="/updateProfile" element={isAuthenticated ? <UpdateProfile /> : <Navigate to="/login"/>} />
                 </Routes>
             </Router>
           </PersonContextProvider>
