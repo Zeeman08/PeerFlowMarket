@@ -98,18 +98,32 @@ INSERT INTO ACTION_LOG (person_id, storefront_id, action_type) VALUES (NEW.perso
 INSERT INTO ACTION_LOG (storefront_id, product_id, action_type) VALUES (NEW.storefront_id, NEW.product_id, 'CREATE');
 ==>
 
+
+
+
+
+
 UPDATE:
 UPDATE storefront SET STOREFRONT_NAME = $2, STOREFRONT_DESCRIPTION = $3, last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = $1 RETURNING *
-==>
+==> updating informations about a storefront
 UPDATE storefront SET STOREFRONT_NAME = $2, STOREFRONT_DESCRIPTION = $3, IMAGE = $4, last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = $1 RETURNING *
+==> updating informations about a storefront if the image attribute is defined in the req.query
 UPDATE product SET product_name = $2, product_description = $3, price = $4, stock_count = $5, last_updated_on = CURRENT_TIMESTAMP WHERE product_id = $1 RETURNING *
 UPDATE product SET product_name = $2, product_description = $3, price = $4, stock_count = $5, image = $6, last_updated_on = CURRENT_TIMESTAMP WHERE product_id = $1 RETURNING *
+==> same logic as updating a storefront
 UPDATE storefront SET last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = (SELECT storefront_id FROM product WHERE product_id = $1)
+==> when updating a product, we update the last_updated_on to the current timestamp
 UPDATE announcements SET announcement_description = $2, image = $3 WHERE announcement_id = $1 RETURNING *
+==> updating an announcement, which the store itself posted
 UPDATE CART SET QUANTITY = QUANTITY - 1 WHERE PERSON_ID = $1 AND PRODUCT_ID = $2
+==> decreasing quantity of a product in a cart
 UPDATE PRODUCT SET STOCK_COUNT = STOCK_COUNT + 1 WHERE PRODUCT_ID = $1
+==> increasing the stock count of a product
 UPDATE ORDERS SET DELIVERY_STATUS = $1 WHERE GROUP_ID = $2 AND IS_MANAGER_OF_PRODUCT($3, PRODUCT_ID) = 1
+==> when the storefront managers change the delivery status of an order, it gets updated in the database
 UPDATE REVIEW SET COMMENTS = $1, RATING = $2 WHERE PERSON_ID = $3 AND PRODUCT_ID = $4
+==> when a user has already posted a reivew about a store, it gets overwriten, hence an update query
+
 
 PLSQL updates
 
