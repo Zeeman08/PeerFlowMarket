@@ -7,62 +7,96 @@ QUERIES:
 
 INSERT:
 INSERT INTO storefront (STOREFRONT_NAME, CATEGORY_ID, STOREFRONT_DESCRIPTION, IMAGE) VALUES ($1, (SELECT CATEGORY_ID FROM CATEGORIES WHERE CATEGORY_NAME = $2), $3, $4) RETURNING *
+==>creating a new storefront
 INSERT INTO manages (PERSON_ID, STOREFRONT_ID) VALUES ($1, $2) RETURNING *
+==>inserting a new (owner, storefront) relationship
 INSERT INTO ACTION_LOG (PERSON_ID, STOREFRONT_ID, ACTION_TYPE) VALUES ($1, $2, 'UPDATE')
+==>
 INSERT INTO TAG_ASSIGNMENT (PRODUCT_ID, TAG_NAME) VALUES($1, $2) RETURNING *
+==>inserting a new (product, tag) relationship
 INSERT INTO ACTION_LOG (STOREFRONT_ID, PRODUCT_ID, ACTION_TYPE) VALUES ((SELECT STOREFRONT_ID FROM PRODUCT WHERE PRODUCT_ID = $1), $1, 'UPDATE')
+==>
 INSERT INTO product (product_name, product_description, stock_count, price, image, storefront_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *
+==>creating a new product
 INSERT INTO tags (tag_name) VALUES ($1) ON CONFLICT (tag_name) DO NOTHING RETURNING *
+==>when we try to add a tag which does not exist in the database, it gets created [usecases: while creating and updating a product]
 INSERT INTO announcements (PERSON_ID, STOREFRONT_ID, ANNOUNCEMENT_DESCRIPTION, image) VALUES ($1, $2, $3, $4) RETURNING *
+==>creating a new announcement by a storefront
 INSERT INTO REVIEW (PRODUCT_ID, PERSON_ID, COMMENTS, RATING) VALUES ($1, $2, $3, $4)
+==>when a person posts a review for a product
 INSERT INTO COMPLAINTS (PERSON_ID, STOREFRONT_ID, COMPLAINT_DETAILS) VALUES ($1, $2, $3) RETURNING *
+==>when a person posts a complaint about a storefront
+
+
 
 PLSQL insertions
 --Checkout procedure
 INSERT INTO TRANSACTIONS (PERSON_ID, STOREFRONT_ID, AMOUNT, TRANSACTION_TYPE) VALUES (row_data.person_id, row_data.storefront_id, row_data.total_amount, X) returning * into row_data2
+==> all the transactions get properly inserted, because it might happen that the cart contains products from multiple storefronts. 
 INSERT INTO ORDERS (PRODUCT_ID, QUANTITY, PERSON_ID, TRANSACTION_ID, GROUP_ID, PRICE) SELECT PRODUCT_ID, QUANTITY, PERSON_ID, row_data2.transaction_id, CURR_GROUP, P.PRICE FROM CART C JOIN PRODUCT P USING(PRODUCT_ID) WHERE PERSON_ID = row_data2.person_id AND STOREFRONT_ID = row_data2.storefront_id
+==> we just bring the rows with relevant columns into the orders table.
 INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS) VALUES (input_person_id, 'process_cart_and_transactions', 'PARAMETERS {input_person_id: ' || input_person_id || ' X: ' || X || '}')
+==>
 
 --Delete product procedure
 INSERT INTO DELETED_PRODUCT (PRODUCT_ID, STOREFRONT_ID, PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE) SELECT PRODUCT_ID, STOREFRONT_ID, PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE FROM PRODUCT WHERE PRODUCT_ID = prdid
+==> we transfer the products into deleted products table, so that we dont lose any information about any malicious user who might have deleted his account
 INSERT INTO ACTION_LOG (storefront_id, product_id, action_type) VALUES(storeid, prdid, 'DELETE')
+==>
 INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS) VALUES (pid, 'delete_product_procedure', 'PARAMETERS {prdid: ' || prdid || ' pid: ' || pid || '}');
+==>
 
 --Delete store procedure
 INSERT INTO DELETED_STOREFRONT (STOREFRONT_ID, STOREFRONT_NAME, STOREFRONT_DESCRIPTION) SELECT STOREFRONT_ID, STOREFRONT_NAME, STOREFRONT_DESCRIPTION FROM STOREFRONT WHERE STOREFRONT_ID = strid
+==> we transfer the storefront into deleted storefronts table
 INSERT INTO ACTION_LOG (person_id, storefront_id, action_type) VALUES(pid, strid, 'DELETE')
+==> 
 INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS) VALUES (pid, 'delete_storefront_procedure', 'PARAMETERS {pid: ' || pid || ' strid: ' || strid || '}');
+==>
 
 --Delete person procedure
 INSERT INTO DELETED_PERSON (PERSON_ID, PERSON_NAME, DATE_OF_BIRTH, PHONE, EMAIL) SELECT PERSON_ID, PERSON_NAME, DATE_OF_BIRTH, PHONE, EMAIL FROM PERSON WHERE PERSON_ID = pid
+==> we transfer the person into deleted person table, so that we dont lose any information about any malicious user who might have deleted his account
 INSERT INTO ACTION_LOG (person_id, action_type) VALUES(pid, 'DELETE')
+==>
 INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS) VALUES (pid, 'delete_person_procedure', 'PARAMETERS {pid: ' || pid || '}')
+==>
 
 --Clear cart procedure
 INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS) VALUES (pid, 'clear_cart_procedure', 'PARAMETERS {pid: ' || pid || '}');
+==>
 
 --Check credentials function
 INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS) VALUES (NULL, 'check_credentials_function', 'PARAMETERS {phone_in: ' || phone_in || ' email_in: ' || email_in || '}')
+==>
 
 --Add to cart function
 INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS) VALUES (pid, 'add_to_cart_function', 'PARAMETERS {pid: ' || pid || ' prdid: ' || prdid || ' qty: ' || qty || '}')
+==>
 INSERT INTO CART (PERSON_ID, PRODUCT_ID, QUANTITY) VALUES (pid, prdid, qty) ON CONFLICT (PERSON_ID, PRODUCT_ID) DO UPDATE SET QUANTITY = CART.QUANTITY + EXCLUDED.QUANTITY
+==> we try to insert the product with its quanitty, to the card, but if product already exists, then just increase the count.
 
 --Is manager of product function
 INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS) VALUES (per_id, 'is_manager_of_product', 'PARAMETERS {per_id: ' || per_id || ' prod_id: ' || prod_id || '}')
+==>
 
 --Is manager of storefront function
 INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS) VALUES (per_id, 'is_manager_of_storefront', 'PARAMETERS {per_id: ' || per_id || ' s_id: ' || s_id || '}')
+==>
 
 --Person insert trigger
 INSERT INTO ACTION_LOG (person_id, action_type) VALUES (NEW.person_id, 'CREATE')
+==> 
 
 --Store create trigger
 INSERT INTO ACTION_LOG (person_id, storefront_id, action_type) VALUES (NEW.person_id, NEW.storefront_id, 'ADD');
+==>
 INSERT INTO ACTION_LOG (person_id, storefront_id, action_type) VALUES (NEW.person_id, NEW.storefront_id, 'CREATE');
+==>
 
 --Product create trigger
 INSERT INTO ACTION_LOG (storefront_id, product_id, action_type) VALUES (NEW.storefront_id, NEW.product_id, 'CREATE');
+==>
 
 
 
@@ -71,6 +105,7 @@ INSERT INTO ACTION_LOG (storefront_id, product_id, action_type) VALUES (NEW.stor
 
 UPDATE:
 UPDATE storefront SET STOREFRONT_NAME = $2, STOREFRONT_DESCRIPTION = $3, last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = $1 RETURNING *
+==>
 UPDATE storefront SET STOREFRONT_NAME = $2, STOREFRONT_DESCRIPTION = $3, IMAGE = $4, last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = $1 RETURNING *
 UPDATE product SET product_name = $2, product_description = $3, price = $4, stock_count = $5, last_updated_on = CURRENT_TIMESTAMP WHERE product_id = $1 RETURNING *
 UPDATE product SET product_name = $2, product_description = $3, price = $4, stock_count = $5, image = $6, last_updated_on = CURRENT_TIMESTAMP WHERE product_id = $1 RETURNING *
