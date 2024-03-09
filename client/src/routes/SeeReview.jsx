@@ -26,7 +26,7 @@ const SeeReview = () => {
     <div>
       <h1 className="text-center mt-5">Product Reviews</h1>
       <div>
-        <table className="table table-hover table-secondary table-striped table-bordered text-center">
+        <table className="table table-hover table-secondary table-striped table-bordered text-center mt-5">
           <thead className="table-dark">
             <tr className="bg-primary">
               <th scope="col">Person ID</th>

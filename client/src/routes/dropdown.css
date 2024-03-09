@@ -3,10 +3,10 @@
 }
 
 .dropdown{
-    width: 200px;
+    width: 250px;
     height: 50px;
     user-select: none;
-    margin: 50px auto;
+    margin: 30px auto;
     position: relative;
 }
 
@@ -22,7 +22,7 @@
     justify-content: space-between;
 }
 
-.dropdown .dropdown-content{
+.dropdown .dropdown-content {
     position: absolute;
     top: 105%;
     padding: 10px;
@@ -30,7 +30,10 @@
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 500;
     color: #333;
-    width: 100%
+    width: 100%;
+    max-height: 200px; /* Set a maximum height for the dropdown content */
+    overflow-x: hidden;
+    overflow-y: auto; /* Enable vertical scrolling */
 }
 
 .dropdown .dropdown-content .dropdown-item{

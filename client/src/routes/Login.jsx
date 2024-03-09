@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {Link} from 'react-router-dom';
 
-const Login = ({setAuth}) => {
+const Login = ({setAuth, setAdmin}) => {
 
   const [inputs, setInputs] = useState({
     email: "",
@@ -31,7 +31,9 @@ const Login = ({setAuth}) => {
         }
 
         localStorage.setItem("token", parseRes.token);
+        localStorage.removeItem("adminToken");
         setAuth(true);
+        setAdmin(false);
         
     } catch (error) {
         console.log(error);
@@ -49,8 +51,8 @@ const Login = ({setAuth}) => {
       <div className="mt-1">
         <Link to="/register">Register</Link>
       </div>
-      <div className="mt-1">
-        <Link to="/adminLogin">Admin</Link>
+      <div>
+        <Link to="/adminLogin">Admin Portal</Link>
       </div>
     </div>
   )

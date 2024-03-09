@@ -158,6 +158,11 @@ const NewProduct = () => {
         return;
       }
 
+      if (image === null) {
+        alert('Please select an image.');
+        return;
+      }
+
       if (stock <= 0 || price <= 0){
         alert("Stock and price must be greater than 0.");
         return;
@@ -192,7 +197,7 @@ const NewProduct = () => {
       //delayed navigation
       setTimeout(() => {
         navigate(`/yourstore/${id}`);
-      }, 1000);
+      }, 500);
       } catch (err) {
       console.error(err);
     }

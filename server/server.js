@@ -91,36 +91,32 @@ app.get("/getStores", async (req, res) => {
     const rowsPerPage = req.query.rows_per_page || 10; // Default to 10 rows per page if not provided
     const pageNumber = req.query.page_number || 1; // Default to the first page if not provided
     const offset = (pageNumber - 1) * rowsPerPage;
-    console.log(req.query);
     // Execute the query
     let x = 0;
     //let query = `${GET_STORE1}`;
-    let query = `SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORY_ASSIGNMENT C WHERE S.storefront_id = C.storefront_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)`;
+    let query = `SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORIES C WHERE S.category_id = C.category_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)`;
     
     if (req.query.search !== undefined && req.query.search !== "") {
       query += ` ${x>0?'AND':'WHERE'} LOWER(S.STOREFRONT_NAME) LIKE LOWER('%${req.query.search}%')`;
       x=1;
     }
     if (req.query.category !== undefined && req.query.category !== "All") {
-      query += ` ${x>0?'AND':'WHERE'} S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM CATEGORY_ASSIGNMENT WHERE CATEGORY_NAME = '${req.query.category}')`;
+      query += ` ${x>0?'AND':'WHERE'} S.STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM STOREFRONT STR WHERE (SELECT CATEGORY_NAME FROM CATEGORIES WHERE CATEGORY_ID = STR.CATEGORY_ID) = '${req.query.category}')`;
       x=1;
     }
     query += ` ${GET_STORE2} ORDER BY S.STOREFRONT_ID OFFSET ${offset} LIMIT ${rowsPerPage}`;
-    console.log('query', query);
     const results = await db.query(query);
 
     let query1 = 'SELECT COUNT(*) FROM STOREFRONT';
     x = 0;
-    console.log(x);
     if (req.query.search !== undefined && req.query.search !== "") {
       query1 += ` ${x>0?'AND':'WHERE'} LOWER(STOREFRONT_NAME) LIKE LOWER('%${req.query.search}%')`;
       x=1;
     }
     if (req.query.category !== undefined && req.query.category !== "All") {
-      query1 += ` ${x>0?'AND':'WHERE'} STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM CATEGORY_ASSIGNMENT WHERE CATEGORY_NAME = '${req.query.category}')`;
+      query1 += ` ${x>0?'AND':'WHERE'} STOREFRONT_ID IN (SELECT STOREFRONT_ID FROM STOREFRONT STR WHERE (SELECT CATEGORY_NAME FROM CATEGORIES WHERE CATEGORY_ID = STR.CATEGORY_ID) = '${req.query.category}')`;
       x=1;
     }
-    console.log('query1', query1);
     const result1 = await db.query(query1);
     res.status(200).json({
       status: "success",
@@ -168,7 +164,7 @@ app.get("/getStoresManagedByPerson/:id", async (req, res) => {
     const pageNumber = req.query.page_number || 1; // Default to the first page if not provided
     const offset = (pageNumber - 1) * rowsPerPage;
     let x = 0;
-    let query = `SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORY_ASSIGNMENT C WHERE S.storefront_id = C.storefront_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)`;
+    let query = `SELECT S.*, COALESCE(ROUND(AVG(PRODUCT_RATING)), 0) AS RATING, (SELECT category_name FROM CATEGORIES C WHERE S.category_id = C.category_id) AS CATEGORY FROM STOREFRONT S LEFT OUTER JOIN (SELECT P.PRODUCT_ID, P.STOREFRONT_ID, AVG(R.RATING) AS PRODUCT_RATING FROM PRODUCT P JOIN REVIEW R ON(P.PRODUCT_ID = R.PRODUCT_ID) GROUP BY P.PRODUCT_ID) P1 ON (S.STOREFRONT_ID = P1.STOREFRONT_ID)`;
     x = 1;
     query += ` WHERE is_manager_of_storefront(${req.params.id}, S.STOREFRONT_ID) > 0`
     if (req.query.search !== undefined && req.query.search !== "") {
@@ -180,7 +176,6 @@ app.get("/getStoresManagedByPerson/:id", async (req, res) => {
       x=1;
     }
     query += ` GROUP BY S.STOREFRONT_ID ORDER BY S.STOREFRONT_ID OFFSET ${offset} LIMIT ${rowsPerPage}`;
-    console.log('query', query);
     const results = await db.query(query);
 
     let query1 = `SELECT COUNT(*) FROM STOREFRONT S WHERE is_manager_of_storefront(${req.params.id}, S.STOREFRONT_ID) > 0`;
@@ -202,15 +197,14 @@ app.get("/getStoresManagedByPerson/:id", async (req, res) => {
 //create a storefront
 app.post("/createStore", async (req, res) => {
   try{
+    console.log(req.body);
     console.log("Got a create store request");
     const results = await db.query(
-      "INSERT INTO storefront (STOREFRONT_NAME, STOREFRONT_DESCRIPTION, IMAGE) VALUES ($1, $2, $3) RETURNING *",
-      [req.body.name, req.body.description, req.body.image]
+      "INSERT INTO storefront (STOREFRONT_NAME, CATEGORY_ID, STOREFRONT_DESCRIPTION, IMAGE) VALUES ($1, (SELECT CATEGORY_ID FROM CATEGORIES WHERE CATEGORY_NAME = $2), $3, $4) RETURNING *",
+      [req.body.name, req.body.category, req.body.description, req.body.image]
     );
 
     const resultsb = await db.query("INSERT INTO manages (PERSON_ID, STOREFRONT_ID) VALUES ($1, $2) RETURNING *", [req.body.owner, results.rows[0].storefront_id]);
-
-    const resultsc = await db.query("INSERT INTO category_assignment (storefront_id, category_name) VALUES ($1, $2) RETURNING *", [results.rows[0].storefront_id, req.body.category]);
     
     res.status(201).json({
       status: "success",
@@ -218,7 +212,6 @@ app.post("/createStore", async (req, res) => {
       data: {
         stores: results.rows[0],
         manages: resultsb.rows[0],
-        category: resultsc.rows[0]
       }
     });
   }catch(err){
@@ -247,7 +240,7 @@ app.post("/createStore", async (req, res) => {
 //   }
 // });
 //update a storefront
-app.put("/updateStore/:id", async (req, res) => {
+app.put("/updateStore/:id/:pid", async (req, res) => {
   try{
     console.log("Got an update store request");
     let query = "";
@@ -267,6 +260,9 @@ app.put("/updateStore/:id", async (req, res) => {
     const results = await db.query(
       query, params
     );
+
+    const response = await db.query("INSERT INTO ACTION_LOG (PERSON_ID, STOREFRONT_ID, ACTION_TYPE) VALUES ($1, $2, 'UPDATE')", [req.params.pid, req.params.id]);
+
     res.status(200).json({
       status: "success",
       results: results.rows.length,
@@ -293,6 +289,48 @@ app.delete("/deleteStore/:id/:personid", async (req, res) => {
     console.log(err);
   }
 });
+
+app.post("/addmanager/:id", async (req, res) => {
+  try {
+    console.log("Got a add manager request");
+    const res1 = await db.query(
+      "SELECT * FROM person WHERE person_id = $1",
+      [req.body.manid]
+    );
+
+    if (res1.rows.length === 0 || res1.rows[0].person_name !== req.body.name) {
+      res.status(404).json({
+        status: "error",
+        message: "Person not found"
+      });
+      return;
+    }
+
+    const res2 = await db.query(
+      "SELECT * FROM manages WHERE person_id = $1 AND storefront_id = $2",
+      [req.body.manid, req.params.id]
+    );
+
+    if (res2.rows.length > 0) {
+      res.status(409).json({
+        status: "error",
+        message: "Person is already a manager"
+      });
+      return;
+    }
+
+    const res3 = await db.query(
+      "INSERT INTO manages (PERSON_ID, STOREFRONT_ID) VALUES ($1, $2) RETURNING *",
+      [req.body.manid, req.params.id]
+    );
+    res.status(201).json({
+      status: "success",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 //geTINGt all the storefronts which are in a couple of categories, separated by commas, all lowercase
 // app.get("/getStoreCategories/:categories", async (req, res) => {
 //   try{
@@ -401,7 +439,6 @@ app.get("/getProduct/:productId", async (req, res) => {
 app.put("/updateProduct/:productId", async (req, res) => {
   try{
     console.log("Got an update product request");
-    console.log(req.body);
     //check if req.body has image
     let query = "";
     let params = [
@@ -418,7 +455,6 @@ app.put("/updateProduct/:productId", async (req, res) => {
       query = "UPDATE product SET product_name = $2, product_description = $3, price = $4, stock_count = $5, image = $6, last_updated_on = CURRENT_TIMESTAMP WHERE product_id = $1 RETURNING *";
       params.push(req.body.image);
     }
-    console.log(query);
     const results = await db.query(query, params);
     const res2 = await db.query(
       "UPDATE storefront SET last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = (SELECT storefront_id FROM product WHERE product_id = $1)",
@@ -440,6 +476,9 @@ app.put("/updateProduct/:productId", async (req, res) => {
         }
       })
     );
+
+    const res4 = await db.query("INSERT INTO ACTION_LOG (STOREFRONT_ID, PRODUCT_ID, ACTION_TYPE) VALUES ((SELECT STOREFRONT_ID FROM PRODUCT WHERE PRODUCT_ID = $1), $1, 'UPDATE')", [req.params.productId]);
+    
     res.status(200).json({
       status: "success",
       results: results.rows.length,
@@ -506,12 +545,12 @@ app.post("/createProduct/:id", async (req, res) => {
   }
 });
 //delete a product
-app.delete("/deleteProduct/:productId", async (req, res) => {
+app.delete("/deleteProduct/:productId/:pid", async (req, res) => {
   try{
     console.log("Got a delete product request");
     const results = await db.query(
-      'CALL delete_product_procedure($1)',
-      [req.params.productId]
+      'CALL delete_product_procedure($1, $2)',
+      [req.params.productId, req.params.pid]
     );
     res.status(204).json({
       status: "success"
@@ -545,12 +584,10 @@ app.get("/getStoreProducts/:id", async (req, res) => {
     query1 = query;
     query += ` OFFSET ${offset} LIMIT ${rowsPerPage}`;
 
-    //const query = `SELECT P.*, COALESCE(ROUND(AVG(R.RATING)), 0) AS PRODUCT_RATING, ARRAY_AGG(TA.TAG_NAME) AS TAGS FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON (P.PRODUCT_ID = R.PRODUCT_ID) LEFT OUTER JOIN TAG_ASSIGNMENT TA ON (P.PRODUCT_ID = TA.PRODUCT_ID) WHERE P.STOREFRONT_ID = $1 GROUP BY P.PRODUCT_ID`;
-    console.log('query: ', query);  
+    //const query = `SELECT P.*, COALESCE(ROUND(AVG(R.RATING)), 0) AS PRODUCT_RATING, ARRAY_AGG(TA.TAG_NAME) AS TAGS FROM PRODUCT P LEFT OUTER JOIN REVIEW R ON (P.PRODUCT_ID = R.PRODUCT_ID) LEFT OUTER JOIN TAG_ASSIGNMENT TA ON (P.PRODUCT_ID = TA.PRODUCT_ID) WHERE P.STOREFRONT_ID = $1 GROUP BY P.PRODUCT_ID`; 
     const results = await db.query(query);
 
     const result1 = await db.query(query1);
-    console.log(result1.rows.length);
     res.status(200).json({
       status: "success",
       results: results.rows.length,
@@ -892,6 +929,51 @@ app.post("/checkout/:id", async (req, res) => {
 });
 
 //get all the transactions
+app.get("/getTransactions", async (req, res) => {
+  try {
+    const results = await db.query("SELECT * FROM TRANSACTIONS");
+    res.status(200).json({
+      status: "success",
+      data: {
+        transactions: results.rows
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//get all the actions
+app.get("/getActions", async (req, res) => {
+  try {
+    const results = await db.query("SELECT * FROM ACTION_LOG");
+    res.status(200).json({
+      status: "success",
+      data: {
+        actions: results.rows
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//get all the functions
+app.get("/getFunctions", async (req, res) => {
+  try {
+    const results = await db.query("SELECT * FROM PLSQL_LOG WHERE function_name != 'is_manager_of_product' AND function_name != 'is_manager_of_storefront'");
+    res.status(200).json({
+      status: "success",
+      data: {
+        functions: results.rows
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//get all the transactions for id
 app.get("/getTransactions/:id", async (req, res) => {
   try{
     console.log("Got get all transactions request");
@@ -917,7 +999,7 @@ app.listen(port, () => {
 app.get("/getGroupOrder/:id", async (req, res) => {
   try{
     console.log("Got get a order request");
-    const results = await db.query(`SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_TIME, DELIVERY_STATUS, P.PRICE FROM ORDERS O JOIN PRODUCT P USING(PRODUCT_ID) WHERE GROUP_ID = ${req.params.id}`);
+    const results = await db.query(`SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_TIME, DELIVERY_STATUS, P.PRICE FROM ORDERS O JOIN PRODUCT P USING(PRODUCT_ID) WHERE GROUP_ID = ${req.params.id} UNION SELECT ORDER_ID, PRODUCT_NAME, QUANTITY, PERSON_ID, TRANSACTION_ID, ORDER_TIME, DELIVERY_STATUS, P.PRICE FROM ORDERS O JOIN DELETED_PRODUCT P USING(PRODUCT_ID) WHERE GROUP_ID = ${req.params.id}`);
     res.status(200).json({
       status: "success",
       results: results.rows.length,
@@ -987,7 +1069,6 @@ app.post("/getGroupOrders/:id", async (req, res) => {
       }
     }
     //const results = await db.query("SELECT * FROM ORDERS WHERE PERSON_ID = $1", [req.params.id]);
-    console.log("success");
     res.status(200).json({
       status: "success",
       results: results.rows.length,
@@ -1008,17 +1089,39 @@ app.post("/postReview/:productId/:personId", async (req, res) => {
     //   "INSERT INTO review (product_id, person_id, rating, comment) VALUES ($1, $2, $3, $4) RETURNING *",
     //   [req.params.productId, req.params.personId, req.body.rating, req.body.comment]
     // );
-    const results = await db.query(
-      "INSERT INTO REVIEW (PRODUCT_ID, PERSON_ID, COMMENTS, RATING) VALUES ($1, $2, $3, $4)",
-      [req.params.productId, req.params.personId, req.body.comment, req.body.rating]
-    );
-    res.status(201).json({
-      status: "success",
-      results: results.rows.length,
-      data: {
-        review: results.rows[0]
-      }
-    });
+
+    const check = await db.query("SELECT * FROM REVIEW WHERE PERSON_ID = $1 AND PRODUCT_ID = $2", [req.params.personId, req.params.productId]);
+
+    console.log(check);
+
+    if (check.rows.length !== 0) {
+      const results = await db.query(
+        "UPDATE REVIEW SET COMMENTS = $1, RATING = $2 WHERE PERSON_ID = $3 AND PRODUCT_ID = $4",
+        [req.body.comment, req.body.rating, req.params.personId, req.params.productId]
+      );
+      
+      res.status(201).json({
+        status: "success",
+        results: results.rows.length,
+        data: {
+          review: results.rows[0]
+        }
+      });
+    }
+    else{
+      const results = await db.query(
+        "INSERT INTO REVIEW (PRODUCT_ID, PERSON_ID, COMMENTS, RATING) VALUES ($1, $2, $3, $4)",
+        [req.params.productId, req.params.personId, req.body.comment, req.body.rating]
+      );
+
+      res.status(201).json({
+        status: "success",
+        results: results.rows.length,
+        data: {
+          review: results.rows[0]
+        }
+      });
+    }
   } catch (err) {
     console.log(err);
   }
@@ -1081,6 +1184,44 @@ app.post("/submitComplaint/", async (req, res) => {
     console.log(err);
   }
 });
+
+
+
+
+
+
+//get locations
+app.get("/getLocations", async (req, res) => {
+  try {
+    const results = await db.query("SELECT * FROM LOCATION");
+    res.status(200).json({
+      status: "success",
+      results: results.rows.length,
+      data: {
+        locations: results.rows,
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//delete a person
+app.delete("/deletePerson/:pid", async (req, res) => {
+  try{
+    console.log("Got a delete person request");
+    const results = await db.query(
+      'CALL delete_person_procedure($1)',
+      [req.params.pid]
+    );
+    res.status(204).json({
+      status: "success"
+    });
+  }catch(err){
+    console.log(err);
+  }
+});
+
 
 // //Create a person
 // app.post("/createPeople", async (req, res) => {

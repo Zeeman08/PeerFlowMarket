@@ -173,11 +173,11 @@ const YourStores = () => {
               <button className="btn btn-outline-secondary">Search</button>
           </form>
 
-            {/* new store button */}
-            <div>
-                <button className="btn btn-success mb-4" onClick={() => navigate(`/newstore`)}>New Store</button>
-            </div>
-            <button className="resetbtn btn btn-outline-danger" onClick={e => {setSelected({category_name: "All"})}}>Reset Categories</button>
+          {/* new store button */}
+          <div>
+              <button className="btn btn-success mb-4" onClick={() => navigate(`/newstore`)}>New Store</button>
+          </div>
+          <button className="resetbtn btn btn-outline-danger" onClick={e => {setSelected({category_name: "All"})}}>Reset Categories</button>
 
           {/* drop down */}
           <div className="dropdown">
@@ -199,7 +199,7 @@ const YourStores = () => {
         </div>
 
         {/* Rows per page dropdown */}
-        <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+        <div className='mb-5' style={{ textAlign: 'center', marginTop: '1rem' }}>
           <label htmlFor="rowsPerPage" style={{ marginRight: '0.5rem' }}>Rows per page:</label>
           <select id="rowsPerPage" value={storesPerPage} onChange={handleRowsPerPageChange}>
             <option value={5}>5</option>
@@ -247,15 +247,15 @@ const YourStores = () => {
         </div>
 
         {/* Pagination */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+        <div style={{ paddingBottom: '60px', display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
           <button
             style={{ padding: '0.5rem', marginRight: '1rem', cursor: 'pointer', backgroundColor: '#007BFF', color: 'white' }}
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            Previous
+            {"<"}
           </button>
-          <span style={{ fontSize: '1rem', marginRight: '1rem' }}>
+          <span className="mt-2" style={{ fontSize: '1rem', marginRight: '1rem' }}>
             Page {currentPage} of {totalPages}
           </span>
           <button
@@ -263,7 +263,7 @@ const YourStores = () => {
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            Next
+            {">"}
           </button>
         </div>
 

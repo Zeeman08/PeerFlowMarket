@@ -1,32 +1,21 @@
 import React, { useState } from 'react'
 import {Link} from 'react-router-dom';
 
-const AdminLogin = ({setAuth2}) => {
+const AdminLogin = ({setAdmin, setAuth}) => {
 
     
     const [password, setPassword] = useState("");
 
     const onSubmitForm = async(e) => {
         try {
-            const response = await fetch("http://localhost:3005/auth/adminLogin", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({password})
-            });
-    
-            const parseRes = await response.json();
-    
-            if (parseRes.token === undefined){
-              alert("Invalid credentials");
-              return;
+            e.preventDefault();
+            if (password === "admin"){
+                localStorage.setItem("admintoken", true);
+                localStorage.removeItem("token");
+                setAdmin(true);
+                setAuth(false);
+                return;
             }
-
-            console.log("Here");
-            console.log(parseRes.token);
-    
-            localStorage.setItem("admintoken", parseRes.token);
-            setAuth2(true);
-            
         } catch (error) {
             console.log(error);
         }

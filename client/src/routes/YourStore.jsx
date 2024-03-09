@@ -12,7 +12,6 @@ const YourStore = () => {
   const [showAnnouncementForm, setShowAnnouncementForm] = useState(false);
   const [announcementText, setAnnouncementText] = useState('');
   const [announcementPosted, setAnnouncementPosted] = useState(false);
-  const [showNewAnnouncementButton, setShowNewAnnouncementButton] = useState(true);
   const [image, setImage] = useState(null);
   const navigate = useNavigate();
   /*******************/
@@ -74,7 +73,7 @@ const YourStore = () => {
   const deleteProduct = async id => {
     try {
       const body = { person_id: person.person_id };
-      const response = await fetch(`http://localhost:3005/deleteProduct/${id}`, {
+      const response = await fetch(`http://localhost:3005/deleteProduct/${id}/${person.person_id}`, {
         method: 'DELETE',
         body: JSON.stringify(body),
       });
@@ -160,6 +159,11 @@ const YourStore = () => {
       });
 
       const parseImg = await imgres.json();
+
+      if (parseImg.filename === undefined) {
+        parseImg.filename = "Deal.png";
+      }
+
       const response = await fetch('http://localhost:3005/createAnnouncement', {
         method: 'POST',
         headers: {
@@ -177,7 +181,6 @@ const YourStore = () => {
         setAnnouncementPosted(true);
         setShowAnnouncementForm(false);
         setAnnouncementText('');
-        setShowNewAnnouncementButton(false); // Hide the "New Announcement" button
       }
     } catch (err) {
       console.error('Error posting announcement:', err);
@@ -208,13 +211,15 @@ const YourStore = () => {
         </button>
       </div>
 
-      {showNewAnnouncementButton && (
-        <div>
-          <button className='btn btn-success mb-4' onClick={() => setShowAnnouncementForm(true)}>
-            New Announcement
-          </button>
-        </div>
-      )}
+      <div className="d-flex justify-content-evenly">
+        <button className='btn btn-success mb-4' onClick={() => setShowAnnouncementForm(true)}>
+          New Announcement
+        </button>
+        <button className='btn btn-primary mb-4' onClick={() => navigate(`/announcements/${id}`)}>
+          View Announcements
+        </button>
+      </div>
+
 
       {showAnnouncementForm && (
         <div>
@@ -250,7 +255,7 @@ const YourStore = () => {
       )}
 
       {/* Rows per page dropdown */}
-      <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+      <div  className='mb-5' style={{ textAlign: 'center', marginTop: '1rem' }}>
           <label htmlFor="rowsPerPage" style={{ marginRight: '0.5rem' }}>Rows per page:</label>
           <select id="rowsPerPage" value={productsPerPage} onChange={handleRowsPerPageChange}>
             <option value={5}>5</option>
@@ -265,7 +270,6 @@ const YourStore = () => {
           <thead className='table-dark'>
             <tr className='bg-primary'>
               <th scope='col'>Name</th>
-              <th scope='col'>Tags</th>
               <th scope='col'>Description</th>
               <th scope='col'>Price</th>
               <th scope='col'>Rating</th>
@@ -280,16 +284,9 @@ const YourStore = () => {
             {displayProducts.map(product => (
               <tr key={product.product_id} onClick={e => console.log('Nothin happens :p')}>
                 <td>{product.product_name}</td>
-                <td>
-                  <ul>
-                    {product.tags.map((tag, index) => (
-                      <li key={index}>{tag}</li>
-                    ))}
-                  </ul>
-                </td>
                 <td>{product.product_description}</td>
                 <td>${product.price}</td>
-                <td>{product.product_rating}</td>
+                <td>{product.product_rating.toFixed(1)}</td>
                 <td>{product.stock_count}</td>
                 <td>{product.items_sold}</td>
                 <td>
@@ -322,15 +319,15 @@ const YourStore = () => {
       </div>
 
       {/* Pagination */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+      <div style={{ paddingBottom: '60px', display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
           <button
             style={{ padding: '0.5rem', marginRight: '1rem', cursor: 'pointer', backgroundColor: '#007BFF', color: 'white' }}
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            Previous
+            {"<"}
           </button>
-          <span style={{ fontSize: '1rem', marginRight: '1rem' }}>
+          <span className="mt-2" style={{ fontSize: '1rem', marginRight: '1rem' }}>
             Page {currentPage} of {totalPages}
           </span>
           <button
@@ -338,7 +335,7 @@ const YourStore = () => {
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            Next
+            {">"}
           </button>
         </div>
 

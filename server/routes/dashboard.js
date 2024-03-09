@@ -8,7 +8,7 @@ router.get("/", authorization, async (req, res) => {
         //req.person has the payload
         //res.json(req.person);
 
-        const person = await db.query("SELECT * FROM person WHERE person_id = $1",
+        const person = await db.query("SELECT * FROM PERSON P JOIN ADDRESS USING(PERSON_ID) JOIN LOCATION USING (LOCATION_ID) WHERE person_id = $1",
         [req.person]);
 
         res.json(person.rows[0]);

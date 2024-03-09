@@ -11,6 +11,9 @@ DECLARE
 	CURR_GROUP INT;
 BEGIN
 	SELECT MAX(GROUP_ID)+1 INTO CURR_GROUP FROM ORDERS;
+	IF CURR_GROUP IS NULL THEN
+		CURR_GROUP := 1;
+	END IF;
 	FOR row_data IN (
 		SELECT STOREFRONT_ID, person_id, SUM(quantity * price) AS total_amount
 		FROM CART C JOIN PRODUCT P USING (PRODUCT_ID)
@@ -33,29 +36,16 @@ BEGIN
 	DELETE 
 	FROM CART
 	WHERE PERSON_ID = INPUT_PERSON_ID;
-END $$;
 
-
---delete person procedure
-
-CREATE OR REPLACE PROCEDURE delete_person_procedure(IN pid INT)
-LANGUAGE plpgsql
-AS $$
-DECLARE
-	act_typ INTEGER;
-BEGIN
-	INSERT INTO DELETED_PERSON (PERSON_ID, PERSON_NAME, DATE_OF_BIRTH, PHONE, EMAIL)
-		SELECT PERSON_ID, PERSON_NAME, DATE_OF_BIRTH, PHONE, EMAIL FROM PERSON WHERE PERSON_ID = pid;
-
-	INSERT INTO ACTION_LOG (person_id, action_type) VALUES(pid, 'DELETE');
-
-	DELETE FROM PERSON WHERE PERSON_ID = pid;
+	--inserting into PLSQ_LOG
+	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
+	VALUES (input_person_id, 'process_cart_and_transactions', 'PARAMETERS {input_person_id: ' || input_person_id || ' X: ' || X || '}');
 END $$;
 
 
 --delete product procedure
 
-CREATE OR REPLACE PROCEDURE delete_product_procedure(IN prdid INT)
+CREATE OR REPLACE PROCEDURE delete_product_procedure(IN prdid INT, IN pid INT)
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -71,6 +61,10 @@ BEGIN
 	DELETE FROM PRODUCT WHERE PRODUCT_ID = prdid;
 	
 	DELETE FROM tag_assignment WHERE PRODUCT_ID = prdid;
+
+	--inserting into PLSQ_LOG
+	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
+	VALUES (pid, 'delete_product_procedure', 'PARAMETERS {prdid: ' || prdid || ' pid: ' || pid || '}');
 END $$;
 
 
@@ -89,10 +83,48 @@ BEGIN
 
 	FOR i IN (SELECT * FROM PRODUCT WHERE STOREFRONT_ID = strid)
 	LOOP
-		PERFORM delete_product_procedure(pid, i.product_id);
+		CALL delete_product_procedure(i.product_id, pid);
 	END LOOP;
 
-	DELETE FROM STOREFRONT WHERE STOREFRONT_ID = pid;
+	DELETE FROM STOREFRONT WHERE STOREFRONT_ID = strid;
+
+	
+	--inserting into PLSQ_LOG
+	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
+	VALUES (pid, 'delete_storefront_procedure', 'PARAMETERS {pid: ' || pid || ' strid: ' || strid || '}');
+END $$;
+
+
+--delete person procedure
+
+CREATE OR REPLACE PROCEDURE delete_person_procedure(IN pid INT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+	R MANAGES%ROWTYPE;
+	managercount INT;
+BEGIN
+	INSERT INTO DELETED_PERSON (PERSON_ID, PERSON_NAME, DATE_OF_BIRTH, PHONE, EMAIL)
+		SELECT PERSON_ID, PERSON_NAME, DATE_OF_BIRTH, PHONE, EMAIL FROM PERSON WHERE PERSON_ID = pid;
+
+	INSERT INTO ACTION_LOG (person_id, action_type) VALUES(pid, 'DELETE');
+
+	CALL clear_cart_procedure(pid);
+
+	FOR R in (SELECT * FROM MANAGES WHERE PERSON_ID = pid)
+	LOOP
+		SELECT COUNT(*) INTO managercount FROM MANAGES WHERE STOREFRONT_ID = R.STOREFRONT_ID;
+		IF managercount = 1 THEN
+			CALL delete_storefront_procedure(pid, R.STOREFRONT_ID);
+		END IF;
+	END LOOP;
+
+
+	DELETE FROM PERSON WHERE PERSON_ID = pid;
+
+	--inserting into PLSQ_LOG
+	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
+	VALUES (pid, 'delete_person_procedure', 'PARAMETERS {pid: ' || pid || '}');
 END $$;
 
 
@@ -110,6 +142,10 @@ BEGIN
 		UPDATE PRODUCT SET STOCK_COUNT = STOCK_COUNT + i.quantity WHERE PRODUCT_ID = i.product_id;
 	END LOOP;
 	DELETE FROM CART WHERE PERSON_ID = pid;
+
+	--inserting into PLSQ_LOG
+	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
+	VALUES (pid, 'clear_cart_procedure', 'PARAMETERS {pid: ' || pid || '}');
 END $$;
 
 
@@ -132,6 +168,10 @@ DECLARE
 	phonecount INT;
 	phonelen INT;
 BEGIN
+	--inserting into PLSQ_LOG
+	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
+	VALUES (NULL, 'check_credentials_function', 'PARAMETERS {phone_in: ' || phone_in || ' email_in: ' || email_in || '}');
+
     phonelen := LENGTH(phone_in);
 	SELECT COUNT(*) INTO phonecount FROM PERSON WHERE PHONE = phone_in;
 	SELECT COUNT(*) INTO emailcount FROM PERSON WHERE EMAIL = email_in;
@@ -157,6 +197,10 @@ $$
 DECLARE
 	currstock INTEGER;
 BEGIN
+	--inserting into PLSQ_LOG
+	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
+	VALUES (pid, 'add_to_cart_function', 'PARAMETERS {pid: ' || pid || ' prdid: ' || prdid || ' qty: ' || qty || '}');
+
 	SELECT STOCK_COUNT INTO currstock FROM PRODUCT WHERE PRODUCT_ID = prdid;
 	IF qty > currstock THEN
 		RETURN FALSE;
@@ -177,6 +221,10 @@ RETURNS INT AS $$
 DECLARE
 	RES INT;
 BEGIN
+	--inserting into PLSQ_LOG
+	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
+	VALUES (per_id, 'is_manager_of_product', 'PARAMETERS {per_id: ' || per_id || ' prod_id: ' || prod_id || '}');
+
 	SELECT M.PERSON_ID INTO RES
 	FROM PRODUCT P JOIN STOREFRONT S ON(S.STOREFRONT_ID = P.STOREFRONT_ID) JOIN MANAGES M ON (S.STOREFRONT_ID = M.STOREFRONT_ID)
 	WHERE P.PRODUCT_ID = prod_id and M.PERSON_ID = per_id;
@@ -194,6 +242,10 @@ AS $$
 DECLARE
     RES INT;
 BEGIN
+	--inserting into PLSQ_LOG
+	INSERT INTO PLSQL_LOG (PERSON_ID, FUNCTION_NAME, PARAMETERS)
+	VALUES (per_id, 'is_manager_of_storefront', 'PARAMETERS {per_id: ' || per_id || ' s_id: ' || s_id || '}');
+
     SELECT COUNT(*) INTO RES 
     FROM MANAGES 
     WHERE PERSON_ID = per_id AND STOREFRONT_ID = s_id;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useData} from '../context/PersonContext';
+import "./dropdown.css";
 
 const NewStore = () => {
   //Getting id from link
@@ -10,6 +11,7 @@ const NewStore = () => {
   const[name, setName] = useState("new store");
   const[desc, setDesc] = useState("new description");
   const [image, setImage] = useState(null);
+  
   /*******************/
   /* DROP DOWN STUFF */
   /*******************/
@@ -93,32 +95,37 @@ const NewStore = () => {
   };
   const saveChanges = async (e) => {
     try {
-        if (selected.category_name === "Select a category")
-          return;
-        const formData = new FormData();
-        formData.append("image", image);
-  
-        const imgres = await fetch("http://localhost:3005/upload", {
-          method: "POST",
-          body: formData
-        });
-  
-        const parseImg = await imgres.json();
-        const body = {
-            name: name,
-            category: selected.category_name,
-            description: desc,
-            image: parseImg.filename,
-            owner: person.person_id
-        };
-        const response = await fetch("http://localhost:3005/createStore", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(body)
-        });
+      if (image === null) {
+        alert('Please select an image.');
+        return;
+      }
 
-        console.log(response);
-        navigate("/yourstores");
+      if (selected.category_name === "Select a category")
+        return;
+      const formData = new FormData();
+      formData.append("image", image);
+
+      const imgres = await fetch("http://localhost:3005/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      const parseImg = await imgres.json();
+      const body = {
+          name: name,
+          category: selected.category_name,
+          description: desc,
+          image: parseImg.filename,
+          owner: person.person_id
+      };
+      const response = await fetch("http://localhost:3005/createStore", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(body)
+      });
+
+      console.log(response);
+      navigate("/yourstores");
     }
     catch (err) {
         console.log(err)
@@ -126,7 +133,9 @@ const NewStore = () => {
   };
 
   const goBack = () => {
-    navigate(`/yourstores`);
+    setTimeout(() => {
+      navigate(`/yourstores`);
+    }, 1000);
   }
 
   return (
@@ -138,7 +147,7 @@ const NewStore = () => {
         onChange={e => setName(e.target.value)}/>
       </div>
       <div>
-      <label htmlFor='description'>Category:</label>
+        <label htmlFor='description'>Category:</label>
           {/* drop down */}
           <div className="dropdown">
             <div className="dropdown-btn" onClick={e => setIsActive(!isActive)}>
