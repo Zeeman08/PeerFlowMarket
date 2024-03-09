@@ -4,7 +4,7 @@ const Admin = ({setAdmin}) => {
 
   const [showActions, setShowActions] = useState(false);
   const [showTransactions, setShowTransactions] = useState(false);
-  const [showFunctions, setShowFunctions] = useState(true);
+  const [showFunctions, setShowFunctions] = useState(false);
 
   const [displayActions, setDisplayActions] = useState([]);
   const [displayTransactions, setDisplayTransactions] = useState([]);
