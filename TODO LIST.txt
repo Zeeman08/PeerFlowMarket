@@ -35,6 +35,7 @@ At least 5 such queries
 -getCart joins 786
 -getAllStores subquery and join 97
 -getStoresManagedByPerson subquery and join 167
+-getGroupOrder set operations 1002
 
 
 At least 2 queries should join 3 or more tables
