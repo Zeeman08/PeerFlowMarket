@@ -51,7 +51,7 @@ At least 5 such queries
 At least 2 queries should join 3 or more tables
 -getAllStores
 -getStoresManagedByPerson
--delivery status checking 1002
+-delivery status checking
 
 
 
