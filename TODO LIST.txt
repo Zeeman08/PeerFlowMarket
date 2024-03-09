@@ -78,6 +78,11 @@ At least 2 queries should join 3 or more tables
 -clearcart
 
 
+
+
+
+
+
 --implement admin side
 --implement log for procedures and functions for tracking
 

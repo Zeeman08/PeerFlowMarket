@@ -266,7 +266,8 @@ app.put("/updateStore/:id/:pid", async (req, res) => {
     res.status(200).json({
       status: "success",
       results: results.rows.length,
-      data: {
+      data
+      : {
         stores: results.rows[0]
       }
     });
