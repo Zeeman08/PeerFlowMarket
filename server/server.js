@@ -939,7 +939,6 @@ app.get("/getTransactions", async (req, res) => {
         transactions: results.rows
       }
     });
-    console.log("Here");
   } catch (error) {
     console.log(error);
   }
