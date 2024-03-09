@@ -148,11 +148,16 @@ const Register = ({setAuth}) => {
     <div>
       <h1 className="text-center my-5">Register</h1>
       <form onSubmit={onSubmitForm}>
+        <label htmlFor="email">Email:</label>
         <input type="email" name="email" placeholder="Email" className="form-control my-3" value={email} onChange={e => onChange(e)}/>
+        <label htmlFor="password">Password:</label>
         <input type="password" name="password" placeholder="Password" className="form-control my-3" value={password} onChange={e => onChange(e)}/>
+        <label htmlFor="name">Name:</label>
         <input type="text" name="name" placeholder="Name" className="form-control my-3" value={name} onChange={e => onChange(e)}/>
+        <label htmlFor="dob">Date of Birth:</label>
         <input type="date" name="dob" className="form-control my-3" value={dob} onChange={e => onChange(e)}/>
         
+        <label htmlFor="location">Location:</label>
         {/* Dropdown for Division - City */}
         <div className="dropdown">
           <div className="dropdown-btn" onClick={e => setIsActive(!isActive)}>
@@ -170,18 +175,24 @@ const Register = ({setAuth}) => {
             </div>
           )}
         </div>
+
+        <label htmlFor="street">Street:</label>
         <input type="text" name="street" placeholder="Street Name" className="form-control my-3" value={street} onChange={e => onChange(e)} />
+        <label htmlFor="houseNumber">House Number:</label>
         <input type="text" name="houseNumber" placeholder="House Number" className="form-control my-3" value={houseNumber} onChange={e => onChange(e)} />
+        <label htmlFor="postCode">Post Code:</label>
         <input type="number" name="postCode" placeholder="Post Code" className="form-control my-3" value={postCode} onChange={e => onChange(e)} />
         
+        <label htmlFor="phone">Phone:</label>
         <input type="phone" name="phone" placeholder="Phone" className="form-control my-3" value={phone} onChange={e => onChange(e)}/>
+        <label htmlFor="image">Profile Picture:</label>
         <input type="file" name="image" className="form-control my-3" onChange={e => onFileChange(e)} />
         <button className="btn btn-success">Submit</button>
       </form>
       <div className="mt-1">
         <Link to="/">Login</Link>
       </div>
-      <div>
+      <div style={{ paddingBottom: '40px' }}>
         <Link to="/adminLogin">Admin Portal</Link>
       </div>
     </div>
