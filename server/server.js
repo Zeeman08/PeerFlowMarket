@@ -932,7 +932,6 @@ app.post("/checkout/:id", async (req, res) => {
 app.get("/getTransactions", async (req, res) => {
   try {
     const results = await db.query("SELECT * FROM TRANSACTIONS");
-    console.log(results);
     res.status(200).json({
       status: "success",
       data: {
