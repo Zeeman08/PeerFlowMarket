@@ -1,4 +1,7 @@
-***BASIC QUERIES***
+*****************************
+********BASIC QUERIES********
+*****************************
+
 1) INSERT: 10 normal, 22 plsql, 32 total
 2) UPDATE: 10 normal, 3 plsql, 13 total
 3) DELETE: 3 normal, 6 plsql, 9 total
@@ -20,6 +23,10 @@ At least 2 queries should join 3 or more tables
 -getAllStores
 -getStoresManagedByPerson
 -delivery status checking
+
+
+
+Insertions into PLSQL LOG and ACTION LOG are meant for auditing later on from admin side
 
 QUERIES:
 
@@ -136,9 +143,6 @@ INSERT INTO ACTION_LOG (storefront_id, product_id, action_type) VALUES (NEW.stor
 ==> insertion into action log
 
 
-Insertions into PLSQL LOG and ACTION LOG are meant for auditing later on from admin side
-
-
 
 UPDATE:
 UPDATE storefront SET STOREFRONT_NAME = $2, STOREFRONT_DESCRIPTION = $3, last_updated_on = CURRENT_TIMESTAMP WHERE storefront_id = $1 RETURNING *
@@ -224,16 +228,21 @@ DELETE FROM CART WHERE PERSON_ID = pid
 
 
 
-***ADVANCED QUERIES***
-1) JOIN: 17
+
+
+
+
+
+
+
+********************************
+********ADVANCED QUERIES********
+********************************
+1) JOIN: 15
 2) SUBQUERIES: 7
 3) SET: 1
 
 JOIN AND SUBQUERIES MIXED
-
-
-
-
 
 
 --getAllStores which fit the search criteria in the CURRENT_PAGE
@@ -395,7 +404,7 @@ FROM ORDERS O JOIN PRODUCT P USING (PRODUCT_ID) JOIN MANAGES USING(STOREFRONT_ID
 WHERE MANAGES.PERSON_ID = ${req.params.id} 
 GROUP BY GROUP_ID;
 
-==> thse two fetch all the group orders based on our search criteria, where the group orders are placed to me. 
+==> these two fetch all the group orders based on our search criteria, where the group orders are placed to me. 
 
 SET OPERATION USED HERE
 --getGroupOrder
@@ -415,7 +424,16 @@ WHERE GROUP_ID = ${req.params.id}
 
 
 
-***PLSQL***
+
+
+
+
+
+
+*********************
+********PLSQL********
+*********************
+
 1) FUNCTIONS: 4
 2) PROCEDURES: 5
 3) TRIGGERS: 4
