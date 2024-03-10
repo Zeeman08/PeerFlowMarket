@@ -769,3 +769,11 @@ CREATE OR REPLACE TRIGGER product_purchase_trigger
 AFTER INSERT ON ORDERS
 FOR EACH ROW
 EXECUTE FUNCTION product_purchase_trigger_function();
+
+
+
+------------------------------------------------------------------
+Subsection: B2
+Group_ID: 3
+Rolls: 2105094 
+	   2105104
